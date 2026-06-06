@@ -14,23 +14,27 @@ export function Nav() {
   const pathname = usePathname()
 
   return (
-    <nav className="flex w-48 flex-col gap-1 border-r border-zinc-200 bg-white px-3 py-6">
-      <p className="mb-4 px-2 text-xs font-semibold uppercase tracking-widest text-zinc-400">
+    <nav aria-label="Library" className="flex w-48 flex-col gap-1 border-r border-zinc-200 bg-white px-3 py-6">
+      <p aria-hidden="true" className="mb-4 px-2 text-xs font-semibold uppercase tracking-widest text-zinc-400">
         Library
       </p>
-      {links.map(({ href, label }) => (
-        <Link
-          key={href}
-          href={href}
-          className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-            pathname.startsWith(href)
-              ? "bg-zinc-100 text-zinc-900"
-              : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900"
-          }`}
-        >
-          {label}
-        </Link>
-      ))}
+      {links.map(({ href, label }) => {
+        const isActive = pathname === href || pathname.startsWith(href + "/")
+        return (
+          <Link
+            key={href}
+            href={href}
+            aria-current={isActive ? "page" : undefined}
+            className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+              isActive
+                ? "bg-zinc-100 text-zinc-900"
+                : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900"
+            }`}
+          >
+            {label}
+          </Link>
+        )
+      })}
       <form action={signOutAction} className="mt-auto">
         <button
           type="submit"
