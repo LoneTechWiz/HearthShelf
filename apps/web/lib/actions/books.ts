@@ -43,10 +43,12 @@ export async function deleteBook(
   if (!session?.user?.id) return { error: "Unauthorized" }
 
   const id = String(formData.get("id") ?? "")
+  if (!id) return { error: "Missing book id" }
   await deleteBookRecord(id, session.user.id)
 
   revalidatePath("/books")
   redirect("/books")
+  return null
 }
 
 export async function updateBook(
@@ -57,6 +59,7 @@ export async function updateBook(
   if (!session?.user?.id) return { error: "Unauthorized" }
 
   const id = String(formData.get("id") ?? "")
+  if (!id) return { error: "Missing book id" }
   const title = nullIfEmpty(formData.get("title"))
   if (!title) return { error: "Title is required" }
 
@@ -69,5 +72,7 @@ export async function updateBook(
   })
 
   revalidatePath(`/books/${id}`)
+  revalidatePath("/books")
   redirect(`/books/${id}`)
+  return null
 }
