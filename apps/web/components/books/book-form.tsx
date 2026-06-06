@@ -28,6 +28,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
   const [state, formAction, isPending] = useActionState(action, null)
 
   const [title, setTitle] = useState(defaultValues?.title ?? "")
+  const [searchQuery, setSearchQuery] = useState(defaultValues?.title ?? "")
   const [authors, setAuthors] = useState(defaultValues?.authors ?? "")
   const [isbn, setIsbn] = useState(defaultValues?.isbn ?? "")
   const [description, setDescription] = useState(defaultValues?.description ?? "")
@@ -41,7 +42,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
   const [lookupError, setLookupError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (title.length < 2) {
+    if (searchQuery.length < 2) {
       setSuggestions([])
       setShowDropdown(false)
       return
@@ -50,7 +51,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
       setIsSearching(true)
       setSearchError(null)
       try {
-        const results = await searchByTitle(title)
+        const results = await searchByTitle(searchQuery)
         setSuggestions(results)
         setShowDropdown(true)
       } catch {
@@ -61,10 +62,11 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
       }
     }, 300)
     return () => clearTimeout(timer)
-  }, [title])
+  }, [searchQuery])
 
   function handleSelect(suggestion: BookSuggestion) {
     setTitle(suggestion.title)
+    setSearchQuery("")
     setAuthors(suggestion.authors)
     setIsbn(suggestion.isbn ?? "")
     setCoverUrl(suggestion.coverUrl ?? "")
@@ -115,7 +117,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
           name="title"
           required
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={(e) => { setTitle(e.target.value); setSearchQuery(e.target.value) }}
           className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500"
         />
         {searchError && (
