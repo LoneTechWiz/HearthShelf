@@ -40,7 +40,7 @@ export function BookSearchDropdown({
       ) : (
         <ul>
           {suggestions.map((s) => (
-            <li key={s.isbn}>
+            <li key={s.key}>
               <button
                 type="button"
                 onClick={() => onSelect(s)}
@@ -54,7 +54,7 @@ export function BookSearchDropdown({
                 <div className="flex min-w-0 flex-col">
                   <span className="truncate text-sm font-medium text-zinc-900">{s.title}</span>
                   <span className="truncate text-xs text-zinc-500">{s.authors}</span>
-                  <span className="text-xs text-zinc-400">{s.isbn}</span>
+                  {s.isbn && <span className="text-xs text-zinc-400">{s.isbn}</span>}
                 </div>
               </button>
             </li>

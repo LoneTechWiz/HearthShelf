@@ -1,7 +1,8 @@
 export type BookSuggestion = {
+  key: string
   title: string
   authors: string
-  isbn: string
+  isbn: string | null
   coverUrl: string | null
   description: string | null
 }
@@ -12,24 +13,22 @@ export async function searchByTitle(title: string): Promise<BookSuggestion[]> {
   )
   if (!res.ok) throw new Error("Search failed")
   const data = await res.json()
-  return (data.docs ?? []).flatMap((doc: {
+  return (data.docs ?? []).map((doc: {
+    key?: string
     title?: string
     author_name?: string[]
-    isbn?: string[]
+    isbn?: string[] | null
     cover_i?: number
-  }) => {
-    const isbn = doc.isbn?.[0]
-    if (!isbn) return []
-    return [{
-      title: doc.title ?? "",
-      authors: (doc.author_name ?? []).join(", "),
-      isbn,
-      coverUrl: doc.cover_i
-        ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-S.jpg`
-        : null,
-      description: null,
-    }]
-  })
+  }) => ({
+    key: doc.key ?? "",
+    title: doc.title ?? "",
+    authors: (doc.author_name ?? []).join(", "),
+    isbn: doc.isbn?.[0] ?? null,
+    coverUrl: doc.cover_i
+      ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-S.jpg`
+      : null,
+    description: null,
+  }))
 }
 
 export async function lookupByIsbn(isbn: string): Promise<BookSuggestion | null> {
@@ -45,6 +44,7 @@ export async function lookupByIsbn(isbn: string): Promise<BookSuggestion | null>
       ? book.description
       : book.description?.value ?? null
   return {
+    key: isbn,
     title: book.title ?? "",
     authors: (book.authors ?? []).map((a: { name: string }) => a.name).join(", "),
     isbn,

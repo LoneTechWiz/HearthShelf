@@ -66,7 +66,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
   function handleSelect(suggestion: BookSuggestion) {
     setTitle(suggestion.title)
     setAuthors(suggestion.authors)
-    setIsbn(suggestion.isbn)
+    setIsbn(suggestion.isbn ?? "")
     setCoverUrl(suggestion.coverUrl ?? "")
     setDescription(suggestion.description ?? "")
     setShowDropdown(false)

@@ -10,6 +10,7 @@ describe("searchByTitle", () => {
       json: async () => ({
         docs: [
           {
+            key: "/works/OL12345W",
             title: "Dune",
             author_name: ["Frank Herbert"],
             isbn: ["9780441013593"],
@@ -20,6 +21,7 @@ describe("searchByTitle", () => {
     }))
     const results = await searchByTitle("Dune")
     expect(results).toEqual([{
+      key: "/works/OL12345W",
       title: "Dune",
       authors: "Frank Herbert",
       isbn: "9780441013593",
@@ -28,15 +30,22 @@ describe("searchByTitle", () => {
     }])
   })
 
-  it("skips docs without an isbn", async () => {
+  it("sets isbn to null when missing from doc", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({
-        docs: [{ title: "No ISBN Book", author_name: ["Author"] }],
+        docs: [{ key: "/works/OL99W", title: "No ISBN Book", author_name: ["Author"] }],
       }),
     }))
     const results = await searchByTitle("No ISBN")
-    expect(results).toEqual([])
+    expect(results).toEqual([{
+      key: "/works/OL99W",
+      title: "No ISBN Book",
+      authors: "Author",
+      isbn: null,
+      coverUrl: null,
+      description: null,
+    }])
   })
 
   it("throws when response is not ok", async () => {
@@ -71,6 +80,7 @@ describe("lookupByIsbn", () => {
     }))
     const result = await lookupByIsbn("9780441013593")
     expect(result).toEqual({
+      key: "9780441013593",
       title: "Dune",
       authors: "Frank Herbert",
       isbn: "9780441013593",
