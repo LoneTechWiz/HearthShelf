@@ -1,5 +1,6 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
+import { Nav } from "@/components/nav"
 
 export default async function LibraryLayout({
   children,
@@ -9,5 +10,10 @@ export default async function LibraryLayout({
   const session = await auth()
   if (!session) redirect("/")
 
-  return <div className="min-h-screen bg-zinc-50">{children}</div>
+  return (
+    <div className="flex min-h-screen">
+      <Nav />
+      <main className="flex-1 overflow-y-auto p-8">{children}</main>
+    </div>
+  )
 }
