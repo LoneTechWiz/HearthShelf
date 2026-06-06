@@ -17,6 +17,7 @@
   "dependencies": {
     "@auth/drizzle-adapter": "^1",
     "@my-shelf/types": "*",
+    "@zxing/browser": "^0.2.0",
     "drizzle-orm": "^0.41",
     "next": "16.2.7",
     "next-auth": "beta",
