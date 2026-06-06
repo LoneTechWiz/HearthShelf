@@ -48,7 +48,7 @@ export function Nav() {
       {/* Desktop sidebar */}
       <nav
         aria-label="Library"
-        className="max-md:hidden md:flex w-48 flex-col gap-1 border-r border-zinc-200 bg-white px-3 py-6"
+        className="nav-desktop w-48 flex-col gap-1 border-r border-zinc-200 bg-white px-3 py-6"
       >
         <p
           aria-hidden="true"
@@ -86,7 +86,7 @@ export function Nav() {
       {/* Mobile bottom tab bar */}
       <nav
         aria-label="Library tabs"
-        className="fixed bottom-0 left-0 right-0 z-50 max-md:flex h-14 border-t border-zinc-200 bg-white md:hidden"
+        className="nav-mobile fixed bottom-0 left-0 right-0 z-50 h-14 border-t border-zinc-200 bg-white"
       >
         {links.map(({ href, label, icon }) => {
           const isActive = pathname === href || pathname.startsWith(href + "/")
