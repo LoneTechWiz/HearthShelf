@@ -43,6 +43,15 @@ describe("searchByTitle", () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false }))
     await expect(searchByTitle("Dune")).rejects.toThrow("Search failed")
   })
+
+  it("returns empty array when docs is missing", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({}),
+    }))
+    const results = await searchByTitle("nonexistent")
+    expect(results).toEqual([])
+  })
 })
 
 describe("lookupByIsbn", () => {

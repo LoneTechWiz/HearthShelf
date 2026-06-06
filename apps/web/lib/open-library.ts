@@ -34,7 +34,7 @@ export async function searchByTitle(title: string): Promise<BookSuggestion[]> {
 
 export async function lookupByIsbn(isbn: string): Promise<BookSuggestion | null> {
   const res = await fetch(
-    `https://openlibrary.org/api/books?bibkeys=ISBN:${encodeURIComponent(isbn)}&format=json&jscmd=data`
+    `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`
   )
   if (!res.ok) throw new Error("Lookup failed")
   const data = await res.json()
