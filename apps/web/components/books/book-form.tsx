@@ -154,7 +154,6 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
             name="isbn"
             value={isbn}
             onChange={(e) => setIsbn(e.target.value)}
-            onBlur={handleIsbnLookup}
             className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500"
           />
           <button
