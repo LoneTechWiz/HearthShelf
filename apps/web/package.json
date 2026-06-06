@@ -1,5 +1,5 @@
 {
-  "name": "@personal-library/web",
+  "name": "@my-shelf/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1",
-    "@personal-library/types": "*",
+    "@my-shelf/types": "*",
     "drizzle-orm": "^0.41",
     "next": "16.2.7",
     "next-auth": "beta",

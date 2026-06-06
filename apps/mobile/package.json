@@ -1,5 +1,5 @@
 {
-  "name": "@personal-library/mobile",
+  "name": "@my-shelf/mobile",
   "version": "0.1.0",
   "private": true,
   "main": "expo-router/entry",
@@ -9,7 +9,7 @@
     "ios": "expo start --ios"
   },
   "dependencies": {
-    "@personal-library/types": "*",
+    "@my-shelf/types": "*",
     "expo": "~52.0.0",
     "expo-router": "~4.0.0",
     "react": "18.3.1",

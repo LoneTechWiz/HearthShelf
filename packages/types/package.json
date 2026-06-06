@@ -1,5 +1,5 @@
 {
-  "name": "@personal-library/types",
+  "name": "@my-shelf/types",
   "version": "0.1.0",
   "private": true,
   "main": "./src/index.ts",
