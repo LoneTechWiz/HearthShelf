@@ -28,11 +28,22 @@ export default async function BooksPage() {
                 href={`/books/${book.id}`}
                 className="flex items-center justify-between px-5 py-4 hover:bg-zinc-50"
               >
-                <div>
-                  <p className="font-medium text-zinc-900">{book.title}</p>
-                  {book.authors && (
-                    <p className="text-sm text-zinc-500">{book.authors}</p>
+                <div className="flex items-center gap-4">
+                  {book.coverUrl ? (
+                    <img
+                      src={book.coverUrl}
+                      alt=""
+                      className="h-14 w-10 flex-shrink-0 rounded object-cover"
+                    />
+                  ) : (
+                    <div className="h-14 w-10 flex-shrink-0 rounded bg-zinc-100" />
                   )}
+                  <div>
+                    <p className="font-medium text-zinc-900">{book.title}</p>
+                    {book.authors && (
+                      <p className="text-sm text-zinc-500">{book.authors}</p>
+                    )}
+                  </div>
                 </div>
                 <span
                   className={`text-xs font-medium px-2 py-0.5 rounded-full ${
