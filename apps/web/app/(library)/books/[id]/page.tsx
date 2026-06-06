@@ -46,6 +46,7 @@ export default async function BookDetailPage({
           <p className="text-sm leading-relaxed text-zinc-600">{book.description}</p>
         )}
         {book.coverUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={book.coverUrl}
             alt={`Cover of ${book.title}`}
