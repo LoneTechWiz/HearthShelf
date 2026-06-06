@@ -9,19 +9,34 @@ export default async function HomePage() {
     <main className="flex flex-1 flex-col items-center justify-center gap-6 bg-zinc-50">
       <h1 className="text-3xl font-semibold text-zinc-900">Personal Library</h1>
       <p className="text-zinc-500">Track your books and who has them.</p>
-      <form
-        action={async () => {
-          "use server"
-          await signIn("github", { redirectTo: "/books" })
-        }}
-      >
-        <button
-          type="submit"
-          className="rounded-lg bg-zinc-900 px-6 py-2.5 text-sm font-medium text-white hover:bg-zinc-700"
+      <div className="flex flex-col gap-3">
+        <form
+          action={async () => {
+            "use server"
+            await signIn("github", { redirectTo: "/books" })
+          }}
         >
-          Sign in with GitHub
-        </button>
-      </form>
+          <button
+            type="submit"
+            className="w-full rounded-lg bg-zinc-900 px-6 py-2.5 text-sm font-medium text-white hover:bg-zinc-700"
+          >
+            Sign in with GitHub
+          </button>
+        </form>
+        <form
+          action={async () => {
+            "use server"
+            await signIn("google", { redirectTo: "/books" })
+          }}
+        >
+          <button
+            type="submit"
+            className="w-full rounded-lg bg-zinc-900 px-6 py-2.5 text-sm font-medium text-white hover:bg-zinc-700"
+          >
+            Sign in with Google
+          </button>
+        </form>
+      </div>
     </main>
   )
 }

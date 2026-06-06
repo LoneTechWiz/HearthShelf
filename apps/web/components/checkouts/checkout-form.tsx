@@ -35,7 +35,7 @@ export function CheckoutForm({ action, books, contacts }: CheckoutFormProps) {
           id="bookId"
           name="bookId"
           required
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-500"
+          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500"
         >
           <option value="">Select a book…</option>
           {books.map((b) => (
@@ -55,7 +55,7 @@ export function CheckoutForm({ action, books, contacts }: CheckoutFormProps) {
           name="borrower"
           required
           defaultValue="self"
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-500"
+          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500"
         >
           <option value="self">Myself</option>
           {contacts.map((c) => (
@@ -74,7 +74,7 @@ export function CheckoutForm({ action, books, contacts }: CheckoutFormProps) {
           id="dueDate"
           name="dueDate"
           type="date"
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-500"
+          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500"
         />
       </div>
 
@@ -86,7 +86,7 @@ export function CheckoutForm({ action, books, contacts }: CheckoutFormProps) {
           id="notes"
           name="notes"
           rows={2}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-500"
+          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500"
         />
       </div>
 
