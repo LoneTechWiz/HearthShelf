@@ -33,22 +33,40 @@ export async function searchByTitle(title: string): Promise<BookSuggestion[]> {
 
 export async function lookupByIsbn(isbn: string): Promise<BookSuggestion | null> {
   const res = await fetch(
-    `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`
+    `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=details`
   )
   if (!res.ok) throw new Error("Lookup failed")
   const data = await res.json()
-  const book = data[`ISBN:${isbn}`]
-  if (!book) return null
-  const description =
-    typeof book.description === "string"
-      ? book.description
-      : book.description?.value ?? null
+  const entry = data[`ISBN:${isbn}`]
+  if (!entry) return null
+
+  const details = entry.details ?? {}
+  const workKey: string | null = details.works?.[0]?.key ?? null
+
+  let description: string | null = null
+  if (workKey) {
+    try {
+      const workRes = await fetch(`https://openlibrary.org${workKey}.json`)
+      if (workRes.ok) {
+        const work = await workRes.json()
+        description =
+          typeof work.description === "string"
+            ? work.description
+            : work.description?.value ?? null
+      }
+    } catch {
+      // description stays null
+    }
+  }
+
   return {
     key: isbn,
-    title: book.title ?? "",
-    authors: (book.authors ?? []).map((a: { name: string }) => a.name).join(", "),
+    title: details.title ?? "",
+    authors: (details.authors ?? []).map((a: { name: string }) => a.name).join(", "),
     isbn,
-    coverUrl: book.cover?.medium ?? null,
+    coverUrl: details.covers?.[0]
+      ? `https://covers.openlibrary.org/b/id/${details.covers[0]}-M.jpg`
+      : null,
     description,
   }
 }

@@ -66,18 +66,26 @@ describe("searchByTitle", () => {
 describe("lookupByIsbn", () => {
   beforeEach(() => vi.restoreAllMocks())
 
-  it("returns book details for a valid ISBN", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        "ISBN:9780441013593": {
-          title: "Dune",
-          authors: [{ name: "Frank Herbert" }],
-          cover: { medium: "https://covers.openlibrary.org/b/id/8839523-M.jpg" },
-          description: "A science fiction novel.",
-        },
-      }),
-    }))
+  it("returns book details including description from work record", async () => {
+    vi.stubGlobal("fetch", vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          "ISBN:9780441013593": {
+            details: {
+              title: "Dune",
+              authors: [{ name: "Frank Herbert" }],
+              covers: [8839523],
+              works: [{ key: "/works/OL12345W" }],
+            },
+          },
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ description: "A science fiction novel." }),
+      })
+    )
     const result = await lookupByIsbn("9780441013593")
     expect(result).toEqual({
       key: "9780441013593",
@@ -89,19 +97,40 @@ describe("lookupByIsbn", () => {
     })
   })
 
-  it("handles description as object with value property", async () => {
+  it("handles work description as object with value property", async () => {
+    vi.stubGlobal("fetch", vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          "ISBN:9780441013593": {
+            details: {
+              title: "Dune",
+              authors: [],
+              works: [{ key: "/works/OL12345W" }],
+            },
+          },
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ description: { value: "A science fiction novel." } }),
+      })
+    )
+    const result = await lookupByIsbn("9780441013593")
+    expect(result?.description).toBe("A science fiction novel.")
+  })
+
+  it("returns null description when no work key", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({
         "ISBN:9780441013593": {
-          title: "Dune",
-          authors: [],
-          description: { value: "A science fiction novel." },
+          details: { title: "Dune", authors: [] },
         },
       }),
     }))
     const result = await lookupByIsbn("9780441013593")
-    expect(result?.description).toBe("A science fiction novel.")
+    expect(result?.description).toBeNull()
   })
 
   it("returns null when ISBN is not found", async () => {
