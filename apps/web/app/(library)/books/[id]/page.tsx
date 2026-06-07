@@ -32,6 +32,14 @@ export default async function BookDetailPage({
             )}
           </div>
           <div className="flex gap-2 shrink-0">
+            {!book.isCheckedOut && (
+              <Link
+                href={`/checkouts/new?bookId=${book.id}`}
+                className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
+              >
+                Check Out
+              </Link>
+            )}
             <Link
               href={`/books/${book.id}/edit`}
               className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"

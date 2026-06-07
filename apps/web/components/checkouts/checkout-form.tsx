@@ -3,6 +3,7 @@
 import { useActionState } from "react"
 import type { BookRow } from "@/lib/queries/books"
 import type { ContactRow } from "@/lib/queries/contacts"
+import { BookCombobox } from "./book-combobox"
 
 type ActionState = { error: string } | null
 type CheckoutFormAction = (
@@ -14,9 +15,10 @@ interface CheckoutFormProps {
   action: CheckoutFormAction
   books: Pick<BookRow, "id" | "title">[]
   contacts: Pick<ContactRow, "id" | "name">[]
+  defaultBookId?: string
 }
 
-export function CheckoutForm({ action, books, contacts }: CheckoutFormProps) {
+export function CheckoutForm({ action, books, contacts, defaultBookId }: CheckoutFormProps) {
   const [state, formAction, isPending] = useActionState(action, null)
 
   return (
@@ -28,22 +30,10 @@ export function CheckoutForm({ action, books, contacts }: CheckoutFormProps) {
       )}
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-700" htmlFor="bookId">
+        <label className="text-sm font-medium text-zinc-700">
           Book <span className="text-red-500">*</span>
         </label>
-        <select
-          id="bookId"
-          name="bookId"
-          required
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500"
-        >
-          <option value="">Select a book…</option>
-          {books.map((b) => (
-            <option key={b.id} value={b.id}>
-              {b.title}
-            </option>
-          ))}
-        </select>
+        <BookCombobox books={books} defaultBookId={defaultBookId} />
       </div>
 
       <div className="flex flex-col gap-1">

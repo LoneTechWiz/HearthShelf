@@ -36,13 +36,30 @@ export async function getBooksForUser(userId: string): Promise<BookWithAvailabil
 export async function getBookById(
   id: string,
   userId: string
-): Promise<BookRow | null> {
+): Promise<BookWithAvailability | null> {
   const rows = await db
-    .select()
+    .select({
+      id: books.id,
+      userId: books.userId,
+      isbn: books.isbn,
+      title: books.title,
+      authors: books.authors,
+      description: books.description,
+      coverUrl: books.coverUrl,
+      createdAt: books.createdAt,
+      activeCheckoutId: checkouts.id,
+    })
     .from(books)
+    .leftJoin(
+      checkouts,
+      and(eq(checkouts.bookId, books.id), isNull(checkouts.returnedAt))
+    )
     .where(and(eq(books.id, id), eq(books.userId, userId)))
     .limit(1)
-  return rows[0] ?? null
+
+  if (!rows[0]) return null
+  const { activeCheckoutId, ...book } = rows[0]
+  return { ...book, isCheckedOut: activeCheckoutId !== null }
 }
 
 export async function createBookRecord(

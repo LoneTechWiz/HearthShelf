@@ -5,7 +5,12 @@ import { getContactsForUser } from "@/lib/queries/contacts"
 import { createCheckout } from "@/lib/actions/checkouts"
 import { CheckoutForm } from "@/components/checkouts/checkout-form"
 
-export default async function NewCheckoutPage() {
+export default async function NewCheckoutPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ bookId?: string }>
+}) {
+  const { bookId } = await searchParams
   const session = await auth()
   const userId = session!.user!.id!
 
@@ -37,6 +42,7 @@ export default async function NewCheckoutPage() {
           action={createCheckout}
           books={availableBooks}
           contacts={contacts}
+          defaultBookId={bookId}
         />
       )}
     </div>
