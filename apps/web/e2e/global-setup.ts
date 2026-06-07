@@ -9,23 +9,23 @@ import * as schema from "../lib/db/schema"
 const SESSION_COOKIE = "authjs.session-token"
 
 async function globalSetup() {
-  const client = postgres(process.env.DATABASE_URL!)
-  const db = drizzle(client, { schema })
-
-  await db.execute(
-    sql`TRUNCATE TABLE "checkout","book","contact","session","account","verificationToken","user" RESTART IDENTITY CASCADE`
-  )
-
   const userId = "e2e-user"
-  await db
-    .insert(schema.users)
-    .values({ id: userId, email: "e2e@example.com", name: "E2E User" })
-
   const sessionToken = randomUUID()
   const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-  await db.insert(schema.sessions).values({ sessionToken, userId, expires })
 
-  await client.end()
+  const client = postgres(process.env.DATABASE_URL!)
+  const db = drizzle(client, { schema })
+  try {
+    await db.execute(
+      sql`TRUNCATE TABLE "checkout","book","contact","session","account","verificationToken","user" RESTART IDENTITY CASCADE`
+    )
+    await db
+      .insert(schema.users)
+      .values({ id: userId, email: "e2e@example.com", name: "E2E User" })
+    await db.insert(schema.sessions).values({ sessionToken, userId, expires })
+  } finally {
+    await client.end()
+  }
 
   const storageState = {
     cookies: [

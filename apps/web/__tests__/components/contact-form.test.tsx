@@ -22,5 +22,6 @@ describe("ContactForm", () => {
     )
     expect(screen.getByLabelText(/Name/)).toHaveValue("Ada")
     expect(screen.getByLabelText(/Email/)).toHaveValue("ada@example.com")
+    expect(screen.getByLabelText(/Phone/)).toHaveValue("")
   })
 })

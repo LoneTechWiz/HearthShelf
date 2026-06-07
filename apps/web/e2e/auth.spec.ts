@@ -8,7 +8,7 @@ test("unauthenticated visitor is redirected from /books to home", async ({
   })
   const page = await context.newPage()
   await page.goto("/books")
-  await expect(page).toHaveURL("http://localhost:3100/")
+  await expect(page).toHaveURL(/localhost:\d+\/$/)
   await context.close()
 })
 
