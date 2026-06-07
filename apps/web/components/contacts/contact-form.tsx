@@ -52,7 +52,7 @@ export function ContactForm({
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-700" htmlFor="email">
+        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300" htmlFor="email">
           Email
         </label>
         <input
@@ -65,7 +65,7 @@ export function ContactForm({
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-700" htmlFor="phone">
+        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300" htmlFor="phone">
           Phone
         </label>
         <input
