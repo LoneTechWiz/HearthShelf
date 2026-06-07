@@ -30,14 +30,14 @@ export function CheckoutForm({ action, books, contacts, defaultBookId }: Checkou
       )}
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-700">
+        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
           Book <span className="text-red-500">*</span>
         </label>
         <BookCombobox books={books} defaultBookId={defaultBookId} />
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-700" htmlFor="borrower">
+        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300" htmlFor="borrower">
           Borrower <span className="text-red-500">*</span>
         </label>
         <select
@@ -45,7 +45,7 @@ export function CheckoutForm({ action, books, contacts, defaultBookId }: Checkou
           name="borrower"
           required
           defaultValue="self"
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500"
+          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-zinc-400"
         >
           <option value="self">Myself</option>
           {contacts.map((c) => (
@@ -57,33 +57,33 @@ export function CheckoutForm({ action, books, contacts, defaultBookId }: Checkou
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-700" htmlFor="dueDate">
+        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300" htmlFor="dueDate">
           Due date
         </label>
         <input
           id="dueDate"
           name="dueDate"
           type="date"
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500"
+          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-zinc-400"
         />
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-700" htmlFor="notes">
+        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300" htmlFor="notes">
           Notes
         </label>
         <textarea
           id="notes"
           name="notes"
           rows={2}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500"
+          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-zinc-400"
         />
       </div>
 
       <button
         type="submit"
         disabled={isPending}
-        className="self-start rounded-lg bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+        className="self-start rounded-lg bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
       >
         {isPending ? "Saving…" : "Check Out"}
       </button>
