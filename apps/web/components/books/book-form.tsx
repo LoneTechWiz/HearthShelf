@@ -3,7 +3,9 @@
 import { useActionState, useState, useEffect } from "react"
 import { searchByTitle, lookupByIsbn } from "@/lib/open-library"
 import type { BookSuggestion } from "@/lib/open-library"
+import { normalizeIsbn } from "@/lib/isbn"
 import { BookSearchDropdown } from "./book-search-dropdown"
+import { BarcodeScanner } from "./barcode-scanner"
 
 type ActionState = { error: string } | null
 type BookFormAction = (
@@ -40,6 +42,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
   const [isLookingUp, setIsLookingUp] = useState(false)
   const [searchError, setSearchError] = useState<string | null>(null)
   const [lookupError, setLookupError] = useState<string | null>(null)
+  const [showScanner, setShowScanner] = useState(false)
 
   useEffect(() => {
     if (searchQuery.length < 2) {
@@ -75,12 +78,11 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
     setSuggestions([])
   }
 
-  async function handleIsbnLookup() {
-    if (!isbn) return
+  async function runLookup(code: string) {
     setIsLookingUp(true)
     setLookupError(null)
     try {
-      const result = await lookupByIsbn(isbn)
+      const result = await lookupByIsbn(code)
       if (!result) {
         setLookupError("No book found for this ISBN")
         return
@@ -94,6 +96,22 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
     } finally {
       setIsLookingUp(false)
     }
+  }
+
+  function handleIsbnLookup() {
+    if (!isbn) return
+    runLookup(isbn)
+  }
+
+  function handleScanned(code: string) {
+    setShowScanner(false)
+    const normalized = normalizeIsbn(code)
+    if (!normalized) {
+      setLookupError("Scanned code is not a valid ISBN")
+      return
+    }
+    setIsbn(normalized)
+    runLookup(normalized)
   }
 
   return (
@@ -166,6 +184,13 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
           >
             {isLookingUp ? "Looking up…" : "Lookup"}
           </button>
+          <button
+            type="button"
+            onClick={() => setShowScanner(true)}
+            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-50"
+          >
+            Scan
+          </button>
         </div>
         {lookupError && (
           <p className="text-xs text-red-600">{lookupError}</p>
@@ -207,6 +232,12 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
       >
         {isPending ? "Saving…" : submitLabel}
       </button>
+      {showScanner && (
+        <BarcodeScanner
+          onDetected={handleScanned}
+          onClose={() => setShowScanner(false)}
+        />
+      )}
     </form>
   )
 }
