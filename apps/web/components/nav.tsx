@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOutAction } from "@/lib/actions/auth"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 const links = [
   {
@@ -48,11 +49,11 @@ export function Nav() {
       {/* Desktop sidebar */}
       <nav
         aria-label="Library"
-        className="nav-desktop w-48 flex-col gap-1 border-r border-zinc-200 bg-white px-3 py-6"
+        className="nav-desktop w-48 flex-col gap-1 border-r border-zinc-200 bg-white px-3 py-6 dark:border-zinc-800 dark:bg-zinc-900"
       >
         <p
           aria-hidden="true"
-          className="mb-4 px-2 text-xs font-semibold uppercase tracking-widest text-zinc-400"
+          className="mb-4 px-2 text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500"
         >
           Library
         </p>
@@ -65,28 +66,31 @@ export function Nav() {
               aria-current={isActive ? "page" : undefined}
               className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                 isActive
-                  ? "bg-zinc-100 text-zinc-900"
-                  : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900"
+                  ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100"
+                  : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
               }`}
             >
               {label}
             </Link>
           )
         })}
-        <form action={signOutAction} className="mt-auto">
-          <button
-            type="submit"
-            className="w-full rounded-md px-3 py-2 text-left text-sm font-medium text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900"
-          >
-            Sign out
-          </button>
-        </form>
+        <div className="mt-auto flex flex-col gap-1">
+          <ThemeToggle variant="sidebar" />
+          <form action={signOutAction}>
+            <button
+              type="submit"
+              className="w-full rounded-md px-3 py-2 text-left text-sm font-medium text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+            >
+              Sign out
+            </button>
+          </form>
+        </div>
       </nav>
 
       {/* Mobile bottom tab bar */}
       <nav
         aria-label="Library tabs"
-        className="nav-mobile fixed bottom-0 left-0 right-0 z-50 h-14 border-t border-zinc-200 bg-white"
+        className="nav-mobile fixed bottom-0 left-0 right-0 z-50 h-14 border-t border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"
       >
         {links.map(({ href, label, icon }) => {
           const isActive = pathname === href || pathname.startsWith(href + "/")
@@ -96,7 +100,7 @@ export function Nav() {
               href={href}
               aria-current={isActive ? "page" : undefined}
               className={`flex flex-1 flex-col items-center justify-center gap-0.5 text-xs font-medium transition-colors ${
-                isActive ? "text-zinc-900" : "text-zinc-400"
+                isActive ? "text-zinc-900 dark:text-zinc-100" : "text-zinc-400 dark:text-zinc-500"
               }`}
             >
               {icon}
@@ -104,10 +108,11 @@ export function Nav() {
             </Link>
           )
         })}
+        <ThemeToggle variant="tab" />
         <form action={signOutAction} className="flex flex-1">
           <button
             type="submit"
-            className="flex flex-1 flex-col items-center justify-center gap-0.5 text-xs font-medium text-zinc-400 transition-colors hover:text-zinc-900"
+            className="flex flex-1 flex-col items-center justify-center gap-0.5 text-xs font-medium text-zinc-400 transition-colors hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100"
           >
             {signOutIcon}
             Sign out

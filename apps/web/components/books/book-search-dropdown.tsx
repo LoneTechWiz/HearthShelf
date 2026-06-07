@@ -31,12 +31,12 @@ export function BookSearchDropdown({
   return (
     <div
       ref={ref}
-      className="absolute z-10 mt-1 w-full rounded-lg border border-zinc-200 bg-white shadow-lg"
+      className="absolute z-10 mt-1 w-full rounded-lg border border-zinc-200 bg-white shadow-lg dark:border-zinc-800 dark:bg-zinc-900"
     >
       {isSearching ? (
-        <div className="px-3 py-2 text-sm text-zinc-500">Searching…</div>
+        <div className="px-3 py-2 text-sm text-zinc-500 dark:text-zinc-400">Searching…</div>
       ) : suggestions.length === 0 ? (
-        <div className="px-3 py-2 text-sm text-zinc-500">No books found</div>
+        <div className="px-3 py-2 text-sm text-zinc-500 dark:text-zinc-400">No books found</div>
       ) : (
         <ul>
           {suggestions.map((s) => (
@@ -44,17 +44,17 @@ export function BookSearchDropdown({
               <button
                 type="button"
                 onClick={() => onSelect(s)}
-                className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-zinc-50"
+                className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-zinc-50 dark:hover:bg-zinc-800"
               >
                 {s.coverUrl ? (
                   <img src={s.coverUrl} alt="" className="h-10 w-7 flex-shrink-0 rounded object-cover" />
                 ) : (
-                  <div className="h-10 w-7 flex-shrink-0 rounded bg-zinc-100" />
+                  <div className="h-10 w-7 flex-shrink-0 rounded bg-zinc-100 dark:bg-zinc-800" />
                 )}
                 <div className="flex min-w-0 flex-col">
-                  <span className="truncate text-sm font-medium text-zinc-900">{s.title}</span>
-                  <span className="truncate text-xs text-zinc-500">{s.authors}</span>
-                  {s.isbn && <span className="text-xs text-zinc-400">{s.isbn}</span>}
+                  <span className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">{s.title}</span>
+                  <span className="truncate text-xs text-zinc-500 dark:text-zinc-400">{s.authors}</span>
+                  {s.isbn && <span className="text-xs text-zinc-400 dark:text-zinc-400">{s.isbn}</span>}
                 </div>
               </button>
             </li>

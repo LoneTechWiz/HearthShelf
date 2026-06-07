@@ -117,7 +117,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
   return (
     <form action={formAction} className="flex flex-col gap-4 max-w-lg">
       {state && "error" in state && (
-        <p className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">
+        <p className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300">
           {state.error}
         </p>
       )}
@@ -127,8 +127,8 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
       )}
 
       <div className="relative flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-700" htmlFor="title">
-          Title <span className="text-red-500">*</span>
+        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300" htmlFor="title">
+          Title <span className="text-red-500 dark:text-red-400">*</span>
         </label>
         <input
           id="title"
@@ -136,10 +136,10 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
           required
           value={title}
           onChange={(e) => { setTitle(e.target.value); setSearchQuery(e.target.value) }}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500"
+          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-zinc-400"
         />
         {searchError && (
-          <p className="text-xs text-red-600">{searchError}</p>
+          <p className="text-xs text-red-600 dark:text-red-400">{searchError}</p>
         )}
         {(showDropdown || isSearching) && (
           <BookSearchDropdown
@@ -152,7 +152,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-700" htmlFor="authors">
+        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300" htmlFor="authors">
           Author(s)
         </label>
         <input
@@ -160,12 +160,12 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
           name="authors"
           value={authors}
           onChange={(e) => setAuthors(e.target.value)}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500"
+          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-zinc-400"
         />
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-700" htmlFor="isbn">
+        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300" htmlFor="isbn">
           ISBN
         </label>
         <div className="flex gap-2">
@@ -174,31 +174,31 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
             name="isbn"
             value={isbn}
             onChange={(e) => setIsbn(e.target.value)}
-            className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500"
+            className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-zinc-400"
           />
           <button
             type="button"
             onClick={handleIsbnLookup}
             disabled={isLookingUp || !isbn}
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
+            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
           >
             {isLookingUp ? "Looking up…" : "Lookup"}
           </button>
           <button
             type="button"
             onClick={() => setShowScanner(true)}
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-50"
+            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
           >
             Scan
           </button>
         </div>
         {lookupError && (
-          <p className="text-xs text-red-600">{lookupError}</p>
+          <p className="text-xs text-red-600 dark:text-red-400">{lookupError}</p>
         )}
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-700" htmlFor="description">
+        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300" htmlFor="description">
           Description
         </label>
         <textarea
@@ -207,12 +207,12 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
           rows={3}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500"
+          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-zinc-400"
         />
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-700" htmlFor="coverUrl">
+        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300" htmlFor="coverUrl">
           Cover image URL
         </label>
         <input
@@ -221,14 +221,14 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
           type="url"
           value={coverUrl}
           onChange={(e) => setCoverUrl(e.target.value)}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500"
+          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-zinc-400"
         />
       </div>
 
       <button
         type="submit"
         disabled={isPending}
-        className="self-start rounded-lg bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+        className="self-start rounded-lg bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
       >
         {isPending ? "Saving…" : submitLabel}
       </button>

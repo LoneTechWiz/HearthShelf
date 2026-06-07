@@ -13,7 +13,7 @@ export default async function LibraryLayout({
   return (
     <div className="flex min-h-screen">
       <Nav />
-      <div className="flex-1 overflow-y-auto bg-zinc-50 p-4 pb-20 md:p-8">{children}</div>
+      <div className="flex-1 overflow-y-auto bg-zinc-50 dark:bg-zinc-950 p-4 pb-20 md:p-8">{children}</div>
     </div>
   )
 }
