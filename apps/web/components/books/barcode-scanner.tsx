@@ -18,35 +18,55 @@ export function BarcodeScanner({ onDetected, onClose }: BarcodeScannerProps) {
   // Start the camera once on mount; refs keep this effect from re-running when
   // the parent re-creates the onDetected callback.
   useEffect(() => {
-    const reader = new BrowserMultiFormatReader()
+    if (!videoRef.current) return
+
+    const video = videoRef.current
+    let stream: MediaStream | null = null
     let controls: IScannerControls | null = null
     let cancelled = false
 
-    reader
-      .decodeFromConstraints(
-        { video: { facingMode: "environment" } },
-        videoRef.current!,
-        (result, _err, ctrl) => {
-          if (cancelled) return
-          if (result) {
-            // Stop the camera before reporting so the parent cannot re-trigger
-            // a scan before this scanner's cleanup runs.
-            ctrl.stop()
-            onDetectedRef.current(result.getText())
-          }
-        }
-      )
-      .then((ctrl) => {
-        controls = ctrl
-        if (cancelled) ctrl.stop()
-      })
-      .catch(() => {
-        setError("Unable to access camera. Check permissions and try again.")
-      })
+    async function start() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment" },
+        })
+        if (cancelled) return
+
+        video.srcObject = stream
+
+        // Wait for the video to confirm it's playing before starting decode.
+        // play() can fire an AbortError even when the video ends up playing fine,
+        // so we resolve on the onplaying event instead of the play() promise.
+        await new Promise<void>((resolve, reject) => {
+          const timeout = setTimeout(() => reject(new Error("timeout")), 10_000)
+          video.onplaying = () => { clearTimeout(timeout); resolve() }
+          video.play().catch((e: DOMException) => {
+            if (e.name !== "AbortError") { clearTimeout(timeout); reject(e) }
+          })
+        })
+        if (cancelled) return
+
+        const reader = new BrowserMultiFormatReader()
+        controls = await reader.decodeFromVideoElement(video, (result) => {
+          if (cancelled || !result) return
+          controls?.stop()
+          stream?.getTracks().forEach((t) => t.stop())
+          video.srcObject = null
+          onDetectedRef.current(result.getText())
+        })
+        if (cancelled) controls.stop()
+      } catch {
+        if (!cancelled) setError("Unable to access camera. Check permissions and try again.")
+      }
+    }
+
+    start()
 
     return () => {
       cancelled = true
       controls?.stop()
+      stream?.getTracks().forEach((t) => t.stop())
+      video.srcObject = null
     }
   }, [])
 
