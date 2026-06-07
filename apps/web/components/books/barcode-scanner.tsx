@@ -84,7 +84,7 @@ export function BarcodeScanner({ onDetected, onClose }: BarcodeScannerProps) {
             type="button"
             autoFocus
             onClick={onClose}
-            className="rounded-lg bg-white px-5 py-2 text-sm font-medium text-zinc-900"
+            className="rounded-lg bg-white px-5 py-2 text-sm font-medium text-zinc-900 dark:bg-zinc-900 dark:text-zinc-100"
           >
             Close
           </button>

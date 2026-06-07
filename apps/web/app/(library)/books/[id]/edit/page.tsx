@@ -18,10 +18,10 @@ export default async function EditBookPage({
   return (
     <div>
       <div className="mb-6">
-        <Link href={`/books/${id}`} className="text-sm text-zinc-500 hover:text-zinc-700">
+        <Link href={`/books/${id}`} className="text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300">
           ← Back to book
         </Link>
-        <h1 className="mt-2 text-2xl font-semibold text-zinc-900">Edit Book</h1>
+        <h1 className="mt-2 text-2xl font-semibold text-zinc-900 dark:text-zinc-100">Edit Book</h1>
       </div>
       <BookForm
         action={updateBook}
