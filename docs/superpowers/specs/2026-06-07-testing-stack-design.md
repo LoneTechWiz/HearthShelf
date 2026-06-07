@@ -154,11 +154,26 @@ run; `global-setup` truncates once before the run.
   ports `5433:5432`, no named volume (ephemeral), a `healthcheck` using
   `pg_isready`.
 
-**`apps/web/.env.test`** (committed; non-secret local creds):
+**`apps/web/.env.test` is gitignored — never committed.** Add `.env.test` to
+`apps/web/.gitignore` (the Next.js default ignores `.env` and `.env*.local` but
+not `.env.test`). The file is created locally and in CI, not stored in git.
+
+**`apps/web/.env.test.example`** (committed) documents the shape:
 ```
+# Copy to .env.test (gitignored). Local test DB from docker-compose.test.yml.
 DATABASE_URL=postgresql://postgres:postgres@localhost:5433/postgres
-AUTH_SECRET=test-secret-not-for-production
+# Generate a value: openssl rand -base64 32
+AUTH_SECRET=
 ```
+
+**Local setup:** `npm run test:env:init` (new script) copies
+`.env.test.example` → `.env.test` if absent and fills `AUTH_SECRET` with a freshly
+generated value; it never overwrites an existing `.env.test`. The DB creds are
+non-secret local Docker values; the only generated secret is `AUTH_SECRET`.
+
+Note: with the database session strategy, `AUTH_SECRET` is not used to verify the
+seeded session (the cookie value is looked up directly in the `sessions` table);
+it is set only because NextAuth requires it to initialize.
 
 **New devDep:** `dotenv-cli` (loads `.env.test` for drizzle-kit and the runners).
 
@@ -174,7 +189,13 @@ start:e2e         dotenv -e .env.test -- next dev -p 3100
 test:db:up        docker compose -f ../../docker-compose.test.yml up -d --wait
 test:db:down      docker compose -f ../../docker-compose.test.yml down -v
 db:push:test      dotenv -e .env.test -- drizzle-kit push
+test:env:init     node scripts/init-test-env.mjs   # create .env.test if absent
 ```
+
+`scripts/init-test-env.mjs` (apps/web): if `.env.test` does not exist, copy
+`.env.test.example` to `.env.test` and replace the empty `AUTH_SECRET=` with
+`AUTH_SECRET=<crypto.randomBytes(32).toString('base64')>`. If `.env.test` already
+exists, do nothing. Pure Node (`node:fs`, `node:crypto`), no extra deps.
 
 Root `package.json` proxies:
 ```
@@ -183,21 +204,28 @@ test:e2e   npm run test:e2e --workspace=apps/web
 ```
 
 Local DB-backed run sequence:
-`npm run test:db:up` → `npm run db:push:test` → `npm run test:integration`
-and/or `npm run test:e2e` → `npm run test:db:down`.
+`npm run test:env:init` (first time) → `npm run test:db:up` →
+`npm run db:push:test` → `npm run test:integration` and/or `npm run test:e2e` →
+`npm run test:db:down`.
 
 ## 6. CI (GitHub Actions)
 
 **`.github/workflows/test.yml`**, triggered on pull requests and pushes to `main`:
 - `services.postgres`: `postgres:18` on `5432`, health-checked.
 - Steps: checkout; `actions/setup-node` (Node 20, npm cache);
-  `npm ci --legacy-peer-deps`; push schema (`db:push:test`); `npm test`
-  (unit + component); `npm run test:integration`;
-  `npx playwright install --with-deps chromium`; `npm run test:e2e`.
-- Job env: `DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres`,
-  `AUTH_SECRET=test-secret-not-for-production`.
-- Note: in CI Postgres is on 5432; the workflow sets `DATABASE_URL` directly in
-  the job env (overriding `.env.test`'s 5433) so the same scripts work.
+  `npm ci --legacy-peer-deps`; **generate `apps/web/.env.test`** (see below);
+  push schema (`db:push:test`); `npm test` (unit + component);
+  `npm run test:integration`; `npx playwright install --with-deps chromium`;
+  `npm run test:e2e`.
+- The `.env.test` is created at runtime, never committed:
+  ```
+  printf 'DATABASE_URL=%s\nAUTH_SECRET=%s\n' \
+    "postgresql://postgres:postgres@localhost:5432/postgres" \
+    "$(openssl rand -base64 32)" > apps/web/.env.test
+  ```
+  This points at the CI service on `5432` (local uses `5433`) and generates a
+  fresh `AUTH_SECRET`, keeping the `dotenv -e .env.test` scripts uniform across
+  local and CI.
 
 ## Verification
 
