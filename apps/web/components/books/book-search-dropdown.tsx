@@ -44,7 +44,7 @@ export function BookSearchDropdown({
               <button
                 type="button"
                 onClick={() => onSelect(s)}
-                className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-zinc-50 dark:hover:bg-zinc-950"
+                className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-zinc-50 dark:hover:bg-zinc-800"
               >
                 {s.coverUrl ? (
                   <img src={s.coverUrl} alt="" className="h-10 w-7 flex-shrink-0 rounded object-cover" />

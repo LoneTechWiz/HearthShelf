@@ -24,21 +24,21 @@ export function CheckoutForm({ action, books, contacts, defaultBookId }: Checkou
   return (
     <form action={formAction} className="flex flex-col gap-4 max-w-md">
       {state && "error" in state && (
-        <p className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">
+        <p className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300">
           {state.error}
         </p>
       )}
 
       <div className="flex flex-col gap-1">
         <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Book <span className="text-red-500">*</span>
+          Book <span className="text-red-500 dark:text-red-400">*</span>
         </label>
         <BookCombobox books={books} defaultBookId={defaultBookId} />
       </div>
 
       <div className="flex flex-col gap-1">
         <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300" htmlFor="borrower">
-          Borrower <span className="text-red-500">*</span>
+          Borrower <span className="text-red-500 dark:text-red-400">*</span>
         </label>
         <select
           id="borrower"

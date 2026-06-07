@@ -29,7 +29,7 @@ export function ContactForm({
   return (
     <form action={formAction} className="flex flex-col gap-4 max-w-md">
       {state && "error" in state && (
-        <p className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">
+        <p className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300">
           {state.error}
         </p>
       )}
@@ -40,7 +40,7 @@ export function ContactForm({
 
       <div className="flex flex-col gap-1">
         <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300" htmlFor="name">
-          Name <span className="text-red-500">*</span>
+          Name <span className="text-red-500 dark:text-red-400">*</span>
         </label>
         <input
           id="name"
