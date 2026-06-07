@@ -61,7 +61,7 @@ export function ThemeToggle({ variant }: { variant: "sidebar" | "tab" }) {
     <button
       type="button"
       onClick={() => setTheme(next)}
-      aria-label={`Switch theme (current: ${labels[current]})`}
+      aria-label={`Switch to ${labels[next]} theme`}
       title={`Theme: ${labels[current]}`}
       className={variant === "sidebar" ? sidebarClass : tabClass}
     >

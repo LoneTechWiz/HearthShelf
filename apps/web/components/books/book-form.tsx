@@ -136,7 +136,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
           required
           value={title}
           onChange={(e) => { setTitle(e.target.value); setSearchQuery(e.target.value) }}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:ring-zinc-400"
+          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-zinc-400"
         />
         {searchError && (
           <p className="text-xs text-red-600 dark:text-red-400">{searchError}</p>
@@ -160,7 +160,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
           name="authors"
           value={authors}
           onChange={(e) => setAuthors(e.target.value)}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:ring-zinc-400"
+          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-zinc-400"
         />
       </div>
 
@@ -174,7 +174,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
             name="isbn"
             value={isbn}
             onChange={(e) => setIsbn(e.target.value)}
-            className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:ring-zinc-400"
+            className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-zinc-400"
           />
           <button
             type="button"
@@ -207,7 +207,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
           rows={3}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:ring-zinc-400"
+          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-zinc-400"
         />
       </div>
 
@@ -221,7 +221,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
           type="url"
           value={coverUrl}
           onChange={(e) => setCoverUrl(e.target.value)}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:ring-zinc-400"
+          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-zinc-400"
         />
       </div>
 

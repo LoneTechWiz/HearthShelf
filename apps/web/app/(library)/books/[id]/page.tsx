@@ -28,7 +28,7 @@ export default async function BookDetailPage({
             <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">{book.title}</h1>
             {book.authors && <p className="mt-1 text-zinc-500 dark:text-zinc-400">{book.authors}</p>}
             {book.isbn && (
-              <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">ISBN: {book.isbn}</p>
+              <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-400">ISBN: {book.isbn}</p>
             )}
           </div>
           <div className="flex gap-2 shrink-0">

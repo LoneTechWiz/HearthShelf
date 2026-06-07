@@ -54,7 +54,7 @@ export function BookSearchDropdown({
                 <div className="flex min-w-0 flex-col">
                   <span className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">{s.title}</span>
                   <span className="truncate text-xs text-zinc-500 dark:text-zinc-400">{s.authors}</span>
-                  {s.isbn && <span className="text-xs text-zinc-400 dark:text-zinc-500">{s.isbn}</span>}
+                  {s.isbn && <span className="text-xs text-zinc-400 dark:text-zinc-400">{s.isbn}</span>}
                 </div>
               </button>
             </li>

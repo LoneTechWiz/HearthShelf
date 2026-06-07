@@ -50,7 +50,7 @@ export default async function CheckoutsPage() {
                         ? `Checked out to ${checkout.contact.name}`
                         : "Checked out to yourself"}
                     </p>
-                    <p className="text-xs text-zinc-400 dark:text-zinc-500">
+                    <p className="text-xs text-zinc-400 dark:text-zinc-400">
                       Since {formatDate(checkout.checkedOutAt)}
                       {checkout.dueDate && ` · Due ${formatDate(checkout.dueDate)}`}
                     </p>
