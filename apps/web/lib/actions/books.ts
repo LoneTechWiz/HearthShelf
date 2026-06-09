@@ -143,3 +143,44 @@ export async function importBooks(
   revalidatePath("/books")
   return { created, updated, skipped, importedIds }
 }
+
+type BulkEditRow = {
+  id: string
+  title: string
+  authors: string
+  isbn: string
+  description: string
+  coverUrl: string
+}
+
+export async function bulkUpdateBooks(
+  _prevState: { updated: number } | { error: string } | null,
+  formData: FormData
+): Promise<{ updated: number } | { error: string }> {
+  const session = await auth()
+  if (!session?.user?.id) return { error: "Unauthorized" }
+  const userId = session.user.id
+
+  let rows: BulkEditRow[]
+  try {
+    rows = JSON.parse(String(formData.get("rows") ?? "[]"))
+  } catch {
+    return { error: "Invalid data" }
+  }
+
+  let updated = 0
+  for (const row of rows) {
+    if (!row.id || !row.title?.trim()) continue
+    await updateBookRecord(row.id, userId, {
+      title: row.title.trim(),
+      authors: nullIfEmpty(row.authors),
+      isbn: nullIfEmpty(row.isbn),
+      description: nullIfEmpty(row.description),
+      coverUrl: nullIfEmpty(row.coverUrl),
+    })
+    updated++
+  }
+
+  revalidatePath("/books")
+  return { updated }
+}
