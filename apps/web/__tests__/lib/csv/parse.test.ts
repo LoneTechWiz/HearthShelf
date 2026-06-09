@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { parseCsv } from "@/lib/csv/parse"
+import { toRecords } from "@/lib/csv/parse"
 
 describe("parseCsv", () => {
   it("parses a simple header + row", () => {
@@ -48,5 +49,40 @@ describe("parseCsv", () => {
 
   it("appends characters after a closing quote (malformed input)", () => {
     expect(parseCsv('a\n"hi"there')).toEqual([["a"], ["hithere"]])
+  })
+})
+
+describe("toRecords", () => {
+  it("maps cells onto expected columns case-insensitively", () => {
+    const rows = [
+      ["Title", "ISBN"],
+      ["Dune", "123"],
+    ]
+    const { records, missingColumns } = toRecords(rows, ["title", "isbn", "authors"])
+    expect(missingColumns).toEqual(["authors"])
+    expect(records).toEqual([
+      { line: 2, values: { title: "Dune", isbn: "123", authors: null } },
+    ])
+  })
+
+  it("turns empty cells into null and trims values", () => {
+    const rows = [
+      ["title", "isbn"],
+      [" Dune ", ""],
+    ]
+    const { records } = toRecords(rows, ["title", "isbn"])
+    expect(records[0].values).toEqual({ title: "Dune", isbn: null })
+  })
+
+  it("reports a missing required header in missingColumns", () => {
+    const rows = [["isbn"], ["123"]]
+    const { missingColumns } = toRecords(rows, ["title", "isbn"])
+    expect(missingColumns).toContain("title")
+  })
+
+  it("returns no records and all columns missing for empty rows", () => {
+    const { records, missingColumns } = toRecords([], ["title"])
+    expect(records).toEqual([])
+    expect(missingColumns).toEqual(["title"])
   })
 })

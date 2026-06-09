@@ -64,3 +64,40 @@ export function parseCsv(text: string): string[][] {
 
   return rows
 }
+
+export type CsvRecord = {
+  line: number
+  values: Record<string, string | null>
+}
+
+// Maps parsed rows onto expected columns using row 0 as the header. Matching is
+// case-insensitive and whitespace-trimmed. Unknown columns are ignored; absent
+// or empty cells become null. missingColumns lists expected columns whose header
+// is absent (the caller decides which are required).
+export function toRecords(
+  rows: string[][],
+  columns: readonly string[]
+): { records: CsvRecord[]; missingColumns: string[] } {
+  if (rows.length === 0) {
+    return { records: [], missingColumns: [...columns] }
+  }
+
+  const header = rows[0].map((h) => h.trim().toLowerCase())
+  const indexByColumn = new Map<string, number>()
+  for (const column of columns) {
+    indexByColumn.set(column, header.indexOf(column.toLowerCase()))
+  }
+  const missingColumns = columns.filter((c) => indexByColumn.get(c) === -1)
+
+  const records = rows.slice(1).map((cells, i) => {
+    const values: Record<string, string | null> = {}
+    for (const column of columns) {
+      const index = indexByColumn.get(column)!
+      const raw = index >= 0 ? (cells[index] ?? "").trim() : ""
+      values[column] = raw === "" ? null : raw
+    }
+    return { line: i + 2, values } // header is line 1
+  })
+
+  return { records, missingColumns }
+}
