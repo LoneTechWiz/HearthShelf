@@ -37,4 +37,16 @@ describe("parseCsv", () => {
   it("returns an empty array for empty input", () => {
     expect(parseCsv("")).toEqual([])
   })
+
+  it("preserves a quoted whitespace-only field", () => {
+    expect(parseCsv('title\n" "')).toEqual([["title"], [" "]])
+  })
+
+  it("preserves an explicit empty quoted field", () => {
+    expect(parseCsv('a\n""')).toEqual([["a"], [""]])
+  })
+
+  it("appends characters after a closing quote (malformed input)", () => {
+    expect(parseCsv('a\n"hi"there')).toEqual([["a"], ["hithere"]])
+  })
 })

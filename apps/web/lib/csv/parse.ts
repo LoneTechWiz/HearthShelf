@@ -1,11 +1,13 @@
 // Splits CSV text into rows of cells. Handles "quoted, fields", "" escaped
 // quotes, and CRLF/LF line endings. Fully blank lines are dropped, so reported
-// line numbers count non-blank rows (header = line 1).
+// line numbers count non-blank rows (header = line 1). Any characters following
+// a closing quote on the same field are appended (malformed input is not rejected).
 export function parseCsv(text: string): string[][] {
   const rows: string[][] = []
   let row: string[] = []
   let field = ""
   let inQuotes = false
+  let rowHasContent = false
   let i = 0
 
   while (i < text.length) {
@@ -29,29 +31,36 @@ export function parseCsv(text: string): string[][] {
 
     if (char === '"') {
       inQuotes = true
+      rowHasContent = true
       i++
     } else if (char === ",") {
       row.push(field)
       field = ""
+      rowHasContent = true
       i++
     } else if (char === "\r") {
+      // CR is only valid as part of CRLF; a lone CR is skipped.
       i++
     } else if (char === "\n") {
-      row.push(field)
-      rows.push(row)
+      if (rowHasContent) {
+        row.push(field)
+        rows.push(row)
+      }
       row = []
       field = ""
+      rowHasContent = false
       i++
     } else {
       field += char
+      rowHasContent = true
       i++
     }
   }
 
-  if (field !== "" || row.length > 0) {
+  if (rowHasContent || field !== "") {
     row.push(field)
     rows.push(row)
   }
 
-  return rows.filter((r) => !(r.length === 1 && r[0].trim() === ""))
+  return rows
 }
