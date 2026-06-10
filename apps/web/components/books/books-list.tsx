@@ -136,6 +136,7 @@ export function BooksList({ books }: { books: BookWithAvailability[] }) {
                     </div>
                   )}
                   <span
+                    role="img"
                     aria-label={book.isCheckedOut ? "Checked out" : "Available"}
                     className={`absolute right-2 top-2 h-2.5 w-2.5 rounded-full ring-2 ring-surface ${
                       book.isCheckedOut ? "bg-amber-500" : "bg-emerald-500"
