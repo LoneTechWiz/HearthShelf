@@ -63,7 +63,7 @@ export async function getRecentActivity(userId: string, limit = 5): Promise<Acti
     .leftJoin(contacts, eq(checkouts.contactId, contacts.id))
     .where(eq(checkouts.userId, userId))
     .orderBy(desc(sql`COALESCE(${checkouts.returnedAt}, ${checkouts.checkedOutAt})`))
-    .limit(limit)
+    .limit(limit * 2)
 
   const events: ActivityEvent[] = []
   for (const r of rows) {
@@ -86,5 +86,11 @@ export async function getRecentActivity(userId: string, limit = 5): Promise<Acti
       })
     }
   }
-  return events.sort((a, b) => b.at.getTime() - a.at.getTime()).slice(0, limit)
+  return events
+    .sort((a, b) => {
+      const dt = b.at.getTime() - a.at.getTime()
+      if (dt !== 0) return dt
+      return a.type === "return" ? -1 : b.type === "return" ? 1 : 0
+    })
+    .slice(0, limit)
 }
