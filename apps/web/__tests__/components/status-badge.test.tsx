@@ -11,4 +11,10 @@ describe("StatusBadge", () => {
     rerender(<StatusBadge status="overdue" />)
     expect(screen.getByText("Overdue")).toBeInTheDocument()
   })
+
+  it("renders a decorative dot that is aria-hidden", () => {
+    const { container } = render(<StatusBadge status="available" />)
+    const dot = container.querySelector('[aria-hidden="true"]')
+    expect(dot).toBeInTheDocument()
+  })
 })

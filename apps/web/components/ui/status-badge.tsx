@@ -1,4 +1,4 @@
-type Status = "available" | "checked-out" | "overdue"
+export type Status = "available" | "checked-out" | "overdue"
 
 const styles: Record<Status, string> = {
   available: "bg-emerald-100 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-300",
