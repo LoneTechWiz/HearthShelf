@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
 import { contacts } from "@/lib/db/schema"
-import { and, asc, eq } from "drizzle-orm"
+import { and, asc, eq, sql } from "drizzle-orm"
 
 export type ContactRow = typeof contacts.$inferSelect
 
@@ -44,4 +44,32 @@ export async function updateContactRecord(
 
 export async function deleteContactRecord(id: string, userId: string): Promise<void> {
   await db.delete(contacts).where(and(eq(contacts.id, id), eq(contacts.userId, userId)))
+}
+
+// Finds an existing contact for upsert. Matches on email when present; otherwise
+// on case-insensitive name.
+export async function findContactMatch(
+  userId: string,
+  row: { name: string; email: string | null }
+): Promise<ContactRow | null> {
+  if (row.email) {
+    const rows = await db
+      .select()
+      .from(contacts)
+      .where(and(eq(contacts.userId, userId), eq(contacts.email, row.email)))
+      .limit(1)
+    return rows[0] ?? null
+  }
+
+  const rows = await db
+    .select()
+    .from(contacts)
+    .where(
+      and(
+        eq(contacts.userId, userId),
+        sql`lower(${contacts.name}) = lower(${row.name})`
+      )
+    )
+    .limit(1)
+  return rows[0] ?? null
 }

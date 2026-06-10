@@ -10,12 +10,20 @@ export default async function ContactsPage() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">Contacts</h1>
-        <Link
-          href="/contacts/new"
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
-        >
-          Add Contact
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/contacts/import"
+            className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+          >
+            Import CSV
+          </Link>
+          <Link
+            href="/contacts/new"
+            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+          >
+            Add Contact
+          </Link>
+        </div>
       </div>
 
       {contacts.length === 0 ? (
