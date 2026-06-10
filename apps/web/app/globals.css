@@ -2,15 +2,16 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Background layers: canvas < surface < surface-raised. Text tiers: ink > ink-muted > ink-faint (faint: timestamps/placeholders only). Accent: interactive elements. */
 :root {
   --canvas: #faf6f0;
   --surface: #fffdfa;
   --surface-raised: #f3ecdf;
   --ink: #2b211b;
   --ink-muted: #6b5d52;
-  --ink-faint: #a3917f;
+  --ink-faint: #7d6c5b;
   --edge: #e8e0d4;
-  --accent: #b4530a;
+  --accent: #a84a08;
   --accent-hover: #93430a;
   --accent-contrast: #ffffff;
   --accent-soft: #f7e8d8;
@@ -22,7 +23,7 @@
   --surface-raised: #2c241d;
   --ink: #f2ece3;
   --ink-muted: #b3a394;
-  --ink-faint: #8a7a68;
+  --ink-faint: #9a8b7a;
   --edge: #372e26;
   --accent: #e08a3c;
   --accent-hover: #eda05c;
