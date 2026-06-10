@@ -64,7 +64,7 @@ export function Nav() {
               aria-current={isActive ? "page" : undefined}
               className={`relative rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                 isActive
-                  ? "bg-accent-soft text-accent before:absolute before:left-0 before:top-1/2 before:h-5 before:w-0.5 before:-translate-y-1/2 before:rounded-full before:bg-accent"
+                  ? "bg-accent-soft text-accent before:absolute before:-left-3 before:top-1/2 before:h-5 before:w-0.5 before:-translate-y-1/2 before:rounded-full before:bg-accent"
                   : "text-ink-muted hover:bg-surface-raised hover:text-ink"
               }`}
             >
