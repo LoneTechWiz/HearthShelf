@@ -3,26 +3,53 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --canvas: #faf6f0;
+  --surface: #fffdfa;
+  --surface-raised: #f3ecdf;
+  --ink: #2b211b;
+  --ink-muted: #6b5d52;
+  --ink-faint: #a3917f;
+  --edge: #e8e0d4;
+  --accent: #b4530a;
+  --accent-hover: #93430a;
+  --accent-contrast: #ffffff;
+  --accent-soft: #f7e8d8;
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --canvas: #161210;
+  --surface: #211b16;
+  --surface-raised: #2c241d;
+  --ink: #f2ece3;
+  --ink-muted: #b3a394;
+  --ink-faint: #8a7a68;
+  --edge: #372e26;
+  --accent: #e08a3c;
+  --accent-hover: #eda05c;
+  --accent-contrast: #231405;
+  --accent-soft: #3a2a1a;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-edge: var(--edge);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-contrast: var(--accent-contrast);
+  --color-accent-soft: var(--accent-soft);
   --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-fraunces);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Nav visibility — unlayered so it wins over @layer utilities */

@@ -1,13 +1,14 @@
 import type { Metadata, Viewport } from "next"
-import { Geist } from "next/font/google"
+import { Geist, Fraunces } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import "./globals.css"
 
 const geist = Geist({ variable: "--font-geist-sans", subsets: ["latin"] })
+const fraunces = Fraunces({ variable: "--font-fraunces", subsets: ["latin"], axes: ["opsz"] })
 
 export const metadata: Metadata = {
-  title: "Personal Library",
-  description: "Track your books and who has them",
+  title: "Hearthshelf",
+  description: "Your home library, kept warm. Track your books and who has them.",
 }
 
 export const viewport: Viewport = {
@@ -17,7 +18,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${geist.variable} h-full antialiased`}>
+    <html lang="en" suppressHydrationWarning className={`${geist.variable} ${fraunces.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <ThemeProvider>{children}</ThemeProvider>
       </body>
