@@ -27,7 +27,9 @@ export default async function BulkEditBooksPage({
           {idList ? "Review imported books" : "Bulk edit"}
         </h1>
       </div>
-      <BookBulkEdit books={books} />
+      {/* Key by the scope so the editable table re-seeds when navigating between
+          the imported-batch and whole-library views. */}
+      <BookBulkEdit key={ids ?? "all"} books={books} />
     </div>
   )
 }
