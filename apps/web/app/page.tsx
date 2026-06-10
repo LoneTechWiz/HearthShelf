@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 
 export default async function HomePage() {
   const session = await auth()
-  if (session) redirect("/books")
+  if (session) redirect("/dashboard")
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-6 bg-zinc-50 dark:bg-zinc-950">
@@ -13,7 +13,7 @@ export default async function HomePage() {
         <form
           action={async () => {
             "use server"
-            await signIn("github", { redirectTo: "/books" })
+            await signIn("github", { redirectTo: "/dashboard" })
           }}
         >
           <button
@@ -26,7 +26,7 @@ export default async function HomePage() {
         <form
           action={async () => {
             "use server"
-            await signIn("google", { redirectTo: "/books" })
+            await signIn("google", { redirectTo: "/dashboard" })
           }}
         >
           <button
