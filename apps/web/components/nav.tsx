@@ -2,9 +2,8 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { signOutAction } from "@/lib/actions/auth"
-import { ThemeToggle } from "@/components/theme-toggle"
 import { Wordmark } from "@/components/brand"
+import { UserMenu, type NavUser } from "@/components/user-menu"
 
 const links = [
   {
@@ -45,13 +44,7 @@ const links = [
   },
 ]
 
-const signOutIcon = (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
-  </svg>
-)
-
-export function Nav() {
+export function Nav({ user }: { user: NavUser }) {
   const pathname = usePathname()
 
   return (
@@ -81,16 +74,8 @@ export function Nav() {
             </Link>
           )
         })}
-        <div className="mt-auto flex flex-col gap-1">
-          <ThemeToggle variant="sidebar" />
-          <form action={signOutAction}>
-            <button
-              type="submit"
-              className="w-full rounded-md px-3 py-2 text-left text-sm font-medium text-ink-muted hover:bg-surface-raised hover:text-ink"
-            >
-              Sign out
-            </button>
-          </form>
+        <div className="mt-auto border-t border-edge pt-2">
+          <UserMenu user={user} variant="sidebar" />
         </div>
       </nav>
 
@@ -115,16 +100,7 @@ export function Nav() {
             </Link>
           )
         })}
-        <ThemeToggle variant="tab" />
-        <form action={signOutAction} className="flex flex-1">
-          <button
-            type="submit"
-            className="flex flex-1 flex-col items-center justify-center gap-0.5 text-xs font-medium text-ink-faint transition-colors hover:text-ink"
-          >
-            {signOutIcon}
-            Sign out
-          </button>
-        </form>
+        <UserMenu user={user} variant="tab" />
       </nav>
     </>
   )
