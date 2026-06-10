@@ -76,7 +76,7 @@ export function BookBulkEdit({ books }: BookBulkEditProps) {
     <form action={formAction} className="flex flex-col gap-4">
       <input type="hidden" name="rows" value={JSON.stringify(rows)} />
 
-      <div className="overflow-x-auto rounded-xl border border-edge bg-surface">
+      <div className="overflow-x-auto rounded-xl border border-edge bg-surface shadow-sm">
         <table className="w-full text-left text-sm">
           <thead className="bg-surface-raised text-ink-muted">
             <tr>
@@ -118,7 +118,7 @@ export function BookBulkEdit({ books }: BookBulkEditProps) {
                     type="button"
                     onClick={() => handleLookup(row.id)}
                     disabled={!row.isbn || lookingUp === row.id}
-                    className={`${btnSecondarySm} disabled:opacity-50`}
+                    className={btnSecondarySm}
                   >
                     {lookingUp === row.id ? "Looking up…" : "Lookup"}
                   </button>
@@ -133,7 +133,7 @@ export function BookBulkEdit({ books }: BookBulkEditProps) {
         <button
           type="submit"
           disabled={isPending}
-          className={`${btnPrimary} self-start disabled:opacity-50`}
+          className={`${btnPrimary} self-start`}
         >
           {isPending ? "Saving…" : "Save all"}
         </button>
