@@ -23,6 +23,8 @@ function Avatar({ user, className }: { user: NavUser; className: string }) {
 export function UserMenu({ user, variant }: { user: NavUser; variant: "sidebar" | "tab" }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     if (!open) return
@@ -30,7 +32,10 @@ export function UserMenu({ user, variant }: { user: NavUser; variant: "sidebar" 
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
     }
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false)
+      if (e.key === "Escape") {
+        setOpen(false)
+        triggerRef.current?.focus()
+      }
     }
     document.addEventListener("pointerdown", onPointerDown)
     document.addEventListener("keydown", onKeyDown)
@@ -40,9 +45,14 @@ export function UserMenu({ user, variant }: { user: NavUser; variant: "sidebar" 
     }
   }, [open])
 
+  useEffect(() => {
+    if (open) menuRef.current?.focus()
+  }, [open])
+
   const menu = (
     <div
-      role="menu"
+      ref={menuRef}
+      tabIndex={-1}
       className={`absolute z-50 w-56 rounded-xl border border-edge bg-surface p-1.5 shadow-lg ${
         variant === "sidebar" ? "bottom-full left-0 mb-2" : "bottom-full right-2 mb-3"
       }`}
@@ -70,9 +80,9 @@ export function UserMenu({ user, variant }: { user: NavUser; variant: "sidebar" 
       <div ref={ref} className="relative">
         {open && menu}
         <button
+          ref={triggerRef}
           type="button"
           onClick={() => setOpen((v) => !v)}
-          aria-haspopup="menu"
           aria-expanded={open}
           className="flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left hover:bg-surface-raised"
         >
@@ -90,9 +100,9 @@ export function UserMenu({ user, variant }: { user: NavUser; variant: "sidebar" 
     <div ref={ref} className="relative flex flex-1">
       {open && menu}
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
-        aria-haspopup="menu"
         aria-expanded={open}
         className="flex flex-1 flex-col items-center justify-center gap-0.5 text-xs font-medium text-ink-faint"
       >
