@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react"
 import { lookupByIsbn } from "@/lib/open-library"
 import { bulkUpdateBooks } from "@/lib/actions/books"
+import { inputClass, btnPrimary, btnSecondarySm } from "@/components/ui/classes"
 
 type Row = {
   id: string
@@ -68,19 +69,16 @@ export function BookBulkEdit({ books }: BookBulkEditProps) {
   }
 
   if (rows.length === 0) {
-    return <p className="text-zinc-500 dark:text-zinc-400">No books to edit.</p>
+    return <p className="text-ink-muted">No books to edit.</p>
   }
-
-  const inputClass =
-    "w-full rounded-md border border-zinc-300 px-2 py-1 text-sm text-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
       <input type="hidden" name="rows" value={JSON.stringify(rows)} />
 
-      <div className="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-800">
+      <div className="overflow-x-auto rounded-xl border border-edge bg-surface">
         <table className="w-full text-left text-sm">
-          <thead className="bg-zinc-50 text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400">
+          <thead className="bg-surface-raised text-ink-muted">
             <tr>
               <th className="px-3 py-2 font-medium">Title</th>
               <th className="px-3 py-2 font-medium">Author(s)</th>
@@ -88,7 +86,7 @@ export function BookBulkEdit({ books }: BookBulkEditProps) {
               <th className="px-3 py-2 font-medium" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
+          <tbody className="divide-y divide-edge">
             {rows.map((row) => (
               <tr key={row.id}>
                 <td className="px-3 py-2">
@@ -120,7 +118,7 @@ export function BookBulkEdit({ books }: BookBulkEditProps) {
                     type="button"
                     onClick={() => handleLookup(row.id)}
                     disabled={!row.isbn || lookingUp === row.id}
-                    className="rounded-md border border-zinc-300 px-3 py-1 text-xs text-zinc-700 hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                    className={`${btnSecondarySm} disabled:opacity-50`}
                   >
                     {lookingUp === row.id ? "Looking up…" : "Lookup"}
                   </button>
@@ -135,12 +133,12 @@ export function BookBulkEdit({ books }: BookBulkEditProps) {
         <button
           type="submit"
           disabled={isPending}
-          className="self-start rounded-lg bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+          className={`${btnPrimary} self-start disabled:opacity-50`}
         >
           {isPending ? "Saving…" : "Save all"}
         </button>
         {state && "updated" in state && (
-          <span className="text-sm text-zinc-500 dark:text-zinc-400">
+          <span className="text-sm text-ink-muted">
             Saved {state.updated} book{state.updated === 1 ? "" : "s"}.
           </span>
         )}

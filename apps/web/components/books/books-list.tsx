@@ -3,6 +3,15 @@
 import { useState } from "react"
 import Link from "next/link"
 import type { BookWithAvailability } from "@/lib/queries/books"
+import { inputClass, btnPrimary, btnSecondarySm } from "@/components/ui/classes"
+import { StatusBadge } from "@/components/ui/status-badge"
+import { EmptyState } from "@/components/ui/empty-state"
+
+const bookIcon = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+  </svg>
+)
 
 export function BooksList({ books }: { books: BookWithAvailability[] }) {
   const [query, setQuery] = useState("")
@@ -23,55 +32,57 @@ export function BooksList({ books }: { books: BookWithAvailability[] }) {
           placeholder="Search books…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full max-w-sm rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-zinc-400"
+          className={`w-full max-w-sm ${inputClass}`}
         />
       </div>
 
       {filtered.length === 0 ? (
-        <p className="text-zinc-500 dark:text-zinc-400">
-          {query
-            ? "No books match your search."
-            : "No books yet. Add your first book to get started."}
-        </p>
+        query ? (
+          <EmptyState icon={bookIcon} title="No matches" description={`Nothing on your shelf matches "${query}".`} />
+        ) : (
+          <EmptyState
+            icon={bookIcon}
+            title="Your shelf is empty"
+            description="Add your first book to start tracking your library."
+            action={<Link href="/books/new" className={btnPrimary}>Add Book</Link>}
+          />
+        )
       ) : (
-        <ul className="divide-y divide-zinc-100 rounded-xl border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-900">
+        <ul className="divide-y divide-edge rounded-xl border border-edge bg-surface shadow-sm">
           {filtered.map((book) => (
             <li key={book.id}>
-              <div className="flex items-center justify-between px-5 py-4 hover:bg-zinc-50 dark:hover:bg-zinc-800">
+              <div className="flex items-center justify-between px-5 py-4 hover:bg-surface-raised">
                 <Link
                   href={`/books/${book.id}`}
                   className="flex min-w-0 flex-1 items-center gap-4"
                 >
                   {book.coverUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={book.coverUrl}
                       alt=""
-                      className="h-14 w-10 flex-shrink-0 rounded object-cover"
+                      className="h-14 w-10 flex-shrink-0 rounded object-cover border border-edge"
                     />
                   ) : (
-                    <div className="h-14 w-10 flex-shrink-0 rounded bg-zinc-100 dark:bg-zinc-800" />
+                    <div className="flex h-14 w-10 flex-shrink-0 items-center justify-center rounded border border-edge bg-surface-raised">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="h-5 w-5 text-ink-faint" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                      </svg>
+                    </div>
                   )}
                   <div className="min-w-0">
-                    <p className="truncate font-medium text-zinc-900 dark:text-zinc-100">{book.title}</p>
+                    <p className="truncate font-medium text-ink">{book.title}</p>
                     {book.authors && (
-                      <p className="truncate text-sm text-zinc-500 dark:text-zinc-400">{book.authors}</p>
+                      <p className="truncate text-sm text-ink-muted">{book.authors}</p>
                     )}
                   </div>
                 </Link>
                 <div className="ml-4 flex shrink-0 items-center gap-2">
-                  <span
-                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                      book.isCheckedOut
-                        ? "bg-amber-100 text-amber-700 dark:bg-amber-400/15 dark:text-amber-300"
-                        : "bg-emerald-100 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-300"
-                    }`}
-                  >
-                    {book.isCheckedOut ? "Checked out" : "Available"}
-                  </span>
+                  <StatusBadge status={book.isCheckedOut ? "checked-out" : "available"} />
                   {!book.isCheckedOut && (
                     <Link
                       href={`/checkouts/new?bookId=${book.id}`}
-                      className="rounded-lg border border-zinc-300 px-3 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                      className={btnSecondarySm}
                     >
                       Check Out
                     </Link>
