@@ -53,9 +53,9 @@ export function ThemeToggle({ variant }: { variant: "sidebar" | "tab" }) {
   const next = order[(order.indexOf(current) + 1) % order.length]
 
   const sidebarClass =
-    "flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-medium text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+    "flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-medium text-ink-muted hover:bg-surface-raised hover:text-ink"
   const tabClass =
-    "flex flex-1 flex-col items-center justify-center gap-0.5 text-xs font-medium text-zinc-400 transition-colors hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100"
+    "flex flex-1 flex-col items-center justify-center gap-0.5 text-xs font-medium text-ink-faint transition-colors hover:text-ink"
 
   return (
     <button
