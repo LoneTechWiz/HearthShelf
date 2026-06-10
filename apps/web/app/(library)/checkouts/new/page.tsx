@@ -24,16 +24,16 @@ export default async function NewCheckoutPage({
   return (
     <div>
       <div className="mb-6">
-        <Link href="/checkouts" className="text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300">
+        <Link href="/checkouts" className="text-sm text-ink-muted hover:text-ink">
           ← Back to checkouts
         </Link>
-        <h1 className="mt-2 text-2xl font-semibold text-zinc-900 dark:text-zinc-100">Check Out a Book</h1>
+        <h1 className="mt-2 font-display text-2xl font-semibold text-ink">Check Out a Book</h1>
       </div>
 
       {availableBooks.length === 0 ? (
-        <p className="text-zinc-500 dark:text-zinc-400">
+        <p className="text-ink-muted">
           All books are currently checked out.{" "}
-          <Link href="/books" className="text-zinc-900 underline dark:text-zinc-100">
+          <Link href="/books" className="text-ink underline">
             Return one first.
           </Link>
         </p>
