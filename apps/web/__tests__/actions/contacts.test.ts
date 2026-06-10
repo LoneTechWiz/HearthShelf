@@ -48,7 +48,7 @@ describe("createContact", () => {
       phone: null,
     })
     expect(revalidatePath).toHaveBeenCalledWith("/contacts")
-    expect(redirect).toHaveBeenCalledWith("/contacts")
+    expect(redirect).toHaveBeenCalledWith("/contacts?flash=Contact added")
   })
 })
 
@@ -78,7 +78,7 @@ describe("deleteContact", () => {
     fd.set("id", "c1")
     await deleteContact(null, fd)
     expect(deleteContactRecord).toHaveBeenCalledWith("c1", "u1")
-    expect(redirect).toHaveBeenCalledWith("/contacts")
+    expect(redirect).toHaveBeenCalledWith("/contacts?flash=Contact deleted")
   })
 })
 
@@ -126,6 +126,6 @@ describe("updateContact", () => {
     })
     expect(revalidatePath).toHaveBeenCalledWith("/contacts/c1")
     expect(revalidatePath).toHaveBeenCalledWith("/contacts")
-    expect(redirect).toHaveBeenCalledWith("/contacts/c1")
+    expect(redirect).toHaveBeenCalledWith("/contacts/c1?flash=Contact updated")
   })
 })

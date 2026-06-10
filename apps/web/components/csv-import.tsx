@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react"
 import Link from "next/link"
 import type { ImportResult } from "@/lib/csv/types"
+import { btnPrimary, labelClass } from "@/components/ui/classes"
 
 type ImportAction = (
   prevState: ImportResult | null,
@@ -52,7 +53,7 @@ export function CsvImport({ action, columns, entity, nextStep }: CsvImportProps)
 
       <div className="flex flex-col gap-1">
         <label
-          className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
+          className={labelClass}
           htmlFor="csv-file"
         >
           CSV file
@@ -62,14 +63,14 @@ export function CsvImport({ action, columns, entity, nextStep }: CsvImportProps)
           type="file"
           accept=".csv,text/csv"
           onChange={handleFile}
-          className="text-sm text-zinc-700 dark:text-zinc-300"
+          className="text-sm text-ink"
         />
         {fileName && (
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">{fileName}</p>
+          <p className="text-xs text-ink-muted">{fileName}</p>
         )}
       </div>
 
-      <p className="text-xs text-zinc-500 dark:text-zinc-400">
+      <p className="text-xs text-ink-muted">
         Expected columns:{" "}
         {columns.map((c) => (
           <span key={c.name} className="font-mono">
@@ -81,7 +82,7 @@ export function CsvImport({ action, columns, entity, nextStep }: CsvImportProps)
         <Link
           href={templateHref}
           download={`${entity}-template.csv`}
-          className="underline hover:text-zinc-700 dark:hover:text-zinc-300"
+          className="underline hover:text-ink"
         >
           download template
         </Link>
@@ -90,7 +91,7 @@ export function CsvImport({ action, columns, entity, nextStep }: CsvImportProps)
       <button
         type="submit"
         disabled={isPending || !text}
-        className="self-start rounded-lg bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+        className={`self-start ${btnPrimary}`}
       >
         {isPending ? "Importing…" : "Import"}
       </button>
@@ -102,13 +103,13 @@ export function CsvImport({ action, columns, entity, nextStep }: CsvImportProps)
       )}
 
       {succeeded && (
-        <div className="rounded-md border border-zinc-200 bg-white px-4 py-3 text-sm dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="font-medium text-zinc-900 dark:text-zinc-100">
+        <div className="rounded-md border border-edge bg-surface px-4 py-3 text-sm">
+          <p className="font-medium text-ink">
             Imported {entity}: {state.created} created, {state.updated} updated,{" "}
             {state.skipped.length} skipped.
           </p>
           {state.skipped.length > 0 && (
-            <ul className="mt-2 list-disc pl-5 text-zinc-600 dark:text-zinc-400">
+            <ul className="mt-2 list-disc pl-5 text-ink-muted">
               {state.skipped.map((s) => (
                 <li key={s.line}>
                   Line {s.line}: {s.reason}
@@ -119,7 +120,7 @@ export function CsvImport({ action, columns, entity, nextStep }: CsvImportProps)
           {nextStep && state.importedIds && state.importedIds.length > 0 && (
             <Link
               href={`${nextStep.hrefBase}?ids=${state.importedIds.join(",")}`}
-              className="mt-3 inline-block rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+              className={`mt-3 inline-block ${btnPrimary}`}
             >
               {nextStep.label}
             </Link>

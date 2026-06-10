@@ -1,6 +1,7 @@
 "use client"
 
 import { deleteBook } from "@/lib/actions/books"
+import { btnDanger } from "@/components/ui/classes"
 
 interface DeleteBookFormProps {
   bookId: string
@@ -17,10 +18,7 @@ export function DeleteBookForm({ bookId }: DeleteBookFormProps) {
   return (
     <form action={handleDelete}>
       <input type="hidden" name="id" value={bookId} />
-      <button
-        type="submit"
-        className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500"
-      >
+      <button type="submit" className={btnDanger}>
         Delete
       </button>
     </form>

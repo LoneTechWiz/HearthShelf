@@ -2,10 +2,19 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { signOutAction } from "@/lib/actions/auth"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { Wordmark } from "@/components/brand"
+import { UserMenu, type NavUser } from "@/components/user-menu"
 
 const links = [
+  {
+    href: "/dashboard",
+    label: "Home",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75" />
+      </svg>
+    ),
+  },
   {
     href: "/books",
     label: "Books",
@@ -35,13 +44,7 @@ const links = [
   },
 ]
 
-const signOutIcon = (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
-  </svg>
-)
-
-export function Nav() {
+export function Nav({ user }: { user: NavUser }) {
   const pathname = usePathname()
 
   return (
@@ -49,14 +52,11 @@ export function Nav() {
       {/* Desktop sidebar */}
       <nav
         aria-label="Library"
-        className="nav-desktop w-48 flex-col gap-1 border-r border-zinc-200 bg-white px-3 py-6 dark:border-zinc-800 dark:bg-zinc-900"
+        className="nav-desktop w-52 flex-col gap-1 border-r border-edge bg-surface px-3 py-6"
       >
-        <p
-          aria-hidden="true"
-          className="mb-4 px-2 text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500"
-        >
-          Library
-        </p>
+        <div className="mb-6 px-2">
+          <Wordmark />
+        </div>
         {links.map(({ href, label }) => {
           const isActive = pathname === href || pathname.startsWith(href + "/")
           return (
@@ -64,33 +64,25 @@ export function Nav() {
               key={href}
               href={href}
               aria-current={isActive ? "page" : undefined}
-              className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+              className={`relative rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                 isActive
-                  ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100"
-                  : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                  ? "bg-accent-soft text-accent before:absolute before:-left-3 before:top-1/2 before:h-5 before:w-0.5 before:-translate-y-1/2 before:rounded-full before:bg-accent"
+                  : "text-ink-muted hover:bg-surface-raised hover:text-ink"
               }`}
             >
               {label}
             </Link>
           )
         })}
-        <div className="mt-auto flex flex-col gap-1">
-          <ThemeToggle variant="sidebar" />
-          <form action={signOutAction}>
-            <button
-              type="submit"
-              className="w-full rounded-md px-3 py-2 text-left text-sm font-medium text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
-            >
-              Sign out
-            </button>
-          </form>
+        <div className="mt-auto border-t border-edge pt-2">
+          <UserMenu user={user} variant="sidebar" />
         </div>
       </nav>
 
       {/* Mobile bottom tab bar */}
       <nav
         aria-label="Library tabs"
-        className="nav-mobile fixed bottom-0 left-0 right-0 z-50 h-14 border-t border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"
+        className="nav-mobile fixed bottom-0 left-0 right-0 z-50 h-14 border-t border-edge bg-surface"
       >
         {links.map(({ href, label, icon }) => {
           const isActive = pathname === href || pathname.startsWith(href + "/")
@@ -100,7 +92,7 @@ export function Nav() {
               href={href}
               aria-current={isActive ? "page" : undefined}
               className={`flex flex-1 flex-col items-center justify-center gap-0.5 text-xs font-medium transition-colors ${
-                isActive ? "text-zinc-900 dark:text-zinc-100" : "text-zinc-400 dark:text-zinc-500"
+                isActive ? "text-accent" : "text-ink-faint"
               }`}
             >
               {icon}
@@ -108,16 +100,7 @@ export function Nav() {
             </Link>
           )
         })}
-        <ThemeToggle variant="tab" />
-        <form action={signOutAction} className="flex flex-1">
-          <button
-            type="submit"
-            className="flex flex-1 flex-col items-center justify-center gap-0.5 text-xs font-medium text-zinc-400 transition-colors hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100"
-          >
-            {signOutIcon}
-            Sign out
-          </button>
-        </form>
+        <UserMenu user={user} variant="tab" />
       </nav>
     </>
   )

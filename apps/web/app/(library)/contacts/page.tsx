@@ -1,6 +1,15 @@
 import Link from "next/link"
 import { auth } from "@/auth"
 import { getContactsForUser } from "@/lib/queries/contacts"
+import { PageHeader } from "@/components/ui/page-header"
+import { EmptyState } from "@/components/ui/empty-state"
+import { btnPrimary, btnSecondary } from "@/components/ui/classes"
+
+const personIcon = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+  </svg>
+)
 
 export default async function ContactsPage() {
   const session = await auth()
@@ -8,38 +17,36 @@ export default async function ContactsPage() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">Contacts</h1>
-        <div className="flex items-center gap-2">
-          <Link
-            href="/contacts/import"
-            className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
-          >
-            Import CSV
-          </Link>
-          <Link
-            href="/contacts/new"
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
-          >
-            Add Contact
-          </Link>
-        </div>
-      </div>
+      <PageHeader
+        title="Contacts"
+        subtitle={`${contacts.length} ${contacts.length === 1 ? "contact" : "contacts"}`}
+        actions={
+          <>
+            <Link href="/contacts/import" className={btnSecondary}>Import CSV</Link>
+            <Link href="/contacts/new" className={btnPrimary}>Add Contact</Link>
+          </>
+        }
+      />
 
       {contacts.length === 0 ? (
-        <p className="text-zinc-500 dark:text-zinc-400">No contacts yet. Add the people you lend books to.</p>
+        <EmptyState
+          icon={personIcon}
+          title="No contacts yet"
+          description="Add the people you lend books to."
+          action={<Link href="/contacts/new" className={btnPrimary}>Add Contact</Link>}
+        />
       ) : (
-        <ul className="divide-y divide-zinc-100 rounded-xl border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-900">
+        <ul className="divide-y divide-edge rounded-xl border border-edge bg-surface shadow-sm">
           {contacts.map((contact) => (
             <li key={contact.id}>
               <Link
                 href={`/contacts/${contact.id}`}
-                className="flex items-center justify-between px-5 py-4 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                className="flex items-center justify-between px-5 py-4 hover:bg-surface-raised"
               >
                 <div>
-                  <p className="font-medium text-zinc-900 dark:text-zinc-100">{contact.name}</p>
+                  <p className="font-medium text-ink">{contact.name}</p>
                   {contact.email && (
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400">{contact.email}</p>
+                    <p className="text-sm text-ink-muted">{contact.email}</p>
                   )}
                 </div>
               </Link>

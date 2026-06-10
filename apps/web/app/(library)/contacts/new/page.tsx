@@ -6,10 +6,10 @@ export default function NewContactPage() {
   return (
     <div>
       <div className="mb-6">
-        <Link href="/contacts" className="text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300">
+        <Link href="/contacts" className="text-sm text-ink-muted hover:text-ink">
           ← Back to contacts
         </Link>
-        <h1 className="mt-2 text-2xl font-semibold text-zinc-900 dark:text-zinc-100">Add a Contact</h1>
+        <h1 className="mt-2 font-display text-2xl font-semibold text-ink">Add a Contact</h1>
       </div>
       <ContactForm action={createContact} submitLabel="Add Contact" />
     </div>

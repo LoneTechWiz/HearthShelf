@@ -1,6 +1,7 @@
 "use client"
 
 import { useActionState } from "react"
+import { btnPrimary, inputClass, labelClass } from "@/components/ui/classes"
 
 type ActionState = { error: string } | null
 type ContactFormAction = (
@@ -39,7 +40,7 @@ export function ContactForm({
       )}
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300" htmlFor="name">
+        <label className={labelClass} htmlFor="name">
           Name <span className="text-red-500 dark:text-red-400">*</span>
         </label>
         <input
@@ -47,12 +48,12 @@ export function ContactForm({
           name="name"
           required
           defaultValue={defaultValues?.name ?? ""}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-zinc-400"
+          className={inputClass}
         />
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300" htmlFor="email">
+        <label className={labelClass} htmlFor="email">
           Email
         </label>
         <input
@@ -60,12 +61,12 @@ export function ContactForm({
           name="email"
           type="email"
           defaultValue={defaultValues?.email ?? ""}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-zinc-400"
+          className={inputClass}
         />
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300" htmlFor="phone">
+        <label className={labelClass} htmlFor="phone">
           Phone
         </label>
         <input
@@ -73,14 +74,14 @@ export function ContactForm({
           name="phone"
           type="tel"
           defaultValue={defaultValues?.phone ?? ""}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-zinc-400"
+          className={inputClass}
         />
       </div>
 
       <button
         type="submit"
         disabled={isPending}
-        className="self-start rounded-lg bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+        className={`self-start ${btnPrimary}`}
       >
         {isPending ? "Saving…" : submitLabel}
       </button>
