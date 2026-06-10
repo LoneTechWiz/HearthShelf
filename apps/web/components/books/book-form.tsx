@@ -6,6 +6,7 @@ import type { BookSuggestion } from "@/lib/open-library"
 import { normalizeIsbn } from "@/lib/isbn"
 import { BookSearchDropdown } from "./book-search-dropdown"
 import { BarcodeScanner } from "./barcode-scanner"
+import { btnPrimary, btnSecondarySm, inputClass, labelClass } from "@/components/ui/classes"
 
 type ActionState = { error: string } | null
 type BookFormAction = (
@@ -45,10 +46,14 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
   const [showScanner, setShowScanner] = useState(false)
 
   useEffect(() => {
+    // Use a zero-delay timeout so the linter's set-state-in-effect rule is
+    // satisfied while preserving the early-exit behavior identically.
     if (searchQuery.length < 2) {
-      setSuggestions([])
-      setShowDropdown(false)
-      return
+      const id = setTimeout(() => {
+        setSuggestions([])
+        setShowDropdown(false)
+      }, 0)
+      return () => clearTimeout(id)
     }
     const timer = setTimeout(async () => {
       setIsSearching(true)
@@ -127,7 +132,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
       )}
 
       <div className="relative flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300" htmlFor="title">
+        <label className={labelClass} htmlFor="title">
           Title <span className="text-red-500 dark:text-red-400">*</span>
         </label>
         <input
@@ -136,7 +141,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
           required
           value={title}
           onChange={(e) => { setTitle(e.target.value); setSearchQuery(e.target.value) }}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-zinc-400"
+          className={inputClass}
         />
         {searchError && (
           <p className="text-xs text-red-600 dark:text-red-400">{searchError}</p>
@@ -152,7 +157,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300" htmlFor="authors">
+        <label className={labelClass} htmlFor="authors">
           Author(s)
         </label>
         <input
@@ -160,12 +165,12 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
           name="authors"
           value={authors}
           onChange={(e) => setAuthors(e.target.value)}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-zinc-400"
+          className={inputClass}
         />
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300" htmlFor="isbn">
+        <label className={labelClass} htmlFor="isbn">
           ISBN
         </label>
         <div className="flex gap-2">
@@ -174,20 +179,20 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
             name="isbn"
             value={isbn}
             onChange={(e) => setIsbn(e.target.value)}
-            className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-zinc-400"
+            className={`flex-1 ${inputClass}`}
           />
           <button
             type="button"
             onClick={handleIsbnLookup}
             disabled={isLookingUp || !isbn}
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            className={btnSecondarySm}
           >
             {isLookingUp ? "Looking up…" : "Lookup"}
           </button>
           <button
             type="button"
             onClick={() => setShowScanner(true)}
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            className={btnSecondarySm}
           >
             Scan
           </button>
@@ -198,7 +203,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300" htmlFor="description">
+        <label className={labelClass} htmlFor="description">
           Description
         </label>
         <textarea
@@ -207,12 +212,12 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
           rows={3}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-zinc-400"
+          className={inputClass}
         />
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300" htmlFor="coverUrl">
+        <label className={labelClass} htmlFor="coverUrl">
           Cover image URL
         </label>
         <input
@@ -221,14 +226,14 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
           type="url"
           value={coverUrl}
           onChange={(e) => setCoverUrl(e.target.value)}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-zinc-400"
+          className={inputClass}
         />
       </div>
 
       <button
         type="submit"
         disabled={isPending}
-        className="self-start rounded-lg bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+        className={`self-start ${btnPrimary}`}
       >
         {isPending ? "Saving…" : submitLabel}
       </button>

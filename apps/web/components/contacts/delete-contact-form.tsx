@@ -1,6 +1,7 @@
 "use client"
 
 import { deleteContact } from "@/lib/actions/contacts"
+import { btnDanger } from "@/components/ui/classes"
 
 interface DeleteContactFormProps {
   contactId: string
@@ -17,10 +18,7 @@ export function DeleteContactForm({ contactId }: DeleteContactFormProps) {
   return (
     <form action={handleDelete}>
       <input type="hidden" name="id" value={contactId} />
-      <button
-        type="submit"
-        className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500"
-      >
+      <button type="submit" className={btnDanger}>
         Delete
       </button>
     </form>

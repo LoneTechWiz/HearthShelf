@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { BrowserMultiFormatReader, type IScannerControls } from "@zxing/browser"
 
 interface BarcodeScannerProps {
@@ -11,7 +11,9 @@ interface BarcodeScannerProps {
 export function BarcodeScanner({ onDetected, onClose }: BarcodeScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const onDetectedRef = useRef(onDetected)
-  onDetectedRef.current = onDetected
+  useLayoutEffect(() => {
+    onDetectedRef.current = onDetected
+  })
 
   const [error, setError] = useState<string | null>(null)
 
@@ -84,7 +86,7 @@ export function BarcodeScanner({ onDetected, onClose }: BarcodeScannerProps) {
             type="button"
             autoFocus
             onClick={onClose}
-            className="rounded-lg bg-white px-5 py-2 text-sm font-medium text-zinc-900"
+            className="rounded-lg bg-white px-5 py-2 text-sm font-medium text-ink"
           >
             Close
           </button>
@@ -104,7 +106,7 @@ export function BarcodeScanner({ onDetected, onClose }: BarcodeScannerProps) {
             type="button"
             autoFocus
             onClick={onClose}
-            className="mt-4 rounded-lg bg-white px-5 py-2 text-sm font-medium text-zinc-900"
+            className="mt-4 rounded-lg bg-white px-5 py-2 text-sm font-medium text-ink"
           >
             Cancel
           </button>
