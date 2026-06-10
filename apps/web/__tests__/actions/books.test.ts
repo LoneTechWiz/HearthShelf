@@ -52,7 +52,7 @@ describe("createBook", () => {
       coverUrl: null,
     })
     expect(revalidatePath).toHaveBeenCalledWith("/books")
-    expect(redirect).toHaveBeenCalledWith("/books")
+    expect(redirect).toHaveBeenCalledWith("/books?flash=Book added")
     expect(result).toBeNull()
   })
 })
@@ -87,7 +87,7 @@ describe("deleteBook", () => {
     await deleteBook(null, fd)
     expect(deleteBookRecord).toHaveBeenCalledWith("book1", "u1")
     expect(revalidatePath).toHaveBeenCalledWith("/books")
-    expect(redirect).toHaveBeenCalledWith("/books")
+    expect(redirect).toHaveBeenCalledWith("/books?flash=Book deleted")
   })
 })
 
@@ -142,6 +142,6 @@ describe("updateBook", () => {
     })
     expect(revalidatePath).toHaveBeenCalledWith("/books/book1")
     expect(revalidatePath).toHaveBeenCalledWith("/books")
-    expect(redirect).toHaveBeenCalledWith("/books/book1")
+    expect(redirect).toHaveBeenCalledWith("/books/book1?flash=Book updated")
   })
 })

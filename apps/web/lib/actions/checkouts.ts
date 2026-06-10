@@ -37,7 +37,7 @@ export async function createCheckout(
   })
 
   revalidatePath("/checkouts")
-  redirect("/checkouts")
+  redirect("/checkouts?flash=Book checked out")
   return null
 }
 
@@ -52,6 +52,6 @@ export async function returnBook(
   await returnBookRecord(checkoutId, session.user.id)
 
   revalidatePath("/checkouts")
-  redirect("/checkouts")
+  redirect("/checkouts?flash=Book returned")
   return null
 }

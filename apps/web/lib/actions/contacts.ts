@@ -36,7 +36,7 @@ export async function createContact(
   })
 
   revalidatePath("/contacts")
-  redirect("/contacts")
+  redirect("/contacts?flash=Contact added")
   return null
 }
 
@@ -52,7 +52,7 @@ export async function deleteContact(
   await deleteContactRecord(id, session.user.id)
 
   revalidatePath("/contacts")
-  redirect("/contacts")
+  redirect("/contacts?flash=Contact deleted")
   return null
 }
 
@@ -76,7 +76,7 @@ export async function updateContact(
 
   revalidatePath(`/contacts/${id}`)
   revalidatePath("/contacts")
-  redirect(`/contacts/${id}`)
+  redirect(`/contacts/${id}?flash=Contact updated`)
   return null
 }
 

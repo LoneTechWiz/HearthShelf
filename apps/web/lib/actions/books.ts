@@ -39,7 +39,7 @@ export async function createBook(
   })
 
   revalidatePath("/books")
-  redirect("/books")
+  redirect("/books?flash=Book added")
   return null
 }
 
@@ -55,7 +55,7 @@ export async function deleteBook(
   await deleteBookRecord(id, session.user.id)
 
   revalidatePath("/books")
-  redirect("/books")
+  redirect("/books?flash=Book deleted")
   return null
 }
 
@@ -81,7 +81,7 @@ export async function updateBook(
 
   revalidatePath(`/books/${id}`)
   revalidatePath("/books")
-  redirect(`/books/${id}`)
+  redirect(`/books/${id}?flash=Book updated`)
   return null
 }
 

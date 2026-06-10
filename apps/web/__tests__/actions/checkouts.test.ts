@@ -46,7 +46,7 @@ describe("createCheckout", () => {
       notes: null,
     })
     expect(revalidatePath).toHaveBeenCalledWith("/checkouts")
-    expect(redirect).toHaveBeenCalledWith("/checkouts")
+    expect(redirect).toHaveBeenCalledWith("/checkouts?flash=Book checked out")
   })
 
   it("creates checkout with contactId when borrower is a contact", async () => {
@@ -88,6 +88,6 @@ describe("returnBook", () => {
     await returnBook(null, fd)
     expect(returnBookRecord).toHaveBeenCalledWith("co1", "u1")
     expect(revalidatePath).toHaveBeenCalledWith("/checkouts")
-    expect(redirect).toHaveBeenCalledWith("/checkouts")
+    expect(redirect).toHaveBeenCalledWith("/checkouts?flash=Book returned")
   })
 })
