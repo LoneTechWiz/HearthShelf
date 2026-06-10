@@ -31,7 +31,7 @@ export function BookSearchDropdown({
   return (
     <div
       ref={ref}
-      className="absolute z-10 mt-1 w-full rounded-lg border-edge bg-surface shadow-md"
+      className="absolute z-10 mt-1 w-full rounded-lg border border-edge bg-surface shadow-md"
     >
       {isSearching ? (
         <div className="px-3 py-2 text-sm text-ink-muted">Searching…</div>

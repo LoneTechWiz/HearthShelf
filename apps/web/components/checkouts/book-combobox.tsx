@@ -59,7 +59,7 @@ export function BookCombobox({ books, defaultBookId }: BookComboboxProps) {
       />
       <input type="hidden" name="bookId" value={selected?.id ?? ""} />
       {open && filtered.length > 0 && (
-        <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border-edge bg-surface shadow-md">
+        <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-edge bg-surface shadow-md">
           {filtered.map((book) => (
             <li key={book.id}>
               <button

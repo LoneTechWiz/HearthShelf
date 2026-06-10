@@ -46,15 +46,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
   const [showScanner, setShowScanner] = useState(false)
 
   useEffect(() => {
-    // Use a zero-delay timeout so the linter's set-state-in-effect rule is
-    // satisfied while preserving the early-exit behavior identically.
-    if (searchQuery.length < 2) {
-      const id = setTimeout(() => {
-        setSuggestions([])
-        setShowDropdown(false)
-      }, 0)
-      return () => clearTimeout(id)
-    }
+    if (searchQuery.length < 2) return
     const timer = setTimeout(async () => {
       setIsSearching(true)
       setSearchError(null)
@@ -140,7 +132,15 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
           name="title"
           required
           value={title}
-          onChange={(e) => { setTitle(e.target.value); setSearchQuery(e.target.value) }}
+          onChange={(e) => {
+              const value = e.target.value
+              setTitle(value)
+              setSearchQuery(value)
+              if (value.length < 2) {
+                setSuggestions([])
+                setShowDropdown(false)
+              }
+            }}
           className={inputClass}
         />
         {searchError && (

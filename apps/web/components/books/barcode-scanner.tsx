@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { BrowserMultiFormatReader, type IScannerControls } from "@zxing/browser"
 
 interface BarcodeScannerProps {
@@ -11,7 +11,7 @@ interface BarcodeScannerProps {
 export function BarcodeScanner({ onDetected, onClose }: BarcodeScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const onDetectedRef = useRef(onDetected)
-  useLayoutEffect(() => {
+  useEffect(() => {
     onDetectedRef.current = onDetected
   })
 
