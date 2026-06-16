@@ -114,7 +114,7 @@ npm workspaces. Three packages:
 
 A `checkout.contactId = null` means the library owner has the book themselves. When set, it points to the contact currently holding the book.
 
-**Auth** — Auth.js v5 (`next-auth@beta`; v5 is still in beta as of this writing). Config is in `apps/web/auth.ts`, which exports `{ handlers, auth, signIn, signOut }`. The GitHub provider is wired by default; swap or add providers there. The API route at `app/api/auth/[...nextauth]/route.ts` simply re-exports `handlers`.
+**Auth** — Auth.js v5 (`next-auth@beta`; v5 is still in beta as of this writing). Config is in `apps/web/auth.ts`, which exports `{ handlers, auth, signIn, signOut }`. Google and GitHub providers are wired by default (Google is the primary sign-in option on the landing page, GitHub is secondary); swap or add providers there. Both providers have `allowDangerousEmailAccountLinking: true` so a sign-in with one links to an existing account from the other if the email matches. The API route at `app/api/auth/[...nextauth]/route.ts` simply re-exports `handlers`.
 
 **Routing** — App Router. The `(library)` route group covers all authenticated pages (`/books`, `/contacts`, `/checkouts`). Its `layout.tsx` calls `auth()` server-side and redirects unauthenticated visitors to `/`. The root `app/page.tsx` is the public landing/sign-in page.
 
@@ -127,3 +127,4 @@ Copy `apps/web/.env.local.example` to `apps/web/.env.local` and fill in:
 - `DATABASE_URL` — PostgreSQL connection string
 - `AUTH_SECRET` — random secret (`openssl rand -base64 32`)
 - `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` — GitHub OAuth app credentials
+- `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` — Google OAuth app credentials
