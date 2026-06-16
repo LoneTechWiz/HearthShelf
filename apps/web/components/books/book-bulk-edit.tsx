@@ -83,6 +83,8 @@ export function BookBulkEdit({ books }: BookBulkEditProps) {
               <th className="px-3 py-2 font-medium">Title</th>
               <th className="px-3 py-2 font-medium">Author(s)</th>
               <th className="px-3 py-2 font-medium">ISBN</th>
+              <th className="px-3 py-2 font-medium">Description</th>
+              <th className="px-3 py-2 font-medium">Cover URL</th>
               <th className="px-3 py-2 font-medium" />
             </tr>
           </thead>
@@ -110,6 +112,23 @@ export function BookBulkEdit({ books }: BookBulkEditProps) {
                     aria-label={`ISBN for ${row.id}`}
                     value={row.isbn}
                     onChange={(e) => update(row.id, "isbn", e.target.value)}
+                    className={inputClass}
+                  />
+                </td>
+                <td className="px-3 py-2">
+                  <textarea
+                    aria-label={`Description for ${row.id}`}
+                    value={row.description}
+                    onChange={(e) => update(row.id, "description", e.target.value)}
+                    rows={2}
+                    className={`${inputClass} resize-y`}
+                  />
+                </td>
+                <td className="px-3 py-2">
+                  <input
+                    aria-label={`Cover URL for ${row.id}`}
+                    value={row.coverUrl}
+                    onChange={(e) => update(row.id, "coverUrl", e.target.value)}
                     className={inputClass}
                   />
                 </td>
