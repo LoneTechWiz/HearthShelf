@@ -77,62 +77,62 @@ export function BookBulkEdit({ books }: BookBulkEditProps) {
       <input type="hidden" name="rows" value={JSON.stringify(rows)} />
 
       <div className="overflow-x-auto rounded-xl border border-edge bg-surface shadow-sm">
-        <table className="w-full text-left text-sm">
+        <table className="w-full table-fixed text-left text-sm">
           <thead className="bg-surface-raised text-ink-muted">
             <tr>
-              <th className="px-3 py-2 font-medium">Title</th>
-              <th className="px-3 py-2 font-medium">Author(s)</th>
-              <th className="px-3 py-2 font-medium">ISBN</th>
-              <th className="px-3 py-2 font-medium">Description</th>
-              <th className="px-3 py-2 font-medium">Cover URL</th>
-              <th className="px-3 py-2 font-medium" />
+              <th className="px-2 py-1.5 font-medium">Title</th>
+              <th className="w-36 px-2 py-1.5 font-medium">Author(s)</th>
+              <th className="w-28 px-2 py-1.5 font-medium">ISBN</th>
+              <th className="w-80 px-2 py-1.5 font-medium">Description</th>
+              <th className="px-2 py-1.5 font-medium">Cover URL</th>
+              <th className="px-2 py-1.5 font-medium" />
             </tr>
           </thead>
           <tbody className="divide-y divide-edge">
             {rows.map((row) => (
               <tr key={row.id}>
-                <td className="px-3 py-2">
+                <td className="px-2 py-1.5">
                   <input
                     aria-label={`Title for ${row.id}`}
                     value={row.title}
                     onChange={(e) => update(row.id, "title", e.target.value)}
-                    className={inputClass}
+                    className={`${inputClass} w-full`}
                   />
                 </td>
-                <td className="px-3 py-2">
+                <td className="w-36 px-2 py-1.5">
                   <input
                     aria-label={`Authors for ${row.id}`}
                     value={row.authors}
                     onChange={(e) => update(row.id, "authors", e.target.value)}
-                    className={inputClass}
+                    className={`${inputClass} w-full`}
                   />
                 </td>
-                <td className="px-3 py-2">
+                <td className="w-28 px-2 py-1.5">
                   <input
                     aria-label={`ISBN for ${row.id}`}
                     value={row.isbn}
                     onChange={(e) => update(row.id, "isbn", e.target.value)}
-                    className={inputClass}
+                    className={`${inputClass} w-full`}
                   />
                 </td>
-                <td className="px-3 py-2">
+                <td className="w-80 px-2 py-1.5">
                   <textarea
                     aria-label={`Description for ${row.id}`}
                     value={row.description}
                     onChange={(e) => update(row.id, "description", e.target.value)}
                     rows={2}
-                    className={`${inputClass} resize-y`}
+                    className={`${inputClass} w-full resize-y`}
                   />
                 </td>
-                <td className="px-3 py-2">
+                <td className="px-2 py-1.5">
                   <input
                     aria-label={`Cover URL for ${row.id}`}
                     value={row.coverUrl}
                     onChange={(e) => update(row.id, "coverUrl", e.target.value)}
-                    className={inputClass}
+                    className={`${inputClass} w-full`}
                   />
                 </td>
-                <td className="px-3 py-2">
+                <td className="px-2 py-1.5">
                   <button
                     type="button"
                     onClick={() => handleLookup(row.id)}
