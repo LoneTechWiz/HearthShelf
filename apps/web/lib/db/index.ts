@@ -8,7 +8,10 @@ import * as schema from "./schema"
 // limit is exhausted.
 const globalForDb = globalThis as unknown as { dbClient?: ReturnType<typeof postgres> }
 
-const client = globalForDb.dbClient ?? postgres(process.env.DATABASE_URL!)
+const client = globalForDb.dbClient ?? postgres(process.env.DATABASE_URL!, {
+  max: 1,
+  prepare: false, // required for Supabase transaction-mode pooler (port 6543)
+})
 
 if (process.env.NODE_ENV !== "production") {
   globalForDb.dbClient = client
