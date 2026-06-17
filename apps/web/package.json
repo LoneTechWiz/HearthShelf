@@ -23,6 +23,8 @@
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "@my-shelf/types": "*",
     "@zxing/browser": "^0.2.0",
     "@zxing/library": "^0.23.0",
