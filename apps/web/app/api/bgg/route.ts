@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
-export const runtime = "edge"
-
 export async function GET(req: NextRequest) {
+  const apiKey = process.env.BGG_API_KEY
+  if (!apiKey) {
+    return NextResponse.json({ error: "BGG_API_KEY not configured" }, { status: 503 })
+  }
+
   const { searchParams } = new URL(req.url)
   const id = searchParams.get("id")
   const query = searchParams.get("query")
@@ -18,9 +21,8 @@ export async function GET(req: NextRequest) {
 
   const res = await fetch(bggUrl, {
     headers: {
-      "User-Agent": "Mozilla/5.0 (compatible; HearthShelf/1.0; +https://github.com/LoneTechWiz/HearthShelf)",
+      "Authorization": `Bearer ${apiKey}`,
       "Accept": "application/xml,text/xml,*/*",
-      "Accept-Language": "en-US,en;q=0.9",
     },
   })
 

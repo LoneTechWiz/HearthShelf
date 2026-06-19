@@ -130,6 +130,13 @@ export function GamesList({ games }: { games: GameWithAvailability[] }) {
           ))}
         </ul>
       )}
+
+      <p className="mt-4 text-right text-xs text-ink-faint">
+        Game data{" "}
+        <a href="https://boardgamegeek.com" target="_blank" rel="noopener noreferrer" className="hover:text-ink-muted underline">
+          Powered by BGG
+        </a>
+      </p>
     </>
   )
 }
