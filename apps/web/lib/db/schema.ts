@@ -1,5 +1,6 @@
 import {
   integer,
+  jsonb,
   pgTable,
   primaryKey,
   text,
@@ -141,6 +142,20 @@ export const contacts = pgTable("contact", {
   email: text("email"),
   phone: text("phone"),
   createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+})
+
+// ── BGG cache tables ───────────────────────────────────────────────────────
+
+export const bggSearchCache = pgTable("bgg_search_cache", {
+  query: text("query").primaryKey(),
+  results: jsonb("results").notNull(),
+  cachedAt: timestamp("cached_at", { withTimezone: true }).notNull(),
+})
+
+export const bggGameCache = pgTable("bgg_game_cache", {
+  bggId: text("bgg_id").primaryKey(),
+  data: jsonb("data").notNull(),
+  cachedAt: timestamp("cached_at", { withTimezone: true }).notNull(),
 })
 
 export const checkouts = pgTable("checkout", {
