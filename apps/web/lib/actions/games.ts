@@ -198,16 +198,20 @@ export async function bulkUpdateGames(
     if (!row.id || !row.title?.trim()) continue
     const minPlayers = row.minPlayers ? parseInt(row.minPlayers, 10) : null
     const maxPlayers = row.maxPlayers ? parseInt(row.maxPlayers, 10) : null
-    await updateGameRecord(row.id, userId, {
-      title: row.title.trim(),
-      coverUrl: nullIfEmpty(row.coverUrl),
-      minPlayers: isNaN(minPlayers!) ? null : minPlayers,
-      maxPlayers: isNaN(maxPlayers!) ? null : maxPlayers,
-      ageRating: nullIfEmpty(row.ageRating),
-      genre: nullIfEmpty(row.genre),
-      description: nullIfEmpty(row.description),
-    })
-    updated++
+    try {
+      await updateGameRecord(row.id, userId, {
+        title: row.title.trim(),
+        coverUrl: nullIfEmpty(row.coverUrl),
+        minPlayers: isNaN(minPlayers!) ? null : minPlayers,
+        maxPlayers: isNaN(maxPlayers!) ? null : maxPlayers,
+        ageRating: nullIfEmpty(row.ageRating),
+        genre: nullIfEmpty(row.genre),
+        description: nullIfEmpty(row.description),
+      })
+      updated++
+    } catch {
+      // skip rows that fail DB update
+    }
   }
 
   revalidatePath("/games")
