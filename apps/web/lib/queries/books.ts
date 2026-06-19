@@ -85,7 +85,7 @@ export async function createBookRecord(
     isbn: string | null
     description: string | null
     coverUrl: string | null
-    genre: string | null
+    genre?: string | null
   }
 ): Promise<void> {
   await db.transaction(async (tx) => {
@@ -105,7 +105,7 @@ export async function createBookRecordReturningId(
     isbn: string | null
     description: string | null
     coverUrl: string | null
-    genre: string | null
+    genre?: string | null
   }
 ): Promise<string> {
   let bookId = ""
@@ -129,7 +129,7 @@ export async function updateBookRecord(
     isbn: string | null
     description: string | null
     coverUrl: string | null
-    genre: string | null
+    genre?: string | null
   }
 ): Promise<void> {
   await db
