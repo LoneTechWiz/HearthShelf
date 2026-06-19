@@ -112,6 +112,9 @@ export const games = pgTable("game", {
 })
 
 // Bridge table — one row per lendable item; unique on (type, refId)
+// userId is required for cascade delete: user → lendableItem → checkout.
+// There is no polymorphic FK from refId back to book/movie/game, so without
+// userId the lendableItem rows would be orphaned on user deletion.
 export const lendableItems = pgTable(
   "lendableItem",
   {
@@ -152,7 +155,7 @@ export const checkouts = pgTable("checkout", {
     .references(() => users.id, { onDelete: "cascade" }),
   contactId: text("contactId").references(() => contacts.id, {
     onDelete: "set null",
-  }),
+  }), // null = owner has the item themselves
   checkedOutAt: timestamp("checkedOutAt", { mode: "date" })
     .defaultNow()
     .notNull(),
