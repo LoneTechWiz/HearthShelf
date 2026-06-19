@@ -1,3 +1,5 @@
+"use client"
+
 export type MovieSuggestion = {
   imdbId: string
   title: string

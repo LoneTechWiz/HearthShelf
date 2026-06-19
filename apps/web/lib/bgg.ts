@@ -22,15 +22,18 @@ export async function searchGamesByTitle(title: string): Promise<GameSuggestion[
   const text = await res.text()
   const doc = new DOMParser().parseFromString(text, "text/xml")
   const items = Array.from(doc.querySelectorAll("item"))
-  return items.slice(0, 8).map((item) => ({
-    bggId: item.getAttribute("id") ?? "",
-    title:
-      item.querySelector("name[type='primary']")?.getAttribute("value") ??
-      item.querySelector("name")?.getAttribute("value") ??
-      "",
-    year:
-      parseInt(item.querySelector("yearpublished")?.getAttribute("value") ?? "") || null,
-  }))
+  return items
+    .map((item) => ({
+      bggId: item.getAttribute("id") ?? "",
+      title:
+        item.querySelector("name[type='primary']")?.getAttribute("value") ??
+        item.querySelector("name")?.getAttribute("value") ??
+        "",
+      year:
+        parseInt(item.querySelector("yearpublished")?.getAttribute("value") ?? "") || null,
+    }))
+    .filter((g) => g.title !== "")
+    .slice(0, 8)
 }
 
 export async function getGameByBggId(bggId: string): Promise<GameDetail | null> {
