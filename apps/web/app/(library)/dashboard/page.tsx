@@ -10,6 +10,12 @@ function formatDate(d: Date) {
   return new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(d)
 }
 
+const ITEM_HREF: Record<string, string> = {
+  book: "/books",
+  movie: "/movies",
+  game: "/games",
+}
+
 export default async function DashboardPage() {
   const session = await auth()
   const userId = session!.user!.id!
@@ -21,8 +27,9 @@ export default async function DashboardPage() {
   ])
 
   const firstName = session!.user!.name?.split(" ")[0]
+  const totalItems = stats.totalBooks + stats.totalMovies + stats.totalGames
 
-  if (stats.totalBooks === 0) {
+  if (totalItems === 0) {
     return (
       <div>
         <PageHeader title={firstName ? `Welcome, ${firstName}` : "Welcome"} />
@@ -33,7 +40,7 @@ export default async function DashboardPage() {
             </svg>
           }
           title="Let's stock your shelf"
-          description="Add your first book by hand, or import your whole library from a CSV."
+          description="Add your first book, movie, or game, or import from a CSV."
           action={
             <>
               <Link href="/books/new" className={btnPrimary}>Add Book</Link>
@@ -47,6 +54,8 @@ export default async function DashboardPage() {
 
   const cards = [
     { label: "Books", value: stats.totalBooks, href: "/books" },
+    { label: "Movies", value: stats.totalMovies, href: "/movies" },
+    { label: "Games", value: stats.totalGames, href: "/games" },
     { label: "Checked out", value: stats.checkedOutNow, href: "/checkouts" },
     { label: "Overdue", value: stats.overdue, href: "/checkouts", alert: stats.overdue > 0 },
     { label: "Contacts", value: stats.totalContacts, href: "/contacts" },
@@ -64,7 +73,7 @@ export default async function DashboardPage() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {cards.map((card) => (
           <Link
             key={card.label}
@@ -88,16 +97,17 @@ export default async function DashboardPage() {
           <h2 className="mb-3 font-display text-lg font-semibold text-ink">Currently out</h2>
           {active.length === 0 ? (
             <p className="rounded-xl border border-dashed border-edge bg-surface px-5 py-8 text-center text-sm text-ink-muted">
-              All your books are home on the shelf.
+              All your items are home on the shelf.
             </p>
           ) : (
             <ul className="divide-y divide-edge rounded-xl border border-edge bg-surface shadow-sm">
               {active.map((checkout) => {
                 const overdue = checkout.dueDate !== null && checkout.dueDate < new Date()
+                const itemHref = `${ITEM_HREF[checkout.item.type] ?? "/books"}/${checkout.item.id}`
                 return (
                   <li key={checkout.id}>
-                    <Link href={`/books/${checkout.book.id}`} className="block px-5 py-3 hover:bg-surface-raised">
-                      <p className="truncate text-sm font-medium text-ink">{checkout.book.title}</p>
+                    <Link href={itemHref} className="block px-5 py-3 hover:bg-surface-raised">
+                      <p className="truncate text-sm font-medium text-ink">{checkout.item.title}</p>
                       <p className="text-xs text-ink-muted">
                         {checkout.contact ? checkout.contact.name : "Yourself"}
                         {checkout.dueDate && (
@@ -125,19 +135,22 @@ export default async function DashboardPage() {
             </p>
           ) : (
             <ul className="divide-y divide-edge rounded-xl border border-edge bg-surface shadow-sm">
-              {activity.map((event) => (
-                <li key={`${event.checkoutId}-${event.type}`} className="px-5 py-3">
-                  <p className="text-sm text-ink">
-                    <Link href={`/books/${event.bookId}`} className="font-medium hover:text-accent">
-                      {event.bookTitle}
-                    </Link>{" "}
-                    {event.type === "checkout"
-                      ? `checked out to ${event.contactName ?? "yourself"}`
-                      : `returned by ${event.contactName ?? "you"}`}
-                  </p>
-                  <p className="text-xs text-ink-faint">{formatDate(event.at)}</p>
-                </li>
-              ))}
+              {activity.map((event) => {
+                const itemHref = `${ITEM_HREF[event.itemType] ?? "/books"}/${event.itemId}`
+                return (
+                  <li key={`${event.checkoutId}-${event.type}`} className="px-5 py-3">
+                    <p className="text-sm text-ink">
+                      <Link href={itemHref} className="font-medium hover:text-accent">
+                        {event.itemTitle}
+                      </Link>{" "}
+                      {event.type === "checkout"
+                        ? `checked out to ${event.contactName ?? "yourself"}`
+                        : `returned by ${event.contactName ?? "you"}`}
+                    </p>
+                    <p className="text-xs text-ink-faint">{formatDate(event.at)}</p>
+                  </li>
+                )
+              })}
             </ul>
           )}
         </section>
