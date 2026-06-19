@@ -17,9 +17,7 @@ export type GameDetail = {
 }
 
 export async function searchGamesByTitle(title: string): Promise<GameSuggestion[]> {
-  const res = await fetch(
-    `https://boardgamegeek.com/xmlapi2/search?query=${encodeURIComponent(title)}&type=boardgame`
-  )
+  const res = await fetch(`/api/bgg?query=${encodeURIComponent(title)}`)
   if (!res.ok) throw new Error("Search failed")
   const text = await res.text()
   const doc = new DOMParser().parseFromString(text, "text/xml")
@@ -39,9 +37,7 @@ export async function searchGamesByTitle(title: string): Promise<GameSuggestion[
 }
 
 export async function getGameByBggId(bggId: string): Promise<GameDetail | null> {
-  const res = await fetch(
-    `https://boardgamegeek.com/xmlapi2/thing?id=${encodeURIComponent(bggId)}&stats=1`
-  )
+  const res = await fetch(`/api/bgg?id=${encodeURIComponent(bggId)}`)
   if (!res.ok) throw new Error("Lookup failed")
   const text = await res.text()
   const doc = new DOMParser().parseFromString(text, "text/xml")
