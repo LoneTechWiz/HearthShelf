@@ -3,7 +3,7 @@
 import { auth } from "@/auth"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
-import { createCheckoutRecord, returnBookRecord } from "@/lib/queries/checkouts"
+import { createCheckoutRecord, returnItemRecord } from "@/lib/queries/checkouts"
 
 type ActionState = { error: string } | null
 
@@ -19,10 +19,9 @@ export async function createCheckout(
   const session = await auth()
   if (!session?.user?.id) return { error: "Unauthorized" }
 
-  const bookId = nullIfEmpty(formData.get("bookId"))
-  if (!bookId) return { error: "Book is required" }
+  const lendableItemId = nullIfEmpty(formData.get("lendableItemId"))
+  if (!lendableItemId) return { error: "Item is required" }
 
-  // borrower is either "self" or "contact:<contactId>"
   const borrower = String(formData.get("borrower") ?? "self")
   const contactId = borrower.startsWith("contact:") ? borrower.slice(8) : null
 
@@ -30,18 +29,18 @@ export async function createCheckout(
   const dueDate = dueDateStr ? new Date(dueDateStr) : null
 
   await createCheckoutRecord(session.user.id, {
-    bookId,
+    lendableItemId,
     contactId,
     dueDate,
     notes: nullIfEmpty(formData.get("notes")),
   })
 
   revalidatePath("/checkouts")
-  redirect("/checkouts?flash=Book checked out")
+  redirect("/checkouts?flash=Item checked out")
   return null
 }
 
-export async function returnBook(
+export async function returnItem(
   _prevState: ActionState,
   formData: FormData
 ): Promise<ActionState> {
@@ -49,9 +48,9 @@ export async function returnBook(
   if (!session?.user?.id) return { error: "Unauthorized" }
 
   const checkoutId = String(formData.get("checkoutId") ?? "")
-  await returnBookRecord(checkoutId, session.user.id)
+  await returnItemRecord(checkoutId, session.user.id)
 
   revalidatePath("/checkouts")
-  redirect("/checkouts?flash=Book returned")
+  redirect("/checkouts?flash=Item returned")
   return null
 }
