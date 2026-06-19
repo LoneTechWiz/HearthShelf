@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { auth } from "@/auth"
 import { getActiveCheckouts, getCheckoutHistory } from "@/lib/queries/checkouts"
-import { returnBook } from "@/lib/actions/checkouts"
+import { returnItem } from "@/lib/actions/checkouts"
 import { PageHeader } from "@/components/ui/page-header"
 import { EmptyState } from "@/components/ui/empty-state"
 import { btnPrimary, btnSecondarySm } from "@/components/ui/classes"
@@ -10,6 +10,8 @@ function formatDate(d: Date | null) {
   if (!d) return null
   return new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(d)
 }
+
+const TYPE_LABELS: Record<string, string> = { book: "Book", movie: "Movie", game: "Game" }
 
 const arrowsIcon = (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
@@ -31,29 +33,28 @@ export default async function CheckoutsPage() {
       <section>
         <PageHeader
           title="Active Checkouts"
-          actions={<Link href="/checkouts/new" className={btnPrimary}>Check Out a Book</Link>}
+          actions={<Link href="/checkouts/new" className={btnPrimary}>Check Out an Item</Link>}
         />
 
         {active.length === 0 ? (
           <EmptyState
             icon={arrowsIcon}
             title="Nothing checked out"
-            description="All your books are home on the shelf."
-            action={<Link href="/checkouts/new" className={btnPrimary}>Check Out a Book</Link>}
+            description="All your items are home on the shelf."
+            action={<Link href="/checkouts/new" className={btnPrimary}>Check Out an Item</Link>}
           />
         ) : (
           <ul className="flex flex-col gap-3">
             {active.map((checkout) => (
-              <li
-                key={checkout.id}
-                className="rounded-xl border border-edge bg-surface px-5 py-4 shadow-sm"
-              >
+              <li key={checkout.id} className="rounded-xl border border-edge bg-surface px-5 py-4 shadow-sm">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="font-medium text-ink">{checkout.book.title}</p>
-                    {checkout.book.authors && (
-                      <p className="text-sm text-ink-muted">{checkout.book.authors}</p>
-                    )}
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium text-ink">{checkout.item.title}</p>
+                      <span className="rounded-full bg-surface-raised px-2 py-0.5 text-xs text-ink-muted">
+                        {TYPE_LABELS[checkout.item.type]}
+                      </span>
+                    </div>
                     <p className="mt-1 text-sm text-ink-muted">
                       {checkout.contact
                         ? `Checked out to ${checkout.contact.name}`
@@ -75,11 +76,9 @@ export default async function CheckoutsPage() {
                     )}
                   </div>
                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                  <form action={returnBook.bind(null, null) as any} className="shrink-0">
+                  <form action={returnItem.bind(null, null) as any} className="shrink-0">
                     <input type="hidden" name="checkoutId" value={checkout.id} />
-                    <button type="submit" className={btnSecondarySm}>
-                      Mark Returned
-                    </button>
+                    <button type="submit" className={btnSecondarySm}>Mark Returned</button>
                   </form>
                 </div>
               </li>
@@ -94,7 +93,12 @@ export default async function CheckoutsPage() {
           <ul className="divide-y divide-edge rounded-xl border border-edge bg-surface shadow-sm">
             {history.map((checkout) => (
               <li key={checkout.id} className="px-5 py-4">
-                <p className="font-medium text-ink">{checkout.book.title}</p>
+                <div className="flex items-center gap-2">
+                  <p className="font-medium text-ink">{checkout.item.title}</p>
+                  <span className="rounded-full bg-surface-raised px-2 py-0.5 text-xs text-ink-muted">
+                    {TYPE_LABELS[checkout.item.type]}
+                  </span>
+                </div>
                 <p className="text-sm text-ink-muted">
                   {checkout.contact ? checkout.contact.name : "Yourself"} ·{" "}
                   {formatDate(checkout.checkedOutAt)} → {formatDate(checkout.returnedAt)}
