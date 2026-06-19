@@ -15,11 +15,17 @@ export async function GET(req: NextRequest) {
     : `https://boardgamegeek.com/xmlapi2/search?query=${encodeURIComponent(query!)}&type=boardgame`
 
   const res = await fetch(bggUrl, {
-    headers: { "User-Agent": "HearthShelf/1.0" },
+    headers: {
+      "User-Agent": "Mozilla/5.0 (compatible; HearthShelf/1.0; +https://github.com/LoneTechWiz/HearthShelf)",
+      "Accept": "application/xml,text/xml,*/*",
+      "Accept-Language": "en-US,en;q=0.9",
+    },
   })
 
   if (!res.ok) {
-    return NextResponse.json({ error: "BGG request failed" }, { status: res.status })
+    const body = await res.text().catch(() => "")
+    console.error(`BGG upstream error: ${res.status} ${res.statusText}`, body.slice(0, 200))
+    return NextResponse.json({ error: "BGG request failed", upstream: res.status }, { status: res.status })
   }
 
   const xml = await res.text()
