@@ -5,6 +5,6 @@ export { db }
 
 export async function truncateAll() {
   await db.execute(
-    sql`TRUNCATE TABLE "checkout","book","contact","session","account","verificationToken","user" RESTART IDENTITY CASCADE`
+    sql`TRUNCATE TABLE "checkout","lendableItem","movie","game","book","contact","session","account","verificationToken","user" RESTART IDENTITY CASCADE`
   )
 }
