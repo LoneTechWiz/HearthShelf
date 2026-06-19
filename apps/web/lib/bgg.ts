@@ -1,3 +1,5 @@
+"use client"
+
 export type GameSuggestion = {
   bggId: string
   title: string
@@ -13,8 +15,6 @@ export type GameDetail = {
   genre: string | null
   description: string | null
 }
-
-"use client"
 
 export async function searchGamesByTitle(title: string): Promise<GameSuggestion[]> {
   const res = await fetch(
