@@ -140,24 +140,28 @@ export async function importMovies(
       description: values.description ?? null,
     }
 
-    const existing = await findMovieMatch(userId, { title })
-    if (existing) {
-      await updateMovieRecord(existing.id, userId, {
-        title,
-        director: data.director ?? existing.director,
-        year: data.year ?? existing.year,
-        posterUrl: data.posterUrl ?? existing.posterUrl,
-        format: data.format ?? existing.format,
-        genre: data.genre ?? existing.genre,
-        runtime: data.runtime ?? existing.runtime,
-        description: data.description ?? existing.description,
-      })
-      updated++
-      importedIds.push(existing.id)
-    } else {
-      const id = await createMovieRecordReturningId(userId, data)
-      created++
-      importedIds.push(id)
+    try {
+      const existing = await findMovieMatch(userId, { title })
+      if (existing) {
+        await updateMovieRecord(existing.id, userId, {
+          title,
+          director: data.director ?? existing.director,
+          year: data.year ?? existing.year,
+          posterUrl: data.posterUrl ?? existing.posterUrl,
+          format: data.format ?? existing.format,
+          genre: data.genre ?? existing.genre,
+          runtime: data.runtime ?? existing.runtime,
+          description: data.description ?? existing.description,
+        })
+        updated++
+        importedIds.push(existing.id)
+      } else {
+        const id = await createMovieRecordReturningId(userId, data)
+        created++
+        importedIds.push(id)
+      }
+    } catch {
+      skipped.push({ line, reason: "Database error" })
     }
   }
 
@@ -187,7 +191,9 @@ export async function bulkUpdateMovies(
 
   let rows: BulkEditRow[]
   try {
-    rows = JSON.parse(String(formData.get("rows") ?? "[]"))
+    const parsed = JSON.parse(String(formData.get("rows") ?? "[]"))
+    if (!Array.isArray(parsed)) return { error: "Invalid data" }
+    rows = parsed
   } catch {
     return { error: "Invalid data" }
   }
