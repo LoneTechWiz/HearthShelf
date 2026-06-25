@@ -1,10 +1,13 @@
 import { db } from "@/lib/db"
-import { books, checkouts } from "@/lib/db/schema"
+import { books, lendableItems, checkouts } from "@/lib/db/schema"
 import { and, desc, eq, inArray, isNull, sql } from "drizzle-orm"
 
 export type BookRow = typeof books.$inferSelect
 
-export type BookWithAvailability = BookRow & { isCheckedOut: boolean }
+export type BookWithAvailability = BookRow & {
+  isCheckedOut: boolean
+  lendableItemId: string | null
+}
 
 export async function getBooksForUser(userId: string): Promise<BookWithAvailability[]> {
   const rows = await db
@@ -16,13 +19,19 @@ export async function getBooksForUser(userId: string): Promise<BookWithAvailabil
       authors: books.authors,
       description: books.description,
       coverUrl: books.coverUrl,
+      genre: books.genre,
       createdAt: books.createdAt,
+      lendableItemId: lendableItems.id,
       activeCheckoutId: checkouts.id,
     })
     .from(books)
     .leftJoin(
+      lendableItems,
+      and(eq(lendableItems.type, "book"), eq(lendableItems.refId, books.id))
+    )
+    .leftJoin(
       checkouts,
-      and(eq(checkouts.bookId, books.id), isNull(checkouts.returnedAt))
+      and(eq(checkouts.lendableItemId, lendableItems.id), isNull(checkouts.returnedAt))
     )
     .where(eq(books.userId, userId))
     .orderBy(desc(books.createdAt))
@@ -46,13 +55,19 @@ export async function getBookById(
       authors: books.authors,
       description: books.description,
       coverUrl: books.coverUrl,
+      genre: books.genre,
       createdAt: books.createdAt,
+      lendableItemId: lendableItems.id,
       activeCheckoutId: checkouts.id,
     })
     .from(books)
     .leftJoin(
+      lendableItems,
+      and(eq(lendableItems.type, "book"), eq(lendableItems.refId, books.id))
+    )
+    .leftJoin(
       checkouts,
-      and(eq(checkouts.bookId, books.id), isNull(checkouts.returnedAt))
+      and(eq(checkouts.lendableItemId, lendableItems.id), isNull(checkouts.returnedAt))
     )
     .where(and(eq(books.id, id), eq(books.userId, userId)))
     .limit(1)
@@ -64,15 +79,58 @@ export async function getBookById(
 
 export async function createBookRecord(
   userId: string,
-  data: { title: string; authors: string | null; isbn: string | null; description: string | null; coverUrl: string | null }
+  data: {
+    title: string
+    authors: string | null
+    isbn: string | null
+    description: string | null
+    coverUrl: string | null
+    genre?: string | null
+  }
 ): Promise<void> {
-  await db.insert(books).values({ userId, ...data })
+  await db.transaction(async (tx) => {
+    const [book] = await tx
+      .insert(books)
+      .values({ userId, ...data })
+      .returning({ id: books.id })
+    await tx.insert(lendableItems).values({ userId, type: "book", refId: book.id })
+  })
+}
+
+export async function createBookRecordReturningId(
+  userId: string,
+  data: {
+    title: string
+    authors: string | null
+    isbn: string | null
+    description: string | null
+    coverUrl: string | null
+    genre?: string | null
+  }
+): Promise<string> {
+  let bookId = ""
+  await db.transaction(async (tx) => {
+    const [book] = await tx
+      .insert(books)
+      .values({ userId, ...data })
+      .returning({ id: books.id })
+    bookId = book.id
+    await tx.insert(lendableItems).values({ userId, type: "book", refId: book.id })
+  })
+  return bookId
 }
 
 export async function updateBookRecord(
   id: string,
   userId: string,
-  data: { title: string; authors: string | null; isbn: string | null; description: string | null; coverUrl: string | null }
+  data: {
+    title: string
+    authors: string | null
+    isbn: string | null
+    description: string | null
+    coverUrl: string | null
+    genre?: string | null
+  }
 ): Promise<void> {
   await db
     .update(books)
@@ -81,15 +139,18 @@ export async function updateBookRecord(
 }
 
 export async function deleteBookRecord(id: string, userId: string): Promise<void> {
-  await db.delete(books).where(and(eq(books.id, id), eq(books.userId, userId)))
-}
-
-type BookData = {
-  title: string
-  authors: string | null
-  isbn: string | null
-  description: string | null
-  coverUrl: string | null
+  await db.transaction(async (tx) => {
+    await tx
+      .delete(lendableItems)
+      .where(
+        and(
+          eq(lendableItems.type, "book"),
+          eq(lendableItems.refId, id),
+          eq(lendableItems.userId, userId)
+        )
+      )
+    await tx.delete(books).where(and(eq(books.id, id), eq(books.userId, userId)))
+  })
 }
 
 // Finds an existing book for upsert. Matches on ISBN when the row has one;
@@ -121,17 +182,6 @@ export async function findBookMatch(
     )
     .limit(1)
   return rows[0] ?? null
-}
-
-export async function createBookRecordReturningId(
-  userId: string,
-  data: BookData
-): Promise<string> {
-  const [row] = await db
-    .insert(books)
-    .values({ userId, ...data })
-    .returning({ id: books.id })
-  return row.id
 }
 
 export async function getBooksByIds(

@@ -94,6 +94,7 @@ describe("importBooks", () => {
       isbn: "123",
       description: "Existing desc",
       coverUrl: "http://cover",
+      genre: null,
       createdAt: new Date(),
     })
     const { importBooks } = await import("@/lib/actions/books")
