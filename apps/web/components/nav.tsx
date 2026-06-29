@@ -72,7 +72,8 @@ const links = [
   },
 ]
 
-const mobilePrimaryHrefs = new Set(["/dashboard", "/books", "/collections", "/checkouts"])
+const shelfHrefs = new Set(["/books", "/movies", "/games"])
+const mobilePrimaryHrefs = new Set(["/dashboard", "/collections", "/checkouts"])
 
 const moreIcon = (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
@@ -83,20 +84,27 @@ const moreIcon = (
 export function Nav({ user }: { user: NavUser }) {
   const pathname = usePathname()
   const [moreOpen, setMoreOpen] = useState(false)
+  const [shelfOpen, setShelfOpen] = useState(false)
   const primaryLinks = links.filter((link) => mobilePrimaryHrefs.has(link.href))
+  const shelfLinks = links.filter((link) => shelfHrefs.has(link.href))
   const moreLinks = links.filter((link) => !mobilePrimaryHrefs.has(link.href))
+    .filter((link) => !shelfHrefs.has(link.href))
+  const shelfIsActive = shelfLinks.some(({ href }) => pathname === href || pathname.startsWith(href + "/"))
   const moreIsActive = moreLinks.some(({ href }) => pathname === href || pathname.startsWith(href + "/"))
 
   useEffect(() => {
-    if (!moreOpen) return
+    if (!moreOpen && !shelfOpen) return
 
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setMoreOpen(false)
+      if (event.key === "Escape") {
+        setMoreOpen(false)
+        setShelfOpen(false)
+      }
     }
 
     document.addEventListener("keydown", onKeyDown)
     return () => document.removeEventListener("keydown", onKeyDown)
-  }, [moreOpen])
+  }, [moreOpen, shelfOpen])
 
   return (
     <>
@@ -130,27 +138,33 @@ export function Nav({ user }: { user: NavUser }) {
         </div>
       </nav>
 
-      {moreOpen && (
+      {(moreOpen || shelfOpen) && (
         <div className="nav-mobile fixed inset-0 z-40 items-end bg-black/20 px-3 pb-16" role="presentation">
           <button
             type="button"
             aria-label="Close navigation menu"
             className="absolute inset-0"
-            onClick={() => setMoreOpen(false)}
+            onClick={() => {
+              setMoreOpen(false)
+              setShelfOpen(false)
+            }}
           />
           <div
             role="dialog"
-            aria-label="More navigation"
+            aria-label={shelfOpen ? "Shelf navigation" : "More navigation"}
             className="relative w-full rounded-2xl border border-edge bg-surface p-3 shadow-xl"
           >
             <div className="mb-2 grid grid-cols-3 gap-2">
-              {moreLinks.map(({ href, label, icon }) => {
+              {(shelfOpen ? shelfLinks : moreLinks).map(({ href, label, icon }) => {
                 const isActive = pathname === href || pathname.startsWith(href + "/")
                 return (
                   <Link
                     key={href}
                     href={href}
-                    onClick={() => setMoreOpen(false)}
+                    onClick={() => {
+                      setMoreOpen(false)
+                      setShelfOpen(false)
+                    }}
                     aria-current={isActive ? "page" : undefined}
                     className={`flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-xl border border-edge text-sm font-medium transition-colors ${
                       isActive
@@ -164,7 +178,7 @@ export function Nav({ user }: { user: NavUser }) {
                 )
               })}
             </div>
-            <UserMenu user={user} variant="panel" />
+            {moreOpen && <UserMenu user={user} variant="panel" />}
           </div>
         </div>
       )}
@@ -174,7 +188,33 @@ export function Nav({ user }: { user: NavUser }) {
         aria-label="Library tabs"
         className="nav-mobile fixed bottom-0 left-0 right-0 z-50 h-16 border-t border-edge bg-surface px-1"
       >
-        {primaryLinks.map(({ href, label, icon }) => {
+        <Link
+          href="/dashboard"
+          aria-label="Home"
+          aria-current={pathname === "/dashboard" ? "page" : undefined}
+          className={`flex flex-1 flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] font-medium transition-colors ${
+            pathname === "/dashboard" ? "text-accent" : "text-ink-faint"
+          }`}
+        >
+          {links.find((link) => link.href === "/dashboard")?.icon}
+          <span>Home</span>
+        </Link>
+        <button
+          type="button"
+          onClick={() => {
+            setShelfOpen((open) => !open)
+            setMoreOpen(false)
+          }}
+          aria-expanded={shelfOpen}
+          aria-label="Shelf"
+          className={`flex flex-1 flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] font-medium transition-colors ${
+            shelfOpen || shelfIsActive ? "text-accent" : "text-ink-faint"
+          }`}
+        >
+          {links.find((link) => link.href === "/books")?.icon}
+          <span>Shelf</span>
+        </button>
+        {primaryLinks.filter((link) => link.href !== "/dashboard").map(({ href, label, icon }) => {
           const isActive = pathname === href || pathname.startsWith(href + "/")
           return (
             <Link
@@ -193,7 +233,10 @@ export function Nav({ user }: { user: NavUser }) {
         })}
         <button
           type="button"
-          onClick={() => setMoreOpen((open) => !open)}
+          onClick={() => {
+            setMoreOpen((open) => !open)
+            setShelfOpen(false)
+          }}
           aria-expanded={moreOpen}
           aria-label="More"
           className={`flex flex-1 flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] font-medium transition-colors ${

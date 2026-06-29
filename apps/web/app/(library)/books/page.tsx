@@ -12,7 +12,7 @@ export default async function BooksPage() {
   return (
     <div>
       <PageHeader
-        title="My Library"
+        title="My Books"
         subtitle={`${books.length} ${books.length === 1 ? "book" : "books"}`}
         actions={
           <>
