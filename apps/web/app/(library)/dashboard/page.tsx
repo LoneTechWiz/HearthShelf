@@ -19,7 +19,7 @@ const ITEM_HREF: Record<string, string> = {
 const collectionOverview = [
   {
     label: "Books",
-    href: "/shelf",
+    href: "/shelf?type=books",
     addHref: "/books/new",
     importHref: "/books/import",
     icon: (
@@ -30,7 +30,7 @@ const collectionOverview = [
   },
   {
     label: "Movies",
-    href: "/shelf",
+    href: "/shelf?type=movies",
     addHref: "/movies/new",
     importHref: "/movies/import",
     icon: (
@@ -41,7 +41,7 @@ const collectionOverview = [
   },
   {
     label: "Games",
-    href: "/shelf",
+    href: "/shelf?type=games",
     addHref: "/games/new",
     importHref: "/games/import",
     icon: (

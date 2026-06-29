@@ -21,7 +21,7 @@ export default async function GameDetailPage({ params }: { params: Promise<{ id:
   return (
     <div>
       <div className="mb-6">
-        <Link href="/games" className="text-sm text-ink-muted hover:text-ink">← Back to games</Link>
+        <Link href="/shelf?type=games" className="text-sm text-ink-muted hover:text-ink">← Back to shelf</Link>
       </div>
       <div className="rounded-xl border border-edge bg-surface p-6 shadow-sm">
         <div className="mb-4 flex items-start justify-between gap-4">

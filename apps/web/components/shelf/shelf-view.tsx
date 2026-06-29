@@ -22,12 +22,14 @@ export function ShelfView({
   books,
   movies,
   games,
+  initialShelf = "books",
 }: {
   books: BookWithAvailability[]
   movies: MovieWithAvailability[]
   games: GameWithAvailability[]
+  initialShelf?: ShelfType
 }) {
-  const [shelf, setShelf] = useState<ShelfType>("books")
+  const [shelf, setShelf] = useState<ShelfType>(initialShelf)
   const count = shelf === "books" ? books.length : shelf === "movies" ? movies.length : games.length
   const singular = shelf === "books" ? "book" : shelf === "movies" ? "movie" : "game"
   const baseHref = shelf === "books" ? "/books" : shelf === "movies" ? "/movies" : "/games"

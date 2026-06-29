@@ -19,8 +19,8 @@ export default async function BookDetailPage({
   return (
     <div>
       <div className="mb-6">
-        <Link href="/books" className="text-sm text-ink-muted hover:text-ink">
-          ← Back to library
+        <Link href="/shelf?type=books" className="text-sm text-ink-muted hover:text-ink">
+          ← Back to shelf
         </Link>
       </div>
 

@@ -6,8 +6,8 @@ export default function ImportBooksPage() {
   return (
     <div>
       <div className="mb-6">
-        <Link href="/books" className="text-sm text-ink-muted hover:text-ink">
-          ← Back to library
+        <Link href="/shelf?type=books" className="text-sm text-ink-muted hover:text-ink">
+          ← Back to shelf
         </Link>
         <h1 className="mt-2 font-display text-2xl font-semibold text-ink">Import Books</h1>
       </div>

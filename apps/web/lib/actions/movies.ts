@@ -48,8 +48,8 @@ export async function createMovie(
     description: nullIfEmpty(formData.get("description")),
   })
 
-  revalidatePath("/movies")
-  redirect("/movies?flash=Movie added")
+  revalidatePath("/shelf")
+  redirect("/shelf?type=movies&flash=Movie%20added")
   return null
 }
 
@@ -64,8 +64,8 @@ export async function deleteMovie(
   if (!id) return { error: "Missing movie id" }
   await deleteMovieRecord(id, session.user.id)
 
-  revalidatePath("/movies")
-  redirect("/movies?flash=Movie deleted")
+  revalidatePath("/shelf")
+  redirect("/shelf?type=movies&flash=Movie%20deleted")
   return null
 }
 
@@ -93,7 +93,7 @@ export async function updateMovie(
   })
 
   revalidatePath(`/movies/${id}`)
-  revalidatePath("/movies")
+  revalidatePath("/shelf")
   redirect(`/movies/${id}?flash=Movie updated`)
   return null
 }
@@ -165,7 +165,7 @@ export async function importMovies(
     }
   }
 
-  revalidatePath("/movies")
+  revalidatePath("/shelf")
   return { created, updated, skipped, importedIds }
 }
 
@@ -216,6 +216,6 @@ export async function bulkUpdateMovies(
     updated++
   }
 
-  revalidatePath("/movies")
+  revalidatePath("/shelf")
   return { updated }
 }
