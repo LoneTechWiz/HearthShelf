@@ -2,10 +2,103 @@
 
 import { useEffect, useRef, useState } from "react"
 import { BrowserMultiFormatReader, type IScannerControls } from "@zxing/browser"
+import { BarcodeFormat, DecodeHintType } from "@zxing/library"
 
 interface BarcodeScannerProps {
   onDetected: (code: string) => void
   onClose: () => void
+}
+
+type NativeBarcode = { rawValue?: string }
+type NativeBarcodeDetector = {
+  detect: (source: HTMLVideoElement) => Promise<NativeBarcode[]>
+}
+type NativeBarcodeDetectorConstructor = {
+  new (options?: { formats?: string[] }): NativeBarcodeDetector
+  getSupportedFormats?: () => Promise<string[]>
+}
+
+const barcodeFormats = [BarcodeFormat.EAN_13]
+const nativeBarcodeFormats = ["ean_13"]
+
+function createZxingReader() {
+  const hints = new Map<DecodeHintType, unknown>()
+  hints.set(DecodeHintType.POSSIBLE_FORMATS, barcodeFormats)
+  hints.set(DecodeHintType.TRY_HARDER, true)
+
+  return new BrowserMultiFormatReader(hints, {
+    delayBetweenScanAttempts: 150,
+    tryPlayVideoTimeout: 10_000,
+  })
+}
+
+function getRearCameraConstraints(): MediaStreamConstraints {
+  return {
+    video: {
+      facingMode: { ideal: "environment" },
+      width: { ideal: 1920 },
+      height: { ideal: 1080 },
+    },
+    audio: false,
+  }
+}
+
+async function createNativeBarcodeDetector() {
+  const detector = (window as typeof window & {
+    BarcodeDetector?: NativeBarcodeDetectorConstructor
+  }).BarcodeDetector
+  if (!detector) return null
+
+  try {
+    const supportedFormats = detector.getSupportedFormats
+      ? await detector.getSupportedFormats()
+      : nativeBarcodeFormats
+    if (!nativeBarcodeFormats.every((format) => supportedFormats.includes(format))) {
+      return null
+    }
+    return new detector({ formats: nativeBarcodeFormats })
+  } catch {
+    return null
+  }
+}
+
+function startNativeBarcodeScan(
+  detector: NativeBarcodeDetector,
+  video: HTMLVideoElement,
+  onDetected: (code: string) => void
+) {
+  let stopped = false
+  let inFlight = false
+  let timeoutId: ReturnType<typeof setTimeout> | null = null
+
+  async function scan() {
+    if (stopped) return
+
+    if (!inFlight && video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+      inFlight = true
+      try {
+        const [barcode] = await detector.detect(video)
+        const code = barcode?.rawValue
+        if (code) {
+          onDetected(code)
+          return
+        }
+      } catch {
+        // Some Android camera frames are briefly unreadable while autofocus settles.
+      } finally {
+        inFlight = false
+      }
+    }
+
+    timeoutId = setTimeout(scan, 250)
+  }
+
+  scan()
+
+  return () => {
+    stopped = true
+    if (timeoutId) clearTimeout(timeoutId)
+  }
 }
 
 export function BarcodeScanner({ onDetected, onClose }: BarcodeScannerProps) {
@@ -23,40 +116,36 @@ export function BarcodeScanner({ onDetected, onClose }: BarcodeScannerProps) {
     if (!videoRef.current) return
 
     const video = videoRef.current
-    let stream: MediaStream | null = null
     let controls: IScannerControls | null = null
+    let stopNativeScan: (() => void) | null = null
     let cancelled = false
+    let detected = false
+
+    function handleDetected(code: string) {
+      if (cancelled || detected) return
+      detected = true
+      stopNativeScan?.()
+      controls?.stop()
+      video.srcObject = null
+      onDetectedRef.current(code)
+    }
 
     async function start() {
       try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "environment" },
+        const reader = createZxingReader()
+        controls = await reader.decodeFromConstraints(getRearCameraConstraints(), video, (result) => {
+          if (!result) return
+          handleDetected(result.getText())
         })
-        if (cancelled) return
+        if (cancelled) {
+          controls.stop()
+          return
+        }
 
-        video.srcObject = stream
+        const nativeDetector = await createNativeBarcodeDetector()
+        if (cancelled || !nativeDetector) return
 
-        // Wait for the video to confirm it's playing before starting decode.
-        // play() can fire an AbortError even when the video ends up playing fine,
-        // so we resolve on the onplaying event instead of the play() promise.
-        await new Promise<void>((resolve, reject) => {
-          const timeout = setTimeout(() => reject(new Error("timeout")), 10_000)
-          video.onplaying = () => { clearTimeout(timeout); resolve() }
-          video.play().catch((e: DOMException) => {
-            if (e.name !== "AbortError") { clearTimeout(timeout); reject(e) }
-          })
-        })
-        if (cancelled) return
-
-        const reader = new BrowserMultiFormatReader()
-        controls = await reader.decodeFromVideoElement(video, (result) => {
-          if (cancelled || !result) return
-          controls?.stop()
-          stream?.getTracks().forEach((t) => t.stop())
-          video.srcObject = null
-          onDetectedRef.current(result.getText())
-        })
-        if (cancelled) controls.stop()
+        stopNativeScan = startNativeBarcodeScan(nativeDetector, video, handleDetected)
       } catch {
         if (!cancelled) setError("Unable to access camera. Check permissions and try again.")
       }
@@ -66,8 +155,8 @@ export function BarcodeScanner({ onDetected, onClose }: BarcodeScannerProps) {
 
     return () => {
       cancelled = true
+      stopNativeScan?.()
       controls?.stop()
-      stream?.getTracks().forEach((t) => t.stop())
       video.srcObject = null
     }
   }, [])
@@ -101,6 +190,9 @@ export function BarcodeScanner({ onDetected, onClose }: BarcodeScannerProps) {
           />
           <p className="mt-4 text-sm text-white">
             Point the camera at the book&apos;s barcode
+          </p>
+          <p className="mt-1 max-w-md text-center text-xs text-white/75">
+            If it does not scan, move closer until the barcode fills the frame and try landscape.
           </p>
           <button
             type="button"
