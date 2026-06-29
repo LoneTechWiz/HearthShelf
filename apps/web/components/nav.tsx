@@ -17,6 +17,16 @@ const links = [
     ),
   },
   {
+    href: "/shelf",
+    label: "Shelf",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 7.5h15M4.5 12h15M4.5 16.5h15" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 5.25h2.25v4.5H7.5zM11.25 9.75h2.25v4.5h-2.25zM15 14.25h2.25v4.5H15z" />
+      </svg>
+    ),
+  },
+  {
     href: "/books",
     label: "Books",
     icon: (
@@ -72,8 +82,7 @@ const links = [
   },
 ]
 
-const shelfHrefs = new Set(["/books", "/movies", "/games"])
-const mobilePrimaryHrefs = new Set(["/dashboard", "/collections", "/checkouts"])
+const mobilePrimaryHrefs = new Set(["/dashboard", "/shelf", "/collections", "/checkouts"])
 
 const moreIcon = (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
@@ -81,37 +90,23 @@ const moreIcon = (
   </svg>
 )
 
-const shelfIcon = (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 7.5h15M4.5 12h15M4.5 16.5h15" />
-    <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 5.25h2.25v4.5H7.5zM11.25 9.75h2.25v4.5h-2.25zM15 14.25h2.25v4.5H15z" />
-  </svg>
-)
-
 export function Nav({ user }: { user: NavUser }) {
   const pathname = usePathname()
   const [moreOpen, setMoreOpen] = useState(false)
-  const [shelfOpen, setShelfOpen] = useState(false)
   const primaryLinks = links.filter((link) => mobilePrimaryHrefs.has(link.href))
-  const shelfLinks = links.filter((link) => shelfHrefs.has(link.href))
   const moreLinks = links.filter((link) => !mobilePrimaryHrefs.has(link.href))
-    .filter((link) => !shelfHrefs.has(link.href))
-  const shelfIsActive = shelfLinks.some(({ href }) => pathname === href || pathname.startsWith(href + "/"))
   const moreIsActive = moreLinks.some(({ href }) => pathname === href || pathname.startsWith(href + "/"))
 
   useEffect(() => {
-    if (!moreOpen && !shelfOpen) return
+    if (!moreOpen) return
 
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setMoreOpen(false)
-        setShelfOpen(false)
-      }
+      if (event.key === "Escape") setMoreOpen(false)
     }
 
     document.addEventListener("keydown", onKeyDown)
     return () => document.removeEventListener("keydown", onKeyDown)
-  }, [moreOpen, shelfOpen])
+  }, [moreOpen])
 
   return (
     <>
@@ -145,33 +140,27 @@ export function Nav({ user }: { user: NavUser }) {
         </div>
       </nav>
 
-      {(moreOpen || shelfOpen) && (
+      {moreOpen && (
         <div className="nav-mobile fixed inset-0 z-40 items-end bg-black/20 px-3 pb-16" role="presentation">
           <button
             type="button"
             aria-label="Close navigation menu"
             className="absolute inset-0"
-            onClick={() => {
-              setMoreOpen(false)
-              setShelfOpen(false)
-            }}
+            onClick={() => setMoreOpen(false)}
           />
           <div
             role="dialog"
-            aria-label={shelfOpen ? "Shelf navigation" : "More navigation"}
+            aria-label="More navigation"
             className="relative w-full rounded-2xl border border-edge bg-surface p-3 shadow-xl"
           >
             <div className="mb-2 grid grid-cols-3 gap-2">
-              {(shelfOpen ? shelfLinks : moreLinks).map(({ href, label, icon }) => {
+              {moreLinks.map(({ href, label, icon }) => {
                 const isActive = pathname === href || pathname.startsWith(href + "/")
                 return (
                   <Link
                     key={href}
                     href={href}
-                    onClick={() => {
-                      setMoreOpen(false)
-                      setShelfOpen(false)
-                    }}
+                    onClick={() => setMoreOpen(false)}
                     aria-current={isActive ? "page" : undefined}
                     className={`flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-xl border border-edge text-sm font-medium transition-colors ${
                       isActive
@@ -185,7 +174,7 @@ export function Nav({ user }: { user: NavUser }) {
                 )
               })}
             </div>
-            {moreOpen && <UserMenu user={user} variant="panel" />}
+            <UserMenu user={user} variant="panel" />
           </div>
         </div>
       )}
@@ -206,21 +195,6 @@ export function Nav({ user }: { user: NavUser }) {
           {links.find((link) => link.href === "/dashboard")?.icon}
           <span>Home</span>
         </Link>
-        <button
-          type="button"
-          onClick={() => {
-            setShelfOpen((open) => !open)
-            setMoreOpen(false)
-          }}
-          aria-expanded={shelfOpen}
-          aria-label="Shelf"
-          className={`flex flex-1 flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] font-medium transition-colors ${
-            shelfOpen || shelfIsActive ? "text-accent" : "text-ink-faint"
-          }`}
-        >
-          {shelfIcon}
-          <span>Shelf</span>
-        </button>
         {primaryLinks.filter((link) => link.href !== "/dashboard").map(({ href, label, icon }) => {
           const isActive = pathname === href || pathname.startsWith(href + "/")
           return (
@@ -242,7 +216,6 @@ export function Nav({ user }: { user: NavUser }) {
           type="button"
           onClick={() => {
             setMoreOpen((open) => !open)
-            setShelfOpen(false)
           }}
           aria-expanded={moreOpen}
           aria-label="More"
