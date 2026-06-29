@@ -83,7 +83,8 @@ const moreIcon = (
 
 const shelfIcon = (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 6.75h15M4.5 12h15M4.5 17.25h15M7.5 4.5v4.5M12 4.5v4.5M16.5 4.5v4.5M9.75 9.75v4.5M14.25 9.75v4.5M7.5 15v4.5M12 15v4.5M16.5 15v4.5" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 7.5h15M4.5 12h15M4.5 16.5h15" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 5.25h2.25v4.5H7.5zM11.25 9.75h2.25v4.5h-2.25zM15 14.25h2.25v4.5H15z" />
   </svg>
 )
 

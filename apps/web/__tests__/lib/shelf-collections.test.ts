@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest"
-import { buildAuthorCollections, buildSeriesCollections, type CollectionBook } from "@/lib/book-collections"
+import {
+  buildBookAuthorCollections,
+  buildBookSeriesCollections,
+  buildMovieDirectorCollections,
+  buildGameCategoryCollections,
+  type CollectionBook,
+  type CollectionMovie,
+  type CollectionGame,
+} from "@/lib/shelf-collections"
 
 const baseBook = {
   userId: "user-1",
@@ -23,7 +31,7 @@ function book(overrides: Partial<CollectionBook> & Pick<CollectionBook, "id" | "
 
 describe("book collections", () => {
   it("does not count duplicate copies toward series completion", () => {
-    const collections = buildSeriesCollections([
+    const collections = buildBookSeriesCollections([
       book({
         id: "copy-1",
         title: "The Fellowship of the Ring",
@@ -55,11 +63,11 @@ describe("book collections", () => {
     expect(collections).toHaveLength(1)
     expect(collections[0].ownedCount).toBe(2)
     expect(collections[0].totalCount).toBe(3)
-    expect(collections[0].books[0].copyCount).toBe(2)
+    expect(collections[0].items[0].copyCount).toBe(2)
   })
 
   it("does not count duplicate copies toward author totals", () => {
-    const collections = buildAuthorCollections([
+    const collections = buildBookAuthorCollections([
       book({ id: "copy-1", title: "Dune", authors: "Frank Herbert" }),
       book({ id: "copy-2", title: "Dune", authors: "Frank Herbert" }),
       book({ id: "book-2", title: "Dune Messiah", authors: "Frank Herbert" }),
@@ -67,6 +75,32 @@ describe("book collections", () => {
 
     expect(collections).toHaveLength(1)
     expect(collections[0].ownedCount).toBe(2)
-    expect(collections[0].books[0].copyCount).toBe(2)
+    expect(collections[0].items[0].copyCount).toBe(2)
+  })
+
+  it("groups movies by director", () => {
+    const movies: CollectionMovie[] = [
+      { id: "m1", title: "Inception", director: "Christopher Nolan", year: 2010, posterUrl: null, genre: "Sci-Fi", format: null },
+      { id: "m2", title: "Interstellar", director: "Christopher Nolan", year: 2014, posterUrl: null, genre: "Sci-Fi", format: null },
+    ]
+
+    const collections = buildMovieDirectorCollections(movies)
+
+    expect(collections).toHaveLength(1)
+    expect(collections[0].name).toBe("Christopher Nolan")
+    expect(collections[0].ownedCount).toBe(2)
+  })
+
+  it("groups games by category", () => {
+    const games: CollectionGame[] = [
+      { id: "g1", title: "Catan", coverUrl: null, genre: "Strategy", minPlayers: 3, maxPlayers: 4, ageRating: null },
+      { id: "g2", title: "Ticket to Ride", coverUrl: null, genre: "Strategy", minPlayers: 2, maxPlayers: 5, ageRating: null },
+    ]
+
+    const collections = buildGameCategoryCollections(games)
+
+    expect(collections).toHaveLength(1)
+    expect(collections[0].name).toBe("Strategy")
+    expect(collections[0].ownedCount).toBe(2)
   })
 })
