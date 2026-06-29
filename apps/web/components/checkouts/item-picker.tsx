@@ -20,14 +20,15 @@ interface ItemPickerProps {
 }
 
 export function ItemPicker({ books, movies, games, defaultLendableItemId, defaultType }: ItemPickerProps) {
-  const [activeType, setActiveType] = useState<ItemType>(defaultType ?? "book")
-  const [query, setQuery] = useState("")
-  const [open, setOpen] = useState(false)
-  const [selected, setSelected] = useState<LendableItem | null>(() => {
+  const initialSelected = (() => {
     if (!defaultLendableItemId) return null
     const allItems = [...books, ...movies, ...games]
     return allItems.find((i) => i.lendableItemId === defaultLendableItemId) ?? null
-  })
+  })()
+  const [activeType, setActiveType] = useState<ItemType>(defaultType ?? "book")
+  const [query, setQuery] = useState(initialSelected?.title ?? "")
+  const [open, setOpen] = useState(false)
+  const [selected, setSelected] = useState<LendableItem | null>(initialSelected)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const itemLists: Record<ItemType, LendableItem[]> = { book: books, movie: movies, game: games }

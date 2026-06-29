@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest"
+import { eq } from "drizzle-orm"
 import {
   createCheckoutRecord,
+  ensureLendableItemsForUser,
   getActiveCheckouts,
   getCheckoutHistory,
   returnItemRecord,
@@ -9,7 +11,7 @@ import { createBookRecordReturningId, getBooksForUser } from "@/lib/queries/book
 import { createMovieRecordReturningId, getMoviesForUser } from "@/lib/queries/movies"
 import { createGameRecordReturningId, getGamesForUser } from "@/lib/queries/games"
 import { createContactRecord, getContactsForUser } from "@/lib/queries/contacts"
-import { users } from "@/lib/db/schema"
+import { books, lendableItems, users } from "@/lib/db/schema"
 import { db, truncateAll } from "../helpers"
 
 const USER_ID = "itest-user"
@@ -97,5 +99,34 @@ describe("checkout queries", () => {
     const li = await bookLendableItemId("Dune")
     await createCheckoutRecord(USER_ID, { lendableItemId: li, contactId: null, dueDate: null, notes: null })
     expect(await getActiveCheckouts("other")).toHaveLength(0)
+  })
+
+  it("creates missing lendable items for existing books", async () => {
+    await db.insert(books).values({
+      id: "legacy-book",
+      userId: USER_ID,
+      title: "Legacy Book",
+    })
+
+    expect(
+      await db.select().from(lendableItems).where(eq(lendableItems.refId, "legacy-book"))
+    ).toHaveLength(0)
+
+    await ensureLendableItemsForUser(USER_ID)
+
+    const rows = await db
+      .select()
+      .from(lendableItems)
+      .where(eq(lendableItems.refId, "legacy-book"))
+    expect(rows).toHaveLength(1)
+    expect(rows[0]).toMatchObject({
+      userId: USER_ID,
+      type: "book",
+      refId: "legacy-book",
+    })
+
+    const [book] = await getBooksForUser(USER_ID)
+    expect(book.lendableItemId).toBe(rows[0].id)
+    expect(book.isCheckedOut).toBe(false)
   })
 })

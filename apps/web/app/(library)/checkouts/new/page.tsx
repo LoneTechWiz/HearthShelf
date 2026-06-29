@@ -4,17 +4,20 @@ import { getBooksForUser } from "@/lib/queries/books"
 import { getMoviesForUser } from "@/lib/queries/movies"
 import { getGamesForUser } from "@/lib/queries/games"
 import { getContactsForUser } from "@/lib/queries/contacts"
+import { ensureLendableItemsForUser } from "@/lib/queries/checkouts"
 import { createCheckout } from "@/lib/actions/checkouts"
 import { CheckoutForm } from "@/components/checkouts/checkout-form"
 
 export default async function NewCheckoutPage({
   searchParams,
 }: {
-  searchParams: Promise<{ lendableItemId?: string; type?: string }>
+  searchParams: Promise<{ lendableItemId?: string; bookId?: string; type?: string }>
 }) {
-  const { lendableItemId, type } = await searchParams
+  const { lendableItemId, bookId, type } = await searchParams
   const session = await auth()
   const userId = session!.user!.id!
+
+  await ensureLendableItemsForUser(userId)
 
   const [books, movies, games, contacts] = await Promise.all([
     getBooksForUser(userId),
@@ -40,7 +43,23 @@ export default async function NewCheckoutPage({
     }))
 
   const totalAvailable = availableBooks.length + availableMovies.length + availableGames.length
-  const defaultType = (["book", "movie", "game"] as const).includes(type as "book") ? (type as "book" | "movie" | "game") : "book"
+  const legacyBookLendableItemId = bookId
+    ? availableBooks.find((book) => books.find((b) => b.id === bookId)?.lendableItemId === book.lendableItemId)?.lendableItemId
+    : undefined
+  const defaultLendableItemId = lendableItemId ?? legacyBookLendableItemId
+  const inferredType = availableBooks.some((item) => item.lendableItemId === defaultLendableItemId)
+    ? "book"
+    : availableMovies.some((item) => item.lendableItemId === defaultLendableItemId)
+      ? "movie"
+      : availableGames.some((item) => item.lendableItemId === defaultLendableItemId)
+        ? "game"
+        : undefined
+  const defaultType = (["book", "movie", "game"] as const).includes(type as "book")
+    ? (type as "book" | "movie" | "game")
+    : inferredType ?? "book"
+  const dueDate = new Date()
+  dueDate.setDate(dueDate.getDate() + 14)
+  const defaultDueDate = dueDate.toISOString().slice(0, 10)
 
   return (
     <div>
@@ -61,8 +80,9 @@ export default async function NewCheckoutPage({
           movies={availableMovies}
           games={availableGames}
           contacts={contacts}
-          defaultLendableItemId={lendableItemId}
+          defaultLendableItemId={defaultLendableItemId}
           defaultType={defaultType}
+          defaultDueDate={defaultDueDate}
         />
       )}
     </div>

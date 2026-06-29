@@ -22,9 +22,10 @@ interface CheckoutFormProps {
   contacts: Pick<ContactRow, "id" | "name">[]
   defaultLendableItemId?: string
   defaultType?: "book" | "movie" | "game"
+  defaultDueDate?: string
 }
 
-export function CheckoutForm({ action, books, movies, games, contacts, defaultLendableItemId, defaultType }: CheckoutFormProps) {
+export function CheckoutForm({ action, books, movies, games, contacts, defaultLendableItemId, defaultType, defaultDueDate }: CheckoutFormProps) {
   const [state, formAction, isPending] = useActionState(action, null)
 
   return (
@@ -62,7 +63,7 @@ export function CheckoutForm({ action, books, movies, games, contacts, defaultLe
 
       <div className="flex flex-col gap-1">
         <label className={labelClass} htmlFor="dueDate">Due date</label>
-        <input id="dueDate" name="dueDate" type="date" className={inputClass} />
+        <input id="dueDate" name="dueDate" type="date" defaultValue={defaultDueDate} className={inputClass} />
       </div>
 
       <div className="flex flex-col gap-1">
