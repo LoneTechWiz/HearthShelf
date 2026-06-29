@@ -83,6 +83,7 @@ const links = [
 ]
 
 const mobilePrimaryHrefs = new Set(["/dashboard", "/shelf", "/collections", "/checkouts"])
+const hiddenNavHrefs = new Set(["/books", "/movies", "/games"])
 
 const moreIcon = (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
@@ -94,7 +95,8 @@ export function Nav({ user }: { user: NavUser }) {
   const pathname = usePathname()
   const [moreOpen, setMoreOpen] = useState(false)
   const primaryLinks = links.filter((link) => mobilePrimaryHrefs.has(link.href))
-  const moreLinks = links.filter((link) => !mobilePrimaryHrefs.has(link.href))
+  const visibleLinks = links.filter((link) => !hiddenNavHrefs.has(link.href))
+  const moreLinks = visibleLinks.filter((link) => !mobilePrimaryHrefs.has(link.href))
   const moreIsActive = moreLinks.some(({ href }) => pathname === href || pathname.startsWith(href + "/"))
 
   useEffect(() => {
@@ -118,7 +120,7 @@ export function Nav({ user }: { user: NavUser }) {
         <div className="mb-6 px-2">
           <Wordmark />
         </div>
-        {links.map(({ href, label }) => {
+        {visibleLinks.map(({ href, label }) => {
           const isActive = pathname === href || pathname.startsWith(href + "/")
           return (
             <Link

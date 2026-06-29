@@ -19,7 +19,7 @@ const ITEM_HREF: Record<string, string> = {
 const collectionOverview = [
   {
     label: "Books",
-    href: "/books",
+    href: "/shelf",
     addHref: "/books/new",
     importHref: "/books/import",
     icon: (
@@ -30,7 +30,7 @@ const collectionOverview = [
   },
   {
     label: "Movies",
-    href: "/movies",
+    href: "/shelf",
     addHref: "/movies/new",
     importHref: "/movies/import",
     icon: (
@@ -41,7 +41,7 @@ const collectionOverview = [
   },
   {
     label: "Games",
-    href: "/games",
+    href: "/shelf",
     addHref: "/games/new",
     importHref: "/games/import",
     icon: (
@@ -98,9 +98,7 @@ export default async function DashboardPage() {
   }
 
   const cards = [
-    { label: "Books", value: stats.totalBooks, href: "/books" },
-    { label: "Movies", value: stats.totalMovies, href: "/movies" },
-    { label: "Games", value: stats.totalGames, href: "/games" },
+    { label: "Shelf", value: totalItems, href: "/shelf" },
     { label: "Checked out", value: stats.checkedOutNow, href: "/checkouts" },
     { label: "Overdue", value: stats.overdue, href: "/checkouts", alert: stats.overdue > 0 },
     { label: "Contacts", value: stats.totalContacts, href: "/contacts" },
