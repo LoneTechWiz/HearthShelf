@@ -29,6 +29,13 @@ export default async function BookDetailPage({
           <div>
             <h1 className="font-display text-2xl font-semibold text-ink">{book.title}</h1>
             {book.authors && <p className="mt-1 text-ink-muted">{book.authors}</p>}
+            {book.seriesName && (
+              <p className="mt-1 text-sm text-ink-muted">
+                {book.seriesName}
+                {book.seriesPosition ? ` #${book.seriesPosition}` : ""}
+                {book.seriesTotal ? ` of ${book.seriesTotal}` : ""}
+              </p>
+            )}
             {book.isbn && (
               <p className="mt-1 text-xs text-ink-faint">ISBN: {book.isbn}</p>
             )}

@@ -18,6 +18,9 @@ export default function ImportBooksPage() {
           { name: "title", required: true, example: "Dune" },
           { name: "authors", example: "Frank Herbert" },
           { name: "isbn", example: "9780441013593" },
+          { name: "seriesName", example: "Dune" },
+          { name: "seriesPosition", example: "1" },
+          { name: "seriesTotal", example: "6" },
           { name: "description" },
           { name: "coverUrl" },
         ]}

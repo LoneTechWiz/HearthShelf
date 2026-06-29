@@ -14,9 +14,6 @@ out/
 .expo/
 dist/
 
-# drizzle migrations (generated, not authored)
-apps/web/drizzle/
-
 # production
 build
 

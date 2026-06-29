@@ -20,7 +20,7 @@ function Avatar({ user, className }: { user: NavUser; className: string }) {
   )
 }
 
-export function UserMenu({ user, variant }: { user: NavUser; variant: "sidebar" | "tab" }) {
+export function UserMenu({ user, variant }: { user: NavUser; variant: "sidebar" | "tab" | "panel" }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -74,6 +74,31 @@ export function UserMenu({ user, variant }: { user: NavUser; variant: "sidebar" 
       </div>
     </div>
   )
+
+  if (variant === "panel") {
+    return (
+      <div className="rounded-xl border border-edge bg-surface p-2">
+        <div className="flex items-center gap-2.5 border-b border-edge px-2 pb-3 pt-1">
+          <Avatar user={user} className="h-8 w-8 shrink-0" />
+          <span className="min-w-0">
+            <span className="block truncate text-sm font-medium text-ink">{user.name ?? "Account"}</span>
+            {user.email && <span className="block truncate text-xs text-ink-muted">{user.email}</span>}
+          </span>
+        </div>
+        <div className="pt-1">
+          <ThemeToggle variant="sidebar" />
+          <form action={signOutAction}>
+            <button
+              type="submit"
+              className="w-full rounded-md px-3 py-2 text-left text-sm font-medium text-ink-muted hover:bg-surface-raised hover:text-ink"
+            >
+              Sign out
+            </button>
+          </form>
+        </div>
+      </div>
+    )
+  }
 
   if (variant === "sidebar") {
     return (

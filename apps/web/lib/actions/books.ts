@@ -20,6 +20,13 @@ function nullIfEmpty(val: FormDataEntryValue | null): string | null {
   return String(val).trim()
 }
 
+function optionalPositiveInt(val: FormDataEntryValue | null): number | null {
+  const text = nullIfEmpty(val)
+  if (!text) return null
+  const parsed = Number.parseInt(text, 10)
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : null
+}
+
 export async function createBook(
   _prevState: ActionState,
   formData: FormData
@@ -34,6 +41,9 @@ export async function createBook(
     title,
     authors: nullIfEmpty(formData.get("authors")),
     isbn: nullIfEmpty(formData.get("isbn")),
+    seriesName: nullIfEmpty(formData.get("seriesName")),
+    seriesPosition: optionalPositiveInt(formData.get("seriesPosition")),
+    seriesTotal: optionalPositiveInt(formData.get("seriesTotal")),
     description: nullIfEmpty(formData.get("description")),
     coverUrl: nullIfEmpty(formData.get("coverUrl")),
   })
@@ -75,6 +85,9 @@ export async function updateBook(
     title,
     authors: nullIfEmpty(formData.get("authors")),
     isbn: nullIfEmpty(formData.get("isbn")),
+    seriesName: nullIfEmpty(formData.get("seriesName")),
+    seriesPosition: optionalPositiveInt(formData.get("seriesPosition")),
+    seriesTotal: optionalPositiveInt(formData.get("seriesTotal")),
     description: nullIfEmpty(formData.get("description")),
     coverUrl: nullIfEmpty(formData.get("coverUrl")),
   })
@@ -85,7 +98,16 @@ export async function updateBook(
   return null
 }
 
-const BOOK_COLUMNS = ["title", "authors", "isbn", "description", "coverUrl"] as const
+const BOOK_COLUMNS = [
+  "title",
+  "authors",
+  "isbn",
+  "seriesName",
+  "seriesPosition",
+  "seriesTotal",
+  "description",
+  "coverUrl",
+] as const
 
 export async function importBooks(
   _prevState: ImportResult | null,
@@ -118,6 +140,9 @@ export async function importBooks(
       title,
       authors: values.authors,
       isbn: values.isbn,
+      seriesName: values.seriesName,
+      seriesPosition: optionalPositiveInt(values.seriesPosition),
+      seriesTotal: optionalPositiveInt(values.seriesTotal),
       description: values.description,
       coverUrl: values.coverUrl,
     }
@@ -128,6 +153,9 @@ export async function importBooks(
         title,
         authors: data.authors ?? existing.authors,
         isbn: data.isbn ?? existing.isbn,
+        seriesName: data.seriesName ?? existing.seriesName,
+        seriesPosition: data.seriesPosition ?? existing.seriesPosition,
+        seriesTotal: data.seriesTotal ?? existing.seriesTotal,
         description: data.description ?? existing.description,
         coverUrl: data.coverUrl ?? existing.coverUrl,
       })
@@ -149,6 +177,9 @@ type BulkEditRow = {
   title: string
   authors: string
   isbn: string
+  seriesName: string
+  seriesPosition: string
+  seriesTotal: string
   description: string
   coverUrl: string
 }
@@ -175,6 +206,9 @@ export async function bulkUpdateBooks(
       title: row.title.trim(),
       authors: nullIfEmpty(row.authors),
       isbn: nullIfEmpty(row.isbn),
+      seriesName: nullIfEmpty(row.seriesName),
+      seriesPosition: optionalPositiveInt(row.seriesPosition),
+      seriesTotal: optionalPositiveInt(row.seriesTotal),
       description: nullIfEmpty(row.description),
       coverUrl: nullIfEmpty(row.coverUrl),
     })

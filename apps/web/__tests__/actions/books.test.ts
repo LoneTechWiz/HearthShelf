@@ -43,11 +43,17 @@ describe("createBook", () => {
     fd.set("title", "Dune")
     fd.set("authors", "Frank Herbert")
     fd.set("isbn", "9780441013593")
+    fd.set("seriesName", "Dune")
+    fd.set("seriesPosition", "1")
+    fd.set("seriesTotal", "6")
     const result = await createBook(null, fd)
     expect(createBookRecord).toHaveBeenCalledWith("u1", {
       title: "Dune",
       authors: "Frank Herbert",
       isbn: "9780441013593",
+      seriesName: "Dune",
+      seriesPosition: 1,
+      seriesTotal: 6,
       description: null,
       coverUrl: null,
     })
@@ -137,6 +143,9 @@ describe("updateBook", () => {
       title: "Updated Title",
       authors: "Author",
       isbn: null,
+      seriesName: null,
+      seriesPosition: null,
+      seriesTotal: null,
       description: null,
       coverUrl: null,
     })
