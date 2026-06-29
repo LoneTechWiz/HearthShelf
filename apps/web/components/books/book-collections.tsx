@@ -109,7 +109,7 @@ export function BookCollections({
   return (
     <>
       <div className="mb-4 flex rounded-lg border border-edge bg-surface p-0.5 sm:w-fit" role="group" aria-label="Collection view">
-        {(["series", "authors"] as const).map((nextView) => (
+        {(["authors", "series"] as const).map((nextView) => (
           <button
             key={nextView}
             type="button"
