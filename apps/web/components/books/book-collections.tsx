@@ -103,7 +103,7 @@ export function BookCollections({
   authorCollections: AuthorCollection[]
   seriesCollections: SeriesCollection[]
 }) {
-  const [view, setView] = useState<"series" | "authors">("series")
+  const [view, setView] = useState<"series" | "authors">("authors")
   const isSeries = view === "series"
 
   return (
