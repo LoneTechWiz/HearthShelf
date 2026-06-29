@@ -50,7 +50,7 @@ describe("createGame", () => {
       genre: null,
       description: null,
     })
-    expect(redirect).toHaveBeenCalledWith("/games?flash=Game added")
+    expect(redirect).toHaveBeenCalledWith("/shelf?type=games&flash=Game%20added")
   })
 })
 
@@ -72,6 +72,6 @@ describe("deleteGame", () => {
     fd.set("id", "g1")
     await deleteGame(null, fd)
     expect(deleteGameRecord).toHaveBeenCalledWith("g1", "u1")
-    expect(redirect).toHaveBeenCalledWith("/games?flash=Game deleted")
+    expect(redirect).toHaveBeenCalledWith("/shelf?type=games&flash=Game%20deleted")
   })
 })

@@ -53,8 +53,8 @@ describe("createMovie", () => {
       runtime: null,
       description: null,
     })
-    expect(revalidatePath).toHaveBeenCalledWith("/movies")
-    expect(redirect).toHaveBeenCalledWith("/movies?flash=Movie added")
+    expect(revalidatePath).toHaveBeenCalledWith("/shelf")
+    expect(redirect).toHaveBeenCalledWith("/shelf?type=movies&flash=Movie%20added")
   })
 })
 
@@ -84,7 +84,7 @@ describe("deleteMovie", () => {
     fd.set("id", "m1")
     await deleteMovie(null, fd)
     expect(deleteMovieRecord).toHaveBeenCalledWith("m1", "u1")
-    expect(redirect).toHaveBeenCalledWith("/movies?flash=Movie deleted")
+    expect(redirect).toHaveBeenCalledWith("/shelf?type=movies&flash=Movie%20deleted")
   })
 })
 
