@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Wordmark } from "@/components/brand"
@@ -71,8 +72,31 @@ const links = [
   },
 ]
 
+const mobilePrimaryHrefs = new Set(["/dashboard", "/books", "/collections", "/checkouts"])
+
+const moreIcon = (
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+  </svg>
+)
+
 export function Nav({ user }: { user: NavUser }) {
   const pathname = usePathname()
+  const [moreOpen, setMoreOpen] = useState(false)
+  const primaryLinks = links.filter((link) => mobilePrimaryHrefs.has(link.href))
+  const moreLinks = links.filter((link) => !mobilePrimaryHrefs.has(link.href))
+  const moreIsActive = moreLinks.some(({ href }) => pathname === href || pathname.startsWith(href + "/"))
+
+  useEffect(() => {
+    if (!moreOpen) return
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setMoreOpen(false)
+    }
+
+    document.addEventListener("keydown", onKeyDown)
+    return () => document.removeEventListener("keydown", onKeyDown)
+  }, [moreOpen])
 
   return (
     <>
@@ -106,12 +130,51 @@ export function Nav({ user }: { user: NavUser }) {
         </div>
       </nav>
 
-      {/* Mobile bottom tab bar — icon-only to fit the library sections */}
+      {moreOpen && (
+        <div className="nav-mobile fixed inset-0 z-40 items-end bg-black/20 px-3 pb-16" role="presentation">
+          <button
+            type="button"
+            aria-label="Close navigation menu"
+            className="absolute inset-0"
+            onClick={() => setMoreOpen(false)}
+          />
+          <div
+            role="dialog"
+            aria-label="More navigation"
+            className="relative w-full rounded-2xl border border-edge bg-surface p-3 shadow-xl"
+          >
+            <div className="mb-2 grid grid-cols-3 gap-2">
+              {moreLinks.map(({ href, label, icon }) => {
+                const isActive = pathname === href || pathname.startsWith(href + "/")
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={() => setMoreOpen(false)}
+                    aria-current={isActive ? "page" : undefined}
+                    className={`flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-xl border border-edge text-sm font-medium transition-colors ${
+                      isActive
+                        ? "bg-accent-soft text-accent"
+                        : "bg-surface text-ink-muted hover:bg-surface-raised hover:text-ink"
+                    }`}
+                  >
+                    {icon}
+                    {label}
+                  </Link>
+                )
+              })}
+            </div>
+            <UserMenu user={user} variant="panel" />
+          </div>
+        </div>
+      )}
+
+      {/* Mobile bottom tab bar */}
       <nav
         aria-label="Library tabs"
-        className="nav-mobile fixed bottom-0 left-0 right-0 z-50 h-14 border-t border-edge bg-surface"
+        className="nav-mobile fixed bottom-0 left-0 right-0 z-50 h-16 border-t border-edge bg-surface px-1"
       >
-        {links.map(({ href, label, icon }) => {
+        {primaryLinks.map(({ href, label, icon }) => {
           const isActive = pathname === href || pathname.startsWith(href + "/")
           return (
             <Link
@@ -119,15 +182,27 @@ export function Nav({ user }: { user: NavUser }) {
               href={href}
               aria-label={label}
               aria-current={isActive ? "page" : undefined}
-              className={`flex flex-1 flex-col items-center justify-center transition-colors ${
+              className={`flex flex-1 flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] font-medium transition-colors ${
                 isActive ? "text-accent" : "text-ink-faint"
               }`}
             >
               {icon}
+              <span>{label}</span>
             </Link>
           )
         })}
-        <UserMenu user={user} variant="tab" />
+        <button
+          type="button"
+          onClick={() => setMoreOpen((open) => !open)}
+          aria-expanded={moreOpen}
+          aria-label="More"
+          className={`flex flex-1 flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] font-medium transition-colors ${
+            moreOpen || moreIsActive ? "text-accent" : "text-ink-faint"
+          }`}
+        >
+          {moreIcon}
+          <span>More</span>
+        </button>
       </nav>
     </>
   )
