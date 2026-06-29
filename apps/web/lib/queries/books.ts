@@ -17,6 +17,9 @@ export async function getBooksForUser(userId: string): Promise<BookWithAvailabil
       isbn: books.isbn,
       title: books.title,
       authors: books.authors,
+      seriesName: books.seriesName,
+      seriesPosition: books.seriesPosition,
+      seriesTotal: books.seriesTotal,
       description: books.description,
       coverUrl: books.coverUrl,
       genre: books.genre,
@@ -53,6 +56,9 @@ export async function getBookById(
       isbn: books.isbn,
       title: books.title,
       authors: books.authors,
+      seriesName: books.seriesName,
+      seriesPosition: books.seriesPosition,
+      seriesTotal: books.seriesTotal,
       description: books.description,
       coverUrl: books.coverUrl,
       genre: books.genre,
@@ -83,6 +89,9 @@ export async function createBookRecord(
     title: string
     authors: string | null
     isbn: string | null
+    seriesName?: string | null
+    seriesPosition?: number | null
+    seriesTotal?: number | null
     description: string | null
     coverUrl: string | null
     genre?: string | null
@@ -103,6 +112,9 @@ export async function createBookRecordReturningId(
     title: string
     authors: string | null
     isbn: string | null
+    seriesName?: string | null
+    seriesPosition?: number | null
+    seriesTotal?: number | null
     description: string | null
     coverUrl: string | null
     genre?: string | null
@@ -127,6 +139,9 @@ export async function updateBookRecord(
     title: string
     authors: string | null
     isbn: string | null
+    seriesName?: string | null
+    seriesPosition?: number | null
+    seriesTotal?: number | null
     description: string | null
     coverUrl: string | null
     genre?: string | null

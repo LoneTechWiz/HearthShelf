@@ -10,6 +10,9 @@ type Row = {
   title: string
   authors: string
   isbn: string
+  seriesName: string
+  seriesPosition: string
+  seriesTotal: string
   description: string
   coverUrl: string
 }
@@ -20,6 +23,9 @@ interface BookBulkEditProps {
     title: string
     authors: string | null
     isbn: string | null
+    seriesName: string | null
+    seriesPosition: number | null
+    seriesTotal: number | null
     description: string | null
     coverUrl: string | null
   }>
@@ -33,6 +39,9 @@ export function BookBulkEdit({ books }: BookBulkEditProps) {
       title: b.title,
       authors: b.authors ?? "",
       isbn: b.isbn ?? "",
+      seriesName: b.seriesName ?? "",
+      seriesPosition: String(b.seriesPosition ?? ""),
+      seriesTotal: String(b.seriesTotal ?? ""),
       description: b.description ?? "",
       coverUrl: b.coverUrl ?? "",
     }))
@@ -83,6 +92,9 @@ export function BookBulkEdit({ books }: BookBulkEditProps) {
               <th className="px-2 py-1.5 font-medium">Title</th>
               <th className="w-36 px-2 py-1.5 font-medium">Author(s)</th>
               <th className="w-28 px-2 py-1.5 font-medium">ISBN</th>
+              <th className="w-40 px-2 py-1.5 font-medium">Series</th>
+              <th className="w-20 px-2 py-1.5 font-medium">Book #</th>
+              <th className="w-24 px-2 py-1.5 font-medium">Total</th>
               <th className="w-80 px-2 py-1.5 font-medium">Description</th>
               <th className="px-2 py-1.5 font-medium">Cover URL</th>
               <th className="px-2 py-1.5 font-medium" />
@@ -112,6 +124,34 @@ export function BookBulkEdit({ books }: BookBulkEditProps) {
                     aria-label={`ISBN for ${row.id}`}
                     value={row.isbn}
                     onChange={(e) => update(row.id, "isbn", e.target.value)}
+                    className={`${inputClass} w-full`}
+                  />
+                </td>
+                <td className="w-40 px-2 py-1.5">
+                  <input
+                    aria-label={`Series for ${row.id}`}
+                    value={row.seriesName}
+                    onChange={(e) => update(row.id, "seriesName", e.target.value)}
+                    className={`${inputClass} w-full`}
+                  />
+                </td>
+                <td className="w-20 px-2 py-1.5">
+                  <input
+                    aria-label={`Series position for ${row.id}`}
+                    type="number"
+                    min={1}
+                    value={row.seriesPosition}
+                    onChange={(e) => update(row.id, "seriesPosition", e.target.value)}
+                    className={`${inputClass} w-full`}
+                  />
+                </td>
+                <td className="w-24 px-2 py-1.5">
+                  <input
+                    aria-label={`Series total for ${row.id}`}
+                    type="number"
+                    min={1}
+                    value={row.seriesTotal}
+                    onChange={(e) => update(row.id, "seriesTotal", e.target.value)}
                     className={`${inputClass} w-full`}
                   />
                 </td>

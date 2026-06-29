@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1781851551657,
+      "tag": "0000_add_movies_games_lendable_items",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1782745205538,
+      "tag": "0001_add_book_series_fields",
+      "breakpoints": true
+    }
+  ]
+}

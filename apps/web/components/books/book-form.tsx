@@ -21,6 +21,9 @@ interface BookFormProps {
     title?: string
     authors?: string | null
     isbn?: string | null
+    seriesName?: string | null
+    seriesPosition?: number | null
+    seriesTotal?: number | null
     description?: string | null
     coverUrl?: string | null
   }
@@ -34,6 +37,9 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
   const [searchQuery, setSearchQuery] = useState(defaultValues?.title ?? "")
   const [authors, setAuthors] = useState(defaultValues?.authors ?? "")
   const [isbn, setIsbn] = useState(defaultValues?.isbn ?? "")
+  const [seriesName, setSeriesName] = useState(defaultValues?.seriesName ?? "")
+  const [seriesPosition, setSeriesPosition] = useState(String(defaultValues?.seriesPosition ?? ""))
+  const [seriesTotal, setSeriesTotal] = useState(String(defaultValues?.seriesTotal ?? ""))
   const [description, setDescription] = useState(defaultValues?.description ?? "")
   const [coverUrl, setCoverUrl] = useState(defaultValues?.coverUrl ?? "")
 
@@ -167,6 +173,50 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
           onChange={(e) => setAuthors(e.target.value)}
           className={inputClass}
         />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <label className={labelClass} htmlFor="seriesName">
+          Series
+        </label>
+        <input
+          id="seriesName"
+          name="seriesName"
+          value={seriesName}
+          onChange={(e) => setSeriesName(e.target.value)}
+          className={inputClass}
+        />
+      </div>
+
+      <div className="flex gap-4">
+        <div className="flex flex-1 flex-col gap-1">
+          <label className={labelClass} htmlFor="seriesPosition">
+            Book #
+          </label>
+          <input
+            id="seriesPosition"
+            name="seriesPosition"
+            type="number"
+            min={1}
+            value={seriesPosition}
+            onChange={(e) => setSeriesPosition(e.target.value)}
+            className={inputClass}
+          />
+        </div>
+        <div className="flex flex-1 flex-col gap-1">
+          <label className={labelClass} htmlFor="seriesTotal">
+            Series total
+          </label>
+          <input
+            id="seriesTotal"
+            name="seriesTotal"
+            type="number"
+            min={1}
+            value={seriesTotal}
+            onChange={(e) => setSeriesTotal(e.target.value)}
+            className={inputClass}
+          />
+        </div>
       </div>
 
       <div className="flex flex-col gap-1">

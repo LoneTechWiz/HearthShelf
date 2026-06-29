@@ -60,6 +60,9 @@ describe("importBooks", () => {
       title: "Dune",
       authors: null,
       isbn: "123",
+      seriesName: null,
+      seriesPosition: null,
+      seriesTotal: null,
       description: null,
       coverUrl: null,
     })
@@ -92,6 +95,9 @@ describe("importBooks", () => {
       title: "Dune",
       authors: "Frank Herbert",
       isbn: "123",
+      seriesName: null,
+      seriesPosition: null,
+      seriesTotal: null,
       description: "Existing desc",
       coverUrl: "http://cover",
       genre: null,
@@ -103,6 +109,9 @@ describe("importBooks", () => {
       title: "Dune",
       authors: "Frank Herbert",
       isbn: "123",
+      seriesName: null,
+      seriesPosition: null,
+      seriesTotal: null,
       description: "Existing desc",
       coverUrl: "http://cover",
     })
@@ -128,7 +137,17 @@ describe("bulkUpdateBooks", () => {
     fd.set(
       "rows",
       JSON.stringify([
-        { id: "b1", title: "Dune", authors: "Frank Herbert", isbn: "", description: "", coverUrl: "" },
+        {
+          id: "b1",
+          title: "Dune",
+          authors: "Frank Herbert",
+          isbn: "",
+          seriesName: "",
+          seriesPosition: "",
+          seriesTotal: "",
+          description: "",
+          coverUrl: "",
+        },
       ])
     )
     const result = await bulkUpdateBooks(null, fd)
@@ -136,6 +155,9 @@ describe("bulkUpdateBooks", () => {
       title: "Dune",
       authors: "Frank Herbert",
       isbn: null,
+      seriesName: null,
+      seriesPosition: null,
+      seriesTotal: null,
       description: null,
       coverUrl: null,
     })
