@@ -15,7 +15,7 @@ export default async function MovieDetailPage({ params }: { params: Promise<{ id
   return (
     <div>
       <div className="mb-6">
-        <Link href="/movies" className="text-sm text-ink-muted hover:text-ink">← Back to movies</Link>
+        <Link href="/shelf?type=movies" className="text-sm text-ink-muted hover:text-ink">← Back to shelf</Link>
       </div>
       <div className="rounded-xl border border-edge bg-surface p-6 shadow-sm">
         <div className="mb-4 flex items-start justify-between gap-4">

@@ -48,8 +48,8 @@ export async function createBook(
     coverUrl: nullIfEmpty(formData.get("coverUrl")),
   })
 
-  revalidatePath("/books")
-  redirect("/books?flash=Book added")
+  revalidatePath("/shelf")
+  redirect("/shelf?type=books&flash=Book%20added")
   return null
 }
 
@@ -64,8 +64,8 @@ export async function deleteBook(
   if (!id) return { error: "Missing book id" }
   await deleteBookRecord(id, session.user.id)
 
-  revalidatePath("/books")
-  redirect("/books?flash=Book deleted")
+  revalidatePath("/shelf")
+  redirect("/shelf?type=books&flash=Book%20deleted")
   return null
 }
 
@@ -93,7 +93,7 @@ export async function updateBook(
   })
 
   revalidatePath(`/books/${id}`)
-  revalidatePath("/books")
+  revalidatePath("/shelf")
   redirect(`/books/${id}?flash=Book updated`)
   return null
 }
@@ -168,7 +168,7 @@ export async function importBooks(
     }
   }
 
-  revalidatePath("/books")
+  revalidatePath("/shelf")
   return { created, updated, skipped, importedIds }
 }
 
@@ -215,6 +215,6 @@ export async function bulkUpdateBooks(
     updated++
   }
 
-  revalidatePath("/books")
+  revalidatePath("/shelf")
   return { updated }
 }

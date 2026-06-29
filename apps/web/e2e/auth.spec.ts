@@ -14,8 +14,9 @@ test("unauthenticated visitor is redirected from /books to home", async ({
 
 test("seeded session can view the library", async ({ page }) => {
   await page.goto("/books")
-  await expect(page).toHaveURL(/\/books$/)
+  await expect(page).toHaveURL(/\/shelf\?type=books$/)
   await expect(
-    page.locator(".nav-desktop").getByRole("link", { name: "Books" })
+    page.locator(".nav-desktop").getByRole("link", { name: "Shelf" })
   ).toBeVisible()
+  await expect(page.getByRole("button", { name: "Books" })).toHaveAttribute("aria-pressed", "true")
 })

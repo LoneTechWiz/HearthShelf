@@ -47,8 +47,8 @@ export async function createGame(
     description: nullIfEmpty(formData.get("description")),
   })
 
-  revalidatePath("/games")
-  redirect("/games?flash=Game added")
+  revalidatePath("/shelf")
+  redirect("/shelf?type=games&flash=Game%20added")
   return null
 }
 
@@ -63,8 +63,8 @@ export async function deleteGame(
   if (!id) return { error: "Missing game id" }
   await deleteGameRecord(id, session.user.id)
 
-  revalidatePath("/games")
-  redirect("/games?flash=Game deleted")
+  revalidatePath("/shelf")
+  redirect("/shelf?type=games&flash=Game%20deleted")
   return null
 }
 
@@ -91,7 +91,7 @@ export async function updateGame(
   })
 
   revalidatePath(`/games/${id}`)
-  revalidatePath("/games")
+  revalidatePath("/shelf")
   redirect(`/games/${id}?flash=Game updated`)
   return null
 }
@@ -161,7 +161,7 @@ export async function importGames(
     }
   }
 
-  revalidatePath("/games")
+  revalidatePath("/shelf")
   return { created, updated, skipped, importedIds }
 }
 
@@ -214,6 +214,6 @@ export async function bulkUpdateGames(
     }
   }
 
-  revalidatePath("/games")
+  revalidatePath("/shelf")
   return { updated }
 }

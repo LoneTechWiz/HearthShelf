@@ -17,6 +17,16 @@ const links = [
     ),
   },
   {
+    href: "/shelf",
+    label: "Shelf",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 7.5h15M4.5 12h15M4.5 16.5h15" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 5.25h2.25v4.5H7.5zM11.25 9.75h2.25v4.5h-2.25zM15 14.25h2.25v4.5H15z" />
+      </svg>
+    ),
+  },
+  {
     href: "/books",
     label: "Books",
     icon: (
@@ -72,7 +82,8 @@ const links = [
   },
 ]
 
-const mobilePrimaryHrefs = new Set(["/dashboard", "/books", "/collections", "/checkouts"])
+const mobilePrimaryHrefs = new Set(["/dashboard", "/shelf", "/collections", "/checkouts"])
+const hiddenNavHrefs = new Set(["/books", "/movies", "/games"])
 
 const moreIcon = (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
@@ -84,7 +95,8 @@ export function Nav({ user }: { user: NavUser }) {
   const pathname = usePathname()
   const [moreOpen, setMoreOpen] = useState(false)
   const primaryLinks = links.filter((link) => mobilePrimaryHrefs.has(link.href))
-  const moreLinks = links.filter((link) => !mobilePrimaryHrefs.has(link.href))
+  const visibleLinks = links.filter((link) => !hiddenNavHrefs.has(link.href))
+  const moreLinks = visibleLinks.filter((link) => !mobilePrimaryHrefs.has(link.href))
   const moreIsActive = moreLinks.some(({ href }) => pathname === href || pathname.startsWith(href + "/"))
 
   useEffect(() => {
@@ -108,7 +120,7 @@ export function Nav({ user }: { user: NavUser }) {
         <div className="mb-6 px-2">
           <Wordmark />
         </div>
-        {links.map(({ href, label }) => {
+        {visibleLinks.map(({ href, label }) => {
           const isActive = pathname === href || pathname.startsWith(href + "/")
           return (
             <Link
@@ -174,7 +186,18 @@ export function Nav({ user }: { user: NavUser }) {
         aria-label="Library tabs"
         className="nav-mobile fixed bottom-0 left-0 right-0 z-50 h-16 border-t border-edge bg-surface px-1"
       >
-        {primaryLinks.map(({ href, label, icon }) => {
+        <Link
+          href="/dashboard"
+          aria-label="Home"
+          aria-current={pathname === "/dashboard" ? "page" : undefined}
+          className={`flex flex-1 flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] font-medium transition-colors ${
+            pathname === "/dashboard" ? "text-accent" : "text-ink-faint"
+          }`}
+        >
+          {links.find((link) => link.href === "/dashboard")?.icon}
+          <span>Home</span>
+        </Link>
+        {primaryLinks.filter((link) => link.href !== "/dashboard").map(({ href, label, icon }) => {
           const isActive = pathname === href || pathname.startsWith(href + "/")
           return (
             <Link
@@ -193,7 +216,9 @@ export function Nav({ user }: { user: NavUser }) {
         })}
         <button
           type="button"
-          onClick={() => setMoreOpen((open) => !open)}
+          onClick={() => {
+            setMoreOpen((open) => !open)
+          }}
           aria-expanded={moreOpen}
           aria-label="More"
           className={`flex flex-1 flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] font-medium transition-colors ${

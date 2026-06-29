@@ -19,7 +19,7 @@ export default async function BulkEditMoviesPage({
   return (
     <div>
       <div className="mb-6">
-        <Link href="/movies" className="text-sm text-ink-muted hover:text-ink">← Back to movies</Link>
+        <Link href="/shelf?type=movies" className="text-sm text-ink-muted hover:text-ink">← Back to shelf</Link>
         <h1 className="mt-2 font-display text-2xl font-semibold text-ink">
           {idList ? "Review imported movies" : "Bulk edit"}
         </h1>
