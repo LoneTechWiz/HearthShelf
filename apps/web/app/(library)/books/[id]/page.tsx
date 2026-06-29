@@ -44,9 +44,9 @@ export default async function BookDetailPage({
             </div>
           </div>
           <div className="flex gap-2 shrink-0">
-            {!book.isCheckedOut && (
+            {!book.isCheckedOut && book.lendableItemId && (
               <Link
-                href={`/checkouts/new?bookId=${book.id}`}
+                href={`/checkouts/new?lendableItemId=${book.lendableItemId}&type=book`}
                 className={btnPrimary}
               >
                 Check Out

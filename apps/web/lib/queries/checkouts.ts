@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
 import { books, movies, games, lendableItems, checkouts, contacts } from "@/lib/db/schema"
-import { and, desc, eq, isNull, isNotNull } from "drizzle-orm"
+import { and, desc, eq, isNull, isNotNull, sql } from "drizzle-orm"
 
 export type CheckoutItem = {
   id: string       // refId (book/movie/game id)
@@ -120,6 +120,49 @@ export async function createCheckoutRecord(
   data: { lendableItemId: string; contactId: string | null; dueDate: Date | null; notes: string | null }
 ): Promise<void> {
   await db.insert(checkouts).values({ userId, ...data })
+}
+
+export async function ensureLendableItemsForUser(userId: string): Promise<void> {
+  await db.transaction(async (tx) => {
+    await tx.execute(sql`
+      INSERT INTO "lendableItem" ("id", "userId", "type", "refId")
+      SELECT gen_random_uuid()::text, ${userId}, 'book', "book"."id"
+      FROM "book"
+      WHERE "book"."userId" = ${userId}
+        AND NOT EXISTS (
+          SELECT 1
+          FROM "lendableItem"
+          WHERE "lendableItem"."type" = 'book'
+            AND "lendableItem"."refId" = "book"."id"
+        )
+    `)
+
+    await tx.execute(sql`
+      INSERT INTO "lendableItem" ("id", "userId", "type", "refId")
+      SELECT gen_random_uuid()::text, ${userId}, 'movie', "movie"."id"
+      FROM "movie"
+      WHERE "movie"."userId" = ${userId}
+        AND NOT EXISTS (
+          SELECT 1
+          FROM "lendableItem"
+          WHERE "lendableItem"."type" = 'movie'
+            AND "lendableItem"."refId" = "movie"."id"
+        )
+    `)
+
+    await tx.execute(sql`
+      INSERT INTO "lendableItem" ("id", "userId", "type", "refId")
+      SELECT gen_random_uuid()::text, ${userId}, 'game', "game"."id"
+      FROM "game"
+      WHERE "game"."userId" = ${userId}
+        AND NOT EXISTS (
+          SELECT 1
+          FROM "lendableItem"
+          WHERE "lendableItem"."type" = 'game'
+            AND "lendableItem"."refId" = "game"."id"
+        )
+    `)
+  })
 }
 
 export async function returnItemRecord(checkoutId: string, userId: string): Promise<void> {

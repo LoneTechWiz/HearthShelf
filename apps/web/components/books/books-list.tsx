@@ -108,9 +108,9 @@ export function BooksList({ books }: { books: BookWithAvailability[] }) {
                 </Link>
                 <div className="ml-4 flex shrink-0 items-center gap-2">
                   <StatusBadge status={book.isCheckedOut ? "checked-out" : "available"} />
-                  {!book.isCheckedOut && (
+                  {!book.isCheckedOut && book.lendableItemId && (
                     <Link
-                      href={`/checkouts/new?bookId=${book.id}`}
+                      href={`/checkouts/new?lendableItemId=${book.lendableItemId}&type=book`}
                       className={btnSecondarySm}
                     >
                       Check Out
