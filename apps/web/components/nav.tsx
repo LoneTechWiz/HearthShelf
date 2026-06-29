@@ -81,6 +81,12 @@ const moreIcon = (
   </svg>
 )
 
+const shelfIcon = (
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 6.75h15M4.5 12h15M4.5 17.25h15M7.5 4.5v4.5M12 4.5v4.5M16.5 4.5v4.5M9.75 9.75v4.5M14.25 9.75v4.5M7.5 15v4.5M12 15v4.5M16.5 15v4.5" />
+  </svg>
+)
+
 export function Nav({ user }: { user: NavUser }) {
   const pathname = usePathname()
   const [moreOpen, setMoreOpen] = useState(false)
@@ -211,7 +217,7 @@ export function Nav({ user }: { user: NavUser }) {
             shelfOpen || shelfIsActive ? "text-accent" : "text-ink-faint"
           }`}
         >
-          {links.find((link) => link.href === "/books")?.icon}
+          {shelfIcon}
           <span>Shelf</span>
         </button>
         {primaryLinks.filter((link) => link.href !== "/dashboard").map(({ href, label, icon }) => {
