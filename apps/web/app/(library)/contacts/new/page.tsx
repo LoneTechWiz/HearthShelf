@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { ContactForm } from "@/components/contacts/contact-form"
-import { createContact, addUserAsContact } from "@/lib/actions/contacts"
+import { createContact, requestUserContact } from "@/lib/actions/contacts"
 import { auth } from "@/auth"
 import { searchUsersByName } from "@/lib/queries/users"
 import { btnPrimary, btnSecondary, inputClass } from "@/components/ui/classes"
@@ -28,7 +28,7 @@ export default async function NewContactPage({
       <section className="max-w-2xl">
         <h2 className="font-display text-lg font-semibold text-ink">Find a user</h2>
         <p className="mt-1 text-sm text-ink-muted">
-          Search by name to add another HearthShelf user to your contacts.
+          Search by name and send a contact request. Their email is only shared if they accept.
         </p>
         <form action="/contacts/new" className="mt-4 flex flex-col gap-2 sm:flex-row">
           <label className="sr-only" htmlFor="user-search">Search users by name</label>
@@ -48,7 +48,7 @@ export default async function NewContactPage({
           <div className="mt-4 rounded-xl border border-edge bg-surface shadow-sm">
             {results.length === 0 ? (
               <p className="px-5 py-6 text-sm text-ink-muted">
-                No users found for "{query}".
+                No users found for &quot;{query}&quot;.
               </p>
             ) : (
               <ul className="divide-y divide-edge">
@@ -56,11 +56,11 @@ export default async function NewContactPage({
                   <li key={user.id} className="flex items-center justify-between gap-4 px-5 py-4">
                     <div className="min-w-0">
                       <p className="truncate font-medium text-ink">{user.name}</p>
-                      <p className="truncate text-sm text-ink-muted">{user.email}</p>
+                      <p className="truncate text-sm text-ink-muted">HearthShelf user</p>
                     </div>
-                    <form action={addUserAsContact}>
+                    <form action={requestUserContact}>
                       <input type="hidden" name="userId" value={user.id} />
-                      <button type="submit" className={btnPrimary}>Add</button>
+                      <button type="submit" className={btnPrimary}>Send request</button>
                     </form>
                   </li>
                 ))}

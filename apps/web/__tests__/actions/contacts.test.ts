@@ -4,12 +4,19 @@ import type { Session } from "next-auth"
 vi.mock("@/auth")
 vi.mock("@/lib/queries/contacts")
 vi.mock("@/lib/queries/users")
+vi.mock("@/lib/queries/contact-requests")
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))
 vi.mock("next/navigation", () => ({ redirect: vi.fn() }))
 
 import { auth } from "@/auth"
 import { createContactRecord, deleteContactRecord, findContactMatch, updateContactRecord } from "@/lib/queries/contacts"
 import { getUserContactCandidate } from "@/lib/queries/users"
+import {
+  createContactRequest,
+  getPendingIncomingContactRequest,
+  getPendingRequestBetweenUsers,
+  updateContactRequestStatus,
+} from "@/lib/queries/contact-requests"
 import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 
@@ -132,15 +139,15 @@ describe("updateContact", () => {
   })
 })
 
-describe("addUserAsContact", () => {
+describe("requestUserContact", () => {
   beforeEach(() => vi.clearAllMocks())
 
   it("redirects when not authenticated", async () => {
     mockedAuth.mockResolvedValue(null)
-    const { addUserAsContact } = await import("@/lib/actions/contacts")
+    const { requestUserContact } = await import("@/lib/actions/contacts")
     const fd = new FormData()
     fd.set("userId", "target")
-    await addUserAsContact(fd)
+    await requestUserContact(fd)
     expect(redirect).toHaveBeenCalledWith("/contacts/new?flash=Unauthorized")
     expect(createContactRecord).not.toHaveBeenCalled()
   })
@@ -148,10 +155,10 @@ describe("addUserAsContact", () => {
   it("redirects when selected user is not found", async () => {
     mockedAuth.mockResolvedValue({ user: { id: "u1" }, expires: "" } as Session)
     vi.mocked(getUserContactCandidate).mockResolvedValue(null)
-    const { addUserAsContact } = await import("@/lib/actions/contacts")
+    const { requestUserContact } = await import("@/lib/actions/contacts")
     const fd = new FormData()
     fd.set("userId", "missing")
-    await addUserAsContact(fd)
+    await requestUserContact(fd)
     expect(getUserContactCandidate).toHaveBeenCalledWith("missing", "u1")
     expect(redirect).toHaveBeenCalledWith("/contacts/new?flash=User%20not%20found")
   })
@@ -164,6 +171,7 @@ describe("addUserAsContact", () => {
       email: "alice@example.com",
       image: null,
     })
+    vi.mocked(getPendingRequestBetweenUsers).mockResolvedValue(null)
     vi.mocked(findContactMatch).mockResolvedValue({
       id: "c1",
       userId: "u1",
@@ -172,15 +180,39 @@ describe("addUserAsContact", () => {
       phone: null,
       createdAt: new Date(),
     })
-    const { addUserAsContact } = await import("@/lib/actions/contacts")
+    const { requestUserContact } = await import("@/lib/actions/contacts")
     const fd = new FormData()
     fd.set("userId", "target")
-    await addUserAsContact(fd)
+    await requestUserContact(fd)
     expect(createContactRecord).not.toHaveBeenCalled()
     expect(redirect).toHaveBeenCalledWith("/contacts/c1?flash=Contact%20already%20exists")
   })
 
-  it("creates contact from selected user and redirects", async () => {
+  it("does not create another request when one is pending", async () => {
+    mockedAuth.mockResolvedValue({ user: { id: "u1" }, expires: "" } as Session)
+    vi.mocked(getUserContactCandidate).mockResolvedValue({
+      id: "target",
+      name: "Alice",
+      email: "alice@example.com",
+      image: null,
+    })
+    vi.mocked(getPendingRequestBetweenUsers).mockResolvedValue({
+      id: "r1",
+      requesterId: "u1",
+      recipientId: "target",
+      status: "pending",
+      createdAt: new Date(),
+      respondedAt: null,
+    })
+    const { requestUserContact } = await import("@/lib/actions/contacts")
+    const fd = new FormData()
+    fd.set("userId", "target")
+    await requestUserContact(fd)
+    expect(createContactRequest).not.toHaveBeenCalled()
+    expect(redirect).toHaveBeenCalledWith("/contacts/new?flash=Request%20already%20pending")
+  })
+
+  it("creates request for selected user and redirects", async () => {
     mockedAuth.mockResolvedValue({ user: { id: "u1" }, expires: "" } as Session)
     vi.mocked(getUserContactCandidate).mockResolvedValue({
       id: "target",
@@ -189,17 +221,72 @@ describe("addUserAsContact", () => {
       image: null,
     })
     vi.mocked(findContactMatch).mockResolvedValue(null)
-    vi.mocked(createContactRecord).mockResolvedValue()
-    const { addUserAsContact } = await import("@/lib/actions/contacts")
+    vi.mocked(getPendingRequestBetweenUsers).mockResolvedValue(null)
+    vi.mocked(createContactRequest).mockResolvedValue()
+    const { requestUserContact } = await import("@/lib/actions/contacts")
     const fd = new FormData()
     fd.set("userId", "target")
-    await addUserAsContact(fd)
+    await requestUserContact(fd)
+    expect(createContactRecord).not.toHaveBeenCalled()
+    expect(createContactRequest).toHaveBeenCalledWith("u1", "target")
+    expect(revalidatePath).toHaveBeenCalledWith("/contacts/new")
+    expect(redirect).toHaveBeenCalledWith("/contacts/new?flash=Request%20sent")
+  })
+})
+
+describe("acceptContactRequest", () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it("creates contacts for both users and accepts the request", async () => {
+    mockedAuth.mockResolvedValue({
+      user: { id: "u1", name: "Owner", email: "owner@example.com" },
+      expires: "",
+    } as Session)
+    vi.mocked(getPendingIncomingContactRequest).mockResolvedValue({
+      id: "r1",
+      createdAt: new Date(),
+      requester: {
+        id: "requester",
+        name: "Alice",
+        email: "alice@example.com",
+        image: null,
+      },
+    })
+    vi.mocked(findContactMatch).mockResolvedValue(null)
+    vi.mocked(createContactRecord).mockResolvedValue()
+    vi.mocked(updateContactRequestStatus).mockResolvedValue()
+    const { acceptContactRequest } = await import("@/lib/actions/contacts")
+    const fd = new FormData()
+    fd.set("requestId", "r1")
+    await acceptContactRequest(fd)
     expect(createContactRecord).toHaveBeenCalledWith("u1", {
       name: "Alice",
       email: "alice@example.com",
       phone: null,
     })
+    expect(createContactRecord).toHaveBeenCalledWith("requester", {
+      name: "Owner",
+      email: "owner@example.com",
+      phone: null,
+    })
+    expect(updateContactRequestStatus).toHaveBeenCalledWith("r1", "u1", "accepted")
     expect(revalidatePath).toHaveBeenCalledWith("/contacts")
-    expect(redirect).toHaveBeenCalledWith("/contacts?flash=Contact%20added")
+    expect(redirect).toHaveBeenCalledWith("/contacts?flash=Contact%20request%20accepted")
+  })
+})
+
+describe("declineContactRequest", () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it("declines the request", async () => {
+    mockedAuth.mockResolvedValue({ user: { id: "u1" }, expires: "" } as Session)
+    vi.mocked(updateContactRequestStatus).mockResolvedValue()
+    const { declineContactRequest } = await import("@/lib/actions/contacts")
+    const fd = new FormData()
+    fd.set("requestId", "r1")
+    await declineContactRequest(fd)
+    expect(updateContactRequestStatus).toHaveBeenCalledWith("r1", "u1", "declined")
+    expect(revalidatePath).toHaveBeenCalledWith("/contacts")
+    expect(redirect).toHaveBeenCalledWith("/contacts?flash=Contact%20request%20declined")
   })
 })

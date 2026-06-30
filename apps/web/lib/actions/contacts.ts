@@ -9,6 +9,12 @@ import {
   findContactMatch,
   updateContactRecord,
 } from "@/lib/queries/contacts"
+import {
+  createContactRequest,
+  getPendingIncomingContactRequest,
+  getPendingRequestBetweenUsers,
+  updateContactRequestStatus,
+} from "@/lib/queries/contact-requests"
 import { getUserContactCandidate } from "@/lib/queries/users"
 import { parseCsv, toRecords } from "@/lib/csv/parse"
 import type { ImportResult, ImportSkip } from "@/lib/csv/types"
@@ -41,7 +47,7 @@ export async function createContact(
   return null
 }
 
-export async function addUserAsContact(formData: FormData): Promise<void> {
+export async function requestUserContact(formData: FormData): Promise<void> {
   const session = await auth()
   if (!session?.user?.id) {
     redirect("/contacts/new?flash=Unauthorized")
@@ -60,6 +66,12 @@ export async function addUserAsContact(formData: FormData): Promise<void> {
     return
   }
 
+  const pendingRequest = await getPendingRequestBetweenUsers(session.user.id, user.id)
+  if (pendingRequest) {
+    redirect("/contacts/new?flash=Request%20already%20pending")
+    return
+  }
+
   const existing = await findContactMatch(session.user.id, {
     name: user.name,
     email: user.email,
@@ -69,14 +81,85 @@ export async function addUserAsContact(formData: FormData): Promise<void> {
     return
   }
 
-  await createContactRecord(session.user.id, {
-    name: user.name,
-    email: user.email,
-    phone: null,
+  await createContactRequest(session.user.id, user.id)
+
+  revalidatePath("/contacts/new")
+  redirect("/contacts/new?flash=Request%20sent")
+}
+
+export async function acceptContactRequest(formData: FormData): Promise<void> {
+  const session = await auth()
+  if (!session?.user?.id) {
+    redirect("/contacts?flash=Unauthorized")
+    return
+  }
+
+  const requestId = String(formData.get("requestId") ?? "")
+  if (!requestId) {
+    redirect("/contacts?flash=Missing%20request")
+    return
+  }
+
+  const request = await getPendingIncomingContactRequest(requestId, session.user.id)
+  if (!request) {
+    redirect("/contacts?flash=Request%20not%20found")
+    return
+  }
+
+  const currentUserName = session.user.name?.trim() || session.user.email
+  const currentUserEmail = session.user.email
+  if (!currentUserName || !currentUserEmail) {
+    redirect("/contacts?flash=Your%20profile%20is%20missing%20contact%20details")
+    return
+  }
+
+  const existingRecipientContact = await findContactMatch(session.user.id, {
+    name: request.requester.name,
+    email: request.requester.email,
   })
+  if (!existingRecipientContact) {
+    await createContactRecord(session.user.id, {
+      name: request.requester.name,
+      email: request.requester.email,
+      phone: null,
+    })
+  }
+
+  const existingRequesterContact = await findContactMatch(request.requester.id, {
+    name: currentUserName,
+    email: currentUserEmail,
+  })
+  if (!existingRequesterContact) {
+    await createContactRecord(request.requester.id, {
+      name: currentUserName,
+      email: currentUserEmail,
+      phone: null,
+    })
+  }
+
+  await updateContactRequestStatus(request.id, session.user.id, "accepted")
 
   revalidatePath("/contacts")
-  redirect("/contacts?flash=Contact%20added")
+  redirect("/contacts?flash=Contact%20request%20accepted")
+}
+
+export async function declineContactRequest(formData: FormData): Promise<void> {
+  const session = await auth()
+  if (!session?.user?.id) {
+    redirect("/contacts?flash=Unauthorized")
+    return
+  }
+
+  const requestId = String(formData.get("requestId") ?? "")
+  if (!requestId) {
+    redirect("/contacts?flash=Missing%20request")
+    return
+  }
+
+  await updateContactRequestStatus(requestId, session.user.id, "declined")
+
+  revalidatePath("/contacts")
+  redirect("/contacts?flash=Contact%20request%20declined")
 }
 
 export async function deleteContact(

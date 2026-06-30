@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest"
 import { createContactRecord } from "@/lib/queries/contacts"
+import { createContactRequest } from "@/lib/queries/contact-requests"
 import { getUserContactCandidate, searchUsersByName } from "@/lib/queries/users"
 import { users } from "@/lib/db/schema"
 import { db, truncateAll } from "../helpers"
@@ -33,6 +34,13 @@ describe("searchUsersByName", () => {
       email: "alice@example.com",
       phone: null,
     })
+
+    const results = await searchUsersByName(USER_ID, "ali")
+    expect(results.map((user) => user.id)).toEqual(["alicia"])
+  })
+
+  it("excludes users with a pending request", async () => {
+    await createContactRequest(USER_ID, "alice")
 
     const results = await searchUsersByName(USER_ID, "ali")
     expect(results.map((user) => user.id)).toEqual(["alicia"])

@@ -147,6 +147,25 @@ export const contacts = pgTable("contact", {
   createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
 })
 
+export const contactRequests = pgTable(
+  "contactRequest",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    requesterId: text("requesterId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    recipientId: text("recipientId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    status: text("status").$type<"pending" | "accepted" | "declined">().notNull().default("pending"),
+    createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+    respondedAt: timestamp("respondedAt", { mode: "date" }),
+  },
+  (t) => [unique().on(t.requesterId, t.recipientId)]
+)
+
 // ── BGG cache tables ───────────────────────────────────────────────────────
 
 export const bggSearchCache = pgTable("bgg_search_cache", {

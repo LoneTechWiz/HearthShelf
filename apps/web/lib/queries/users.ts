@@ -1,8 +1,9 @@
 import { db } from "@/lib/db"
-import { contacts, users } from "@/lib/db/schema"
+import { contactRequests, contacts, users } from "@/lib/db/schema"
 import { and, asc, eq, ne, sql } from "drizzle-orm"
 
-export type UserSearchResult = Pick<typeof users.$inferSelect, "id" | "name" | "email" | "image">
+export type UserSearchResult = Pick<typeof users.$inferSelect, "id" | "name" | "image">
+export type UserContactCandidate = Pick<typeof users.$inferSelect, "id" | "name" | "email" | "image">
 
 function normalizeSearchTerm(term: string) {
   return term.trim().replaceAll("%", "\\%").replaceAll("_", "\\_")
@@ -37,6 +38,15 @@ export async function searchUsersByName(
               lower(${contacts.email}) = lower(${users.email})
               or lower(${contacts.name}) = lower(${users.name})
             )
+        )`,
+        sql`not exists (
+          select 1
+          from ${contactRequests}
+          where ${contactRequests.status} = 'pending'
+            and (
+              (${contactRequests.requesterId} = ${currentUserId} and ${contactRequests.recipientId} = ${users.id})
+              or (${contactRequests.requesterId} = ${users.id} and ${contactRequests.recipientId} = ${currentUserId})
+            )
         )`
       )
     )
@@ -49,7 +59,7 @@ export async function searchUsersByName(
 export async function getUserContactCandidate(
   id: string,
   currentUserId: string
-): Promise<UserSearchResult | null> {
+): Promise<UserContactCandidate | null> {
   const rows = await db
     .select({
       id: users.id,
