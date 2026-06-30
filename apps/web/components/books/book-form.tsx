@@ -7,6 +7,7 @@ import { normalizeIsbn } from "@/lib/isbn"
 import { BookSearchDropdown } from "./book-search-dropdown"
 import { BarcodeScanner } from "./barcode-scanner"
 import { btnPrimary, btnSecondarySm, inputClass, labelClass } from "@/components/ui/classes"
+import { DataAttribution } from "@/components/ui/data-attribution"
 
 type ActionState = { error: string } | null
 type BookFormAction = (
@@ -287,6 +288,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
       >
         {isPending ? "Saving…" : submitLabel}
       </button>
+      <DataAttribution label="Open Library" href="https://openlibrary.org" />
       {showScanner && (
         <BarcodeScanner
           onDetected={handleScanned}

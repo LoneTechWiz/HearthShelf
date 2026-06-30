@@ -4,6 +4,7 @@ import { useActionState, useState, useEffect } from "react"
 import { searchMoviesByTitle, getMovieByImdbId } from "@/lib/omdb"
 import type { MovieSuggestion } from "@/lib/omdb"
 import { btnPrimary, inputClass, labelClass } from "@/components/ui/classes"
+import { DataAttribution } from "@/components/ui/data-attribution"
 
 type ActionState = { error: string } | null
 type MovieFormAction = (prevState: ActionState, formData: FormData) => Promise<ActionState>
@@ -46,7 +47,7 @@ export function MovieForm({ action, defaultValues, submitLabel = "Save" }: Movie
   const [searchError, setSearchError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (searchQuery.length < 2) { setSuggestions([]); setShowDropdown(false); return }
+    if (searchQuery.length < 2) return
     const timer = setTimeout(async () => {
       setIsSearching(true)
       setSearchError(null)
@@ -104,7 +105,15 @@ export function MovieForm({ action, defaultValues, submitLabel = "Save" }: Movie
           name="title"
           required
           value={title}
-          onChange={(e) => { setTitle(e.target.value); setSearchQuery(e.target.value) }}
+          onChange={(e) => {
+            const value = e.target.value
+            setTitle(value)
+            setSearchQuery(value)
+            if (value.length < 2) {
+              setSuggestions([])
+              setShowDropdown(false)
+            }
+          }}
           className={inputClass}
         />
         {searchError && <p className="text-xs text-red-600">{searchError}</p>}
@@ -187,6 +196,7 @@ export function MovieForm({ action, defaultValues, submitLabel = "Save" }: Movie
       <button type="submit" disabled={isPending || isLookingUp} className={`self-start ${btnPrimary}`}>
         {isPending ? "Saving…" : submitLabel}
       </button>
+      <DataAttribution label="OMDb API" href="https://www.omdbapi.com/" />
     </form>
   )
 }

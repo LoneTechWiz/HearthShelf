@@ -4,6 +4,7 @@ import { useActionState, useState, useEffect } from "react"
 import { searchGamesByTitle, getGameByBggId } from "@/lib/bgg"
 import type { GameSuggestion } from "@/lib/bgg"
 import { btnPrimary, inputClass, labelClass } from "@/components/ui/classes"
+import { DataAttribution } from "@/components/ui/data-attribution"
 
 type ActionState = { error: string } | null
 type GameFormAction = (prevState: ActionState, formData: FormData) => Promise<ActionState>
@@ -42,7 +43,7 @@ export function GameForm({ action, defaultValues, submitLabel = "Save" }: GameFo
   const [searchError, setSearchError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (searchQuery.length < 2) { setSuggestions([]); setShowDropdown(false); return }
+    if (searchQuery.length < 2) return
     const timer = setTimeout(async () => {
       setIsSearching(true)
       setSearchError(null)
@@ -69,7 +70,6 @@ export function GameForm({ action, defaultValues, submitLabel = "Save" }: GameFo
     try {
       const detail = await getGameByBggId(suggestion.bggId)
       if (detail) {
-        setCoverUrl(detail.coverUrl ?? "")
         setMinPlayers(String(detail.minPlayers ?? ""))
         setMaxPlayers(String(detail.maxPlayers ?? ""))
         setAgeRating(detail.ageRating ?? "")
@@ -95,7 +95,15 @@ export function GameForm({ action, defaultValues, submitLabel = "Save" }: GameFo
           Title <span className="text-red-500">*</span>
         </label>
         <input id="title" name="title" required value={title}
-          onChange={(e) => { setTitle(e.target.value); setSearchQuery(e.target.value) }}
+          onChange={(e) => {
+            const value = e.target.value
+            setTitle(value)
+            setSearchQuery(value)
+            if (value.length < 2) {
+              setSuggestions([])
+              setShowDropdown(false)
+            }
+          }}
           className={inputClass} />
         {searchError && <p className="text-xs text-red-600">{searchError}</p>}
         {(showDropdown || isSearching) && suggestions.length > 0 && (
@@ -157,6 +165,7 @@ export function GameForm({ action, defaultValues, submitLabel = "Save" }: GameFo
       <button type="submit" disabled={isPending || isLookingUp} className={`self-start ${btnPrimary}`}>
         {isPending ? "Saving…" : submitLabel}
       </button>
+      <DataAttribution label="BoardGameGeek" href="https://boardgamegeek.com" />
     </form>
   )
 }
