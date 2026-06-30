@@ -28,7 +28,7 @@ export default async function NewContactPage({
       <section className="max-w-2xl">
         <h2 className="font-display text-lg font-semibold text-ink">Find a user</h2>
         <p className="mt-1 text-sm text-ink-muted">
-          Search by name and send a contact request. Their email is only shared if they accept.
+          Search by name and send a contact request. Email addresses stay hidden for connected users.
         </p>
         <form action="/contacts/new" className="mt-4 flex flex-col gap-2 sm:flex-row">
           <label className="sr-only" htmlFor="user-search">Search users by name</label>

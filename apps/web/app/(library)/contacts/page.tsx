@@ -84,7 +84,7 @@ export default async function ContactsPage() {
               >
                 <div>
                   <p className="font-medium text-ink">{contact.name}</p>
-                  {contact.email && (
+                  {contact.email && !contact.linkedUserId && (
                     <p className="text-sm text-ink-muted">{contact.email}</p>
                   )}
                 </div>

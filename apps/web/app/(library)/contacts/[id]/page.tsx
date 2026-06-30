@@ -27,7 +27,7 @@ export default async function ContactDetailPage({
         <div className="flex items-start justify-between gap-4">
           <div>
             <h1 className="font-display text-2xl font-semibold text-ink">{contact.name}</h1>
-            {contact.email && (
+            {contact.email && !contact.linkedUserId && (
               <p className="mt-1 text-sm text-ink-muted">{contact.email}</p>
             )}
             {contact.phone && (
