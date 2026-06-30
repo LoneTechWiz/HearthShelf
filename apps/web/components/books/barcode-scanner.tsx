@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { BrowserMultiFormatReader, type IScannerControls } from "@zxing/browser"
+import { BrowserMultiFormatReader } from "@zxing/browser"
 import { BarcodeFormat, DecodeHintType } from "@zxing/library"
 
 interface BarcodeScannerProps {
@@ -11,7 +11,7 @@ interface BarcodeScannerProps {
 
 type NativeBarcode = { rawValue?: string }
 type NativeBarcodeDetector = {
-  detect: (source: HTMLVideoElement) => Promise<NativeBarcode[]>
+  detect: (source: HTMLCanvasElement | HTMLVideoElement) => Promise<NativeBarcode[]>
 }
 type NativeBarcodeDetectorConstructor = {
   new (options?: { formats?: string[] }): NativeBarcodeDetector
@@ -21,8 +21,8 @@ type ScannerVideoConstraints = MediaTrackConstraints & {
   focusMode?: ConstrainDOMString
 }
 
-const barcodeFormats = [BarcodeFormat.EAN_13]
-const nativeBarcodeFormats = ["ean_13"]
+const barcodeFormats = [BarcodeFormat.EAN_13, BarcodeFormat.UPC_A]
+const nativeBarcodeFormats = ["ean_13", "upc_a"]
 
 function createZxingReader() {
   const hints = new Map<DecodeHintType, unknown>()
@@ -80,23 +80,80 @@ async function createNativeBarcodeDetector() {
     const supportedFormats = detector.getSupportedFormats
       ? await detector.getSupportedFormats()
       : nativeBarcodeFormats
-    if (!nativeBarcodeFormats.every((format) => supportedFormats.includes(format))) {
+    const formats = nativeBarcodeFormats.filter((format) => supportedFormats.includes(format))
+    if (formats.length === 0) {
       return null
     }
-    return new detector({ formats: nativeBarcodeFormats })
+    return new detector({ formats })
   } catch {
     return null
   }
 }
 
-function startNativeBarcodeScan(
-  detector: NativeBarcodeDetector,
+function drawVideoFrame(video: HTMLVideoElement, canvas: HTMLCanvasElement) {
+  const width = video.videoWidth
+  const height = video.videoHeight
+  if (width === 0 || height === 0) return false
+
+  if (canvas.width !== width) canvas.width = width
+  if (canvas.height !== height) canvas.height = height
+
+  const context = canvas.getContext("2d", { willReadFrequently: true })
+  if (!context) return false
+
+  context.drawImage(video, 0, 0, width, height)
+  return true
+}
+
+function drawRotatedFrame(source: HTMLCanvasElement, target: HTMLCanvasElement) {
+  if (target.width !== source.height) target.width = source.height
+  if (target.height !== source.width) target.height = source.width
+
+  const context = target.getContext("2d", { willReadFrequently: true })
+  if (!context) return false
+
+  context.save()
+  context.clearRect(0, 0, target.width, target.height)
+  context.translate(target.width, 0)
+  context.rotate(Math.PI / 2)
+  context.drawImage(source, 0, 0)
+  context.restore()
+  return true
+}
+
+async function detectWithNative(
+  detector: NativeBarcodeDetector | null,
+  canvas: HTMLCanvasElement
+) {
+  if (!detector) return null
+
+  try {
+    const [barcode] = await detector.detect(canvas)
+    return barcode?.rawValue ?? null
+  } catch {
+    return null
+  }
+}
+
+function decodeWithZxing(reader: BrowserMultiFormatReader, canvas: HTMLCanvasElement) {
+  try {
+    return reader.decodeFromCanvas(canvas).getText()
+  } catch {
+    return null
+  }
+}
+
+function startFrameBarcodeScan(
+  reader: BrowserMultiFormatReader,
+  detector: NativeBarcodeDetector | null,
   video: HTMLVideoElement,
   onDetected: (code: string) => void
 ) {
   let stopped = false
   let inFlight = false
   let timeoutId: ReturnType<typeof setTimeout> | null = null
+  const frameCanvas = document.createElement("canvas")
+  const rotatedCanvas = document.createElement("canvas")
 
   async function scan() {
     if (stopped) return
@@ -104,8 +161,16 @@ function startNativeBarcodeScan(
     if (!inFlight && video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
       inFlight = true
       try {
-        const [barcode] = await detector.detect(video)
-        const code = barcode?.rawValue
+        const didDraw = drawVideoFrame(video, frameCanvas)
+        const code = didDraw
+          ? await detectWithNative(detector, frameCanvas)
+            ?? decodeWithZxing(reader, frameCanvas)
+            ?? (drawRotatedFrame(frameCanvas, rotatedCanvas)
+              ? await detectWithNative(detector, rotatedCanvas)
+                ?? decodeWithZxing(reader, rotatedCanvas)
+              : null)
+          : null
+
         if (code) {
           onDetected(code)
           return
@@ -143,7 +208,6 @@ export function BarcodeScanner({ onDetected, onClose }: BarcodeScannerProps) {
     if (!videoRef.current) return
 
     const video = videoRef.current
-    let controls: IScannerControls | null = null
     let stopNativeScan: (() => void) | null = null
     let cancelled = false
     let detected = false
@@ -152,7 +216,8 @@ export function BarcodeScanner({ onDetected, onClose }: BarcodeScannerProps) {
       if (cancelled || detected) return
       detected = true
       stopNativeScan?.()
-      controls?.stop()
+      const stream = video.srcObject instanceof MediaStream ? video.srcObject : null
+      if (stream) stopStream(stream)
       video.srcObject = null
       onDetectedRef.current(code)
     }
@@ -160,28 +225,22 @@ export function BarcodeScanner({ onDetected, onClose }: BarcodeScannerProps) {
     async function start() {
       let stream: MediaStream | null = null
       try {
+        const reader = createZxingReader()
         stream = await openRearCamera()
         if (cancelled) {
           stopStream(stream)
           return
         }
 
-        const reader = createZxingReader()
-        controls = await reader.decodeFromStream(stream, video, (result) => {
-          if (!result) return
-          handleDetected(result.getText())
-        })
-        if (cancelled) {
-          controls.stop()
-          return
-        }
+        video.srcObject = stream
+        await video.play()
 
         const nativeDetector = await createNativeBarcodeDetector()
-        if (cancelled || !nativeDetector) return
+        if (cancelled) return
 
-        stopNativeScan = startNativeBarcodeScan(nativeDetector, video, handleDetected)
+        stopNativeScan = startFrameBarcodeScan(reader, nativeDetector, video, handleDetected)
       } catch {
-        if (!controls && stream) stopStream(stream)
+        if (stream) stopStream(stream)
         if (!cancelled) setError("Unable to access camera. Check permissions and try again.")
       }
     }
@@ -191,7 +250,8 @@ export function BarcodeScanner({ onDetected, onClose }: BarcodeScannerProps) {
     return () => {
       cancelled = true
       stopNativeScan?.()
-      controls?.stop()
+      const stream = video.srcObject instanceof MediaStream ? video.srcObject : null
+      if (stream) stopStream(stream)
       video.srcObject = null
     }
   }, [])
