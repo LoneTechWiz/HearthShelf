@@ -3,14 +3,19 @@ import { notFound } from "next/navigation"
 import { auth } from "@/auth"
 import { getGameById } from "@/lib/queries/games"
 import { DeleteGameForm } from "@/components/games/delete-game-form"
+import { ItemReviewPanel } from "@/components/reviews/item-review-panel"
 import { StatusBadge } from "@/components/ui/status-badge"
 import { btnPrimary, btnSecondary } from "@/components/ui/classes"
+import { getReviewForItem } from "@/lib/queries/reviews"
 
 export default async function GameDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const session = await auth()
   const game = await getGameById(id, session!.user!.id!)
   if (!game) notFound()
+  const review = game.lendableItemId
+    ? await getReviewForItem(game.lendableItemId, session!.user!.id!)
+    : null
 
   const players = game.minPlayers === game.maxPlayers
     ? `${game.minPlayers} players`
@@ -53,6 +58,13 @@ export default async function GameDetailPage({ params }: { params: Promise<{ id:
           // eslint-disable-next-line @next/next/no-img-element
           <img src={game.coverUrl} alt={`Cover of ${game.title}`}
             className="mt-4 h-48 w-auto rounded-lg object-cover border border-edge" />
+        )}
+        {game.lendableItemId && (
+          <ItemReviewPanel
+            lendableItemId={game.lendableItemId}
+            returnPath={`/games/${game.id}`}
+            review={review}
+          />
         )}
       </div>
     </div>

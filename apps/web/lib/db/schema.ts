@@ -203,3 +203,23 @@ export const checkouts = pgTable("checkout", {
   returnedAt: timestamp("returnedAt", { mode: "date" }),
   notes: text("notes"),
 })
+
+export const itemReviews = pgTable(
+  "itemReview",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    lendableItemId: text("lendableItemId")
+      .notNull()
+      .references(() => lendableItems.id, { onDelete: "cascade" }),
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    rating: integer("rating").notNull(),
+    body: text("body"),
+    createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt", { mode: "date" }).defaultNow().notNull(),
+  },
+  (t) => [unique().on(t.userId, t.lendableItemId)]
+)
