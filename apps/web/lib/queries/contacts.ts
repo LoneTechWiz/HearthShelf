@@ -26,7 +26,7 @@ export async function getContactById(
 
 export async function createContactRecord(
   userId: string,
-  data: { name: string; email: string | null; phone: string | null }
+  data: { name: string; email: string | null; phone: string | null; linkedUserId?: string | null }
 ): Promise<void> {
   await db.insert(contacts).values({ userId, ...data })
 }

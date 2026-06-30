@@ -7,6 +7,7 @@ import {
   createContactRecord,
   deleteContactRecord,
   findContactMatch,
+  getContactById,
   updateContactRecord,
 } from "@/lib/queries/contacts"
 import {
@@ -122,6 +123,7 @@ export async function acceptContactRequest(formData: FormData): Promise<void> {
       name: request.requester.name,
       email: request.requester.email,
       phone: null,
+      linkedUserId: request.requester.id,
     })
   }
 
@@ -134,6 +136,7 @@ export async function acceptContactRequest(formData: FormData): Promise<void> {
       name: currentUserName,
       email: currentUserEmail,
       phone: null,
+      linkedUserId: session.user.id,
     })
   }
 
@@ -171,6 +174,10 @@ export async function deleteContact(
 
   const id = String(formData.get("id") ?? "")
   if (!id) return { error: "Missing contact id" }
+  const contact = await getContactById(id, session.user.id)
+  if (!contact) return { error: "Contact not found" }
+  if (contact.linkedUserId) return { error: "Contacts added from requests cannot be deleted" }
+
   await deleteContactRecord(id, session.user.id)
 
   revalidatePath("/contacts")
@@ -187,6 +194,10 @@ export async function updateContact(
 
   const id = String(formData.get("id") ?? "")
   if (!id) return { error: "Missing contact id" }
+  const contact = await getContactById(id, session.user.id)
+  if (!contact) return { error: "Contact not found" }
+  if (contact.linkedUserId) return { error: "Contacts added from requests cannot be edited" }
+
   const name = nullIfEmpty(formData.get("name"))
   if (!name) return { error: "Name is required" }
 

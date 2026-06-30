@@ -33,16 +33,23 @@ export default async function ContactDetailPage({
             {contact.phone && (
               <p className="mt-1 text-sm text-ink-muted">{contact.phone}</p>
             )}
+            {contact.linkedUserId && (
+              <p className="mt-3 text-sm text-ink-muted">
+                Connected HearthShelf user. Contact details are managed by their profile.
+              </p>
+            )}
           </div>
-          <div className="flex gap-2 shrink-0">
-            <Link
-              href={`/contacts/${contact.id}/edit`}
-              className={btnSecondary}
-            >
-              Edit
-            </Link>
-            <DeleteContactForm contactId={contact.id} />
-          </div>
+          {!contact.linkedUserId && (
+            <div className="flex gap-2 shrink-0">
+              <Link
+                href={`/contacts/${contact.id}/edit`}
+                className={btnSecondary}
+              >
+                Edit
+              </Link>
+              <DeleteContactForm contactId={contact.id} />
+            </div>
+          )}
         </div>
       </div>
     </div>

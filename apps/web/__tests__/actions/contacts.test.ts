@@ -9,7 +9,13 @@ vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))
 vi.mock("next/navigation", () => ({ redirect: vi.fn() }))
 
 import { auth } from "@/auth"
-import { createContactRecord, deleteContactRecord, findContactMatch, updateContactRecord } from "@/lib/queries/contacts"
+import {
+  createContactRecord,
+  deleteContactRecord,
+  findContactMatch,
+  getContactById,
+  updateContactRecord,
+} from "@/lib/queries/contacts"
 import { getUserContactCandidate } from "@/lib/queries/users"
 import {
   createContactRequest,
@@ -81,6 +87,15 @@ describe("deleteContact", () => {
 
   it("deletes and redirects", async () => {
     mockedAuth.mockResolvedValue({ user: { id: "u1" }, expires: "" } as Session)
+    vi.mocked(getContactById).mockResolvedValue({
+      id: "c1",
+      userId: "u1",
+      name: "Alice",
+      email: null,
+      phone: null,
+      linkedUserId: null,
+      createdAt: new Date(),
+    })
     vi.mocked(deleteContactRecord).mockResolvedValue()
     const { deleteContact } = await import("@/lib/actions/contacts")
     const fd = new FormData()
@@ -88,6 +103,26 @@ describe("deleteContact", () => {
     await deleteContact(null, fd)
     expect(deleteContactRecord).toHaveBeenCalledWith("c1", "u1")
     expect(redirect).toHaveBeenCalledWith("/contacts?flash=Contact deleted")
+  })
+
+  it("does not delete linked contacts", async () => {
+    mockedAuth.mockResolvedValue({ user: { id: "u1" }, expires: "" } as Session)
+    vi.mocked(getContactById).mockResolvedValue({
+      id: "c1",
+      userId: "u1",
+      name: "Alice",
+      email: null,
+      phone: null,
+      linkedUserId: "other-user",
+      createdAt: new Date(),
+    })
+    const { deleteContact } = await import("@/lib/actions/contacts")
+    const fd = new FormData()
+    fd.set("id", "c1")
+    expect(await deleteContact(null, fd)).toEqual({
+      error: "Contacts added from requests cannot be deleted",
+    })
+    expect(deleteContactRecord).not.toHaveBeenCalled()
   })
 })
 
@@ -113,6 +148,15 @@ describe("updateContact", () => {
 
   it("returns error when name is empty", async () => {
     mockedAuth.mockResolvedValue({ user: { id: "u1" }, expires: "" } as Session)
+    vi.mocked(getContactById).mockResolvedValue({
+      id: "c1",
+      userId: "u1",
+      name: "Alice",
+      email: null,
+      phone: null,
+      linkedUserId: null,
+      createdAt: new Date(),
+    })
     const { updateContact } = await import("@/lib/actions/contacts")
     const fd = new FormData()
     fd.set("id", "c1")
@@ -122,6 +166,15 @@ describe("updateContact", () => {
 
   it("updates and redirects to contact detail", async () => {
     mockedAuth.mockResolvedValue({ user: { id: "u1" }, expires: "" } as Session)
+    vi.mocked(getContactById).mockResolvedValue({
+      id: "c1",
+      userId: "u1",
+      name: "Alice",
+      email: null,
+      phone: null,
+      linkedUserId: null,
+      createdAt: new Date(),
+    })
     vi.mocked(updateContactRecord).mockResolvedValue()
     const { updateContact } = await import("@/lib/actions/contacts")
     const fd = new FormData()
@@ -136,6 +189,27 @@ describe("updateContact", () => {
     expect(revalidatePath).toHaveBeenCalledWith("/contacts/c1")
     expect(revalidatePath).toHaveBeenCalledWith("/contacts")
     expect(redirect).toHaveBeenCalledWith("/contacts/c1?flash=Contact updated")
+  })
+
+  it("does not update linked contacts", async () => {
+    mockedAuth.mockResolvedValue({ user: { id: "u1" }, expires: "" } as Session)
+    vi.mocked(getContactById).mockResolvedValue({
+      id: "c1",
+      userId: "u1",
+      name: "Alice",
+      email: null,
+      phone: null,
+      linkedUserId: "other-user",
+      createdAt: new Date(),
+    })
+    const { updateContact } = await import("@/lib/actions/contacts")
+    const fd = new FormData()
+    fd.set("id", "c1")
+    fd.set("name", "Bob")
+    expect(await updateContact(null, fd)).toEqual({
+      error: "Contacts added from requests cannot be edited",
+    })
+    expect(updateContactRecord).not.toHaveBeenCalled()
   })
 })
 
@@ -178,6 +252,7 @@ describe("requestUserContact", () => {
       name: "Alice",
       email: "alice@example.com",
       phone: null,
+      linkedUserId: null,
       createdAt: new Date(),
     })
     const { requestUserContact } = await import("@/lib/actions/contacts")
@@ -263,11 +338,13 @@ describe("acceptContactRequest", () => {
       name: "Alice",
       email: "alice@example.com",
       phone: null,
+      linkedUserId: "requester",
     })
     expect(createContactRecord).toHaveBeenCalledWith("requester", {
       name: "Owner",
       email: "owner@example.com",
       phone: null,
+      linkedUserId: "u1",
     })
     expect(updateContactRequestStatus).toHaveBeenCalledWith("r1", "u1", "accepted")
     expect(revalidatePath).toHaveBeenCalledWith("/contacts")

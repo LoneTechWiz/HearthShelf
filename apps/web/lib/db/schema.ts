@@ -144,6 +144,7 @@ export const contacts = pgTable("contact", {
   name: text("name").notNull(),
   email: text("email"),
   phone: text("phone"),
+  linkedUserId: text("linkedUserId").references(() => users.id, { onDelete: "cascade" }),
   createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
 })
 
