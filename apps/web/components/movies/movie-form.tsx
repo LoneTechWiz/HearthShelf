@@ -3,6 +3,7 @@
 import { useActionState, useState, useEffect } from "react"
 import { searchMoviesByTitle, getMovieByImdbId } from "@/lib/omdb"
 import type { MovieSuggestion } from "@/lib/omdb"
+import { inferMovieSeriesName } from "@/lib/movie-series"
 import { btnPrimary, inputClass, labelClass } from "@/components/ui/classes"
 import { DataAttribution } from "@/components/ui/data-attribution"
 
@@ -14,6 +15,7 @@ interface MovieFormProps {
   defaultValues?: {
     id?: string
     title?: string
+    seriesName?: string | null
     director?: string | null
     year?: number | null
     posterUrl?: string | null
@@ -32,6 +34,7 @@ export function MovieForm({ action, defaultValues, submitLabel = "Save" }: Movie
 
   const [title, setTitle] = useState(defaultValues?.title ?? "")
   const [searchQuery, setSearchQuery] = useState(defaultValues?.title ?? "")
+  const [seriesName, setSeriesName] = useState(defaultValues?.seriesName ?? "")
   const [director, setDirector] = useState(defaultValues?.director ?? "")
   const [year, setYear] = useState(String(defaultValues?.year ?? ""))
   const [posterUrl, setPosterUrl] = useState(defaultValues?.posterUrl ?? "")
@@ -67,6 +70,7 @@ export function MovieForm({ action, defaultValues, submitLabel = "Save" }: Movie
 
   async function handleSelect(suggestion: MovieSuggestion) {
     setTitle(suggestion.title)
+    setSeriesName(inferMovieSeriesName(suggestion.title) ?? "")
     setSearchQuery("")
     setShowDropdown(false)
     setSuggestions([])
@@ -76,6 +80,7 @@ export function MovieForm({ action, defaultValues, submitLabel = "Save" }: Movie
     try {
       const detail = await getMovieByImdbId(suggestion.imdbId)
       if (detail) {
+        setSeriesName(detail.seriesName ?? "")
         setDirector(detail.director ?? "")
         setGenre(detail.genre ?? "")
         setRuntime(String(detail.runtime ?? ""))
@@ -134,6 +139,13 @@ export function MovieForm({ action, defaultValues, submitLabel = "Save" }: Movie
             ))}
           </ul>
         )}
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <label className={labelClass} htmlFor="seriesName">Series</label>
+        <input id="seriesName" name="seriesName" value={seriesName}
+          onChange={(e) => setSeriesName(e.target.value)} className={inputClass}
+          disabled={isLookingUp} />
       </div>
 
       <div className="flex flex-col gap-1">

@@ -21,6 +21,7 @@ export default async function MovieDetailPage({ params }: { params: Promise<{ id
         <div className="mb-4 flex items-start justify-between gap-4">
           <div>
             <h1 className="font-display text-2xl font-semibold text-ink">{movie.title}</h1>
+            {movie.seriesName && <p className="mt-1 text-sm text-ink-muted">{movie.seriesName}</p>}
             {movie.director && <p className="mt-1 text-ink-muted">{movie.director}</p>}
             <div className="mt-1 flex flex-wrap gap-2 text-xs text-ink-faint">
               {movie.year && <span>{movie.year}</span>}

@@ -9,7 +9,7 @@ export type CollectionBook = Pick<
 
 export type CollectionMovie = Pick<
   MovieRow,
-  "id" | "title" | "director" | "year" | "posterUrl" | "genre" | "format"
+  "id" | "title" | "seriesName" | "director" | "year" | "posterUrl" | "genre" | "format"
 >
 
 export type CollectionGame = Pick<
@@ -183,10 +183,10 @@ export function buildBookSeriesCollections(books: CollectionBook[]): ShelfCollec
     .sort((a, b) => a.name.localeCompare(b.name))
 }
 
-export function buildMovieDirectorCollections(movies: CollectionMovie[]): ShelfCollection[] {
+export function buildMovieSeriesCollections(movies: CollectionMovie[]): ShelfCollection[] {
   return groupBy(
     movies,
-    (movie) => movie.director?.trim() || "Unknown director",
+    (movie) => movie.seriesName?.trim() ?? null,
     movieIdentity,
     movieItem
   )

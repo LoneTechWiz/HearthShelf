@@ -79,6 +79,7 @@ export function MoviesList({ movies }: { movies: MovieWithAvailability[] }) {
                   )}
                   <div className="min-w-0">
                     <p className="truncate font-medium text-ink">{movie.title}</p>
+                    {movie.seriesName && <p className="truncate text-sm text-ink-muted">{movie.seriesName}</p>}
                     {movie.director && <p className="truncate text-sm text-ink-muted">{movie.director}</p>}
                     {movie.year && <p className="truncate text-xs text-ink-faint">{movie.year}</p>}
                   </div>
@@ -115,6 +116,7 @@ export function MoviesList({ movies }: { movies: MovieWithAvailability[] }) {
                     }`} />
                 </div>
                 <p className="mt-2 truncate text-sm font-medium text-ink">{movie.title}</p>
+                {movie.seriesName && <p className="truncate text-xs text-ink-muted">{movie.seriesName}</p>}
                 {movie.director && <p className="truncate text-xs text-ink-muted">{movie.director}</p>}
               </Link>
             </li>

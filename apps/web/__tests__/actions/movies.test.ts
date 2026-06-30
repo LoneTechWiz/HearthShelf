@@ -45,6 +45,7 @@ describe("createMovie", () => {
     await createMovie(null, fd)
     expect(createMovieRecord).toHaveBeenCalledWith("u1", {
       title: "Inception",
+      seriesName: null,
       director: "Christopher Nolan",
       year: 2010,
       posterUrl: null,

@@ -29,6 +29,13 @@
       "when": 1782796057330,
       "tag": "0003_premium_stryfe",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1782838298409,
+      "tag": "0004_sweet_doctor_doom",
+      "breakpoints": true
     }
   ]
 }

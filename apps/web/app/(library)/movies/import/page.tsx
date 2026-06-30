@@ -14,6 +14,7 @@ export default function ImportMoviesPage() {
         entity="movies"
         columns={[
           { name: "title", required: true, example: "Inception" },
+          { name: "seriesName", example: "Star Wars" },
           { name: "director", example: "Christopher Nolan" },
           { name: "year", example: "2010" },
           { name: "format", example: "Blu-ray" },

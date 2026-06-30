@@ -6,8 +6,8 @@ import { getGamesForUser } from "@/lib/queries/games"
 import {
   buildBookAuthorCollections,
   buildBookSeriesCollections,
-  buildMovieDirectorCollections,
   buildMovieGenreCollections,
+  buildMovieSeriesCollections,
   buildGameCategoryCollections,
   buildGamePlayerCollections,
 } from "@/lib/shelf-collections"
@@ -44,7 +44,7 @@ export default async function CollectionsPage() {
             series: buildBookSeriesCollections(books),
           },
           movies: {
-            directors: buildMovieDirectorCollections(movies),
+            series: buildMovieSeriesCollections(movies),
             genres: buildMovieGenreCollections(movies),
           },
           games: {

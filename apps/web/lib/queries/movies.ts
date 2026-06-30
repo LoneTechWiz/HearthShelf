@@ -14,6 +14,7 @@ export async function getMoviesForUser(userId: string): Promise<MovieWithAvailab
       id: movies.id,
       userId: movies.userId,
       title: movies.title,
+      seriesName: movies.seriesName,
       director: movies.director,
       year: movies.year,
       posterUrl: movies.posterUrl,
@@ -52,6 +53,7 @@ export async function getMovieById(
       id: movies.id,
       userId: movies.userId,
       title: movies.title,
+      seriesName: movies.seriesName,
       director: movies.director,
       year: movies.year,
       posterUrl: movies.posterUrl,
@@ -82,6 +84,7 @@ export async function getMovieById(
 
 type MovieData = {
   title: string
+  seriesName?: string | null
   director: string | null
   year: number | null
   posterUrl: string | null
