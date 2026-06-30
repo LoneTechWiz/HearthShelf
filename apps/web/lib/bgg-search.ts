@@ -17,6 +17,7 @@ type BggSearchItem = {
 type BggThingItem = {
   "@_id"?: string | number
   image?: string
+  thumbnail?: string
 }
 
 function normalizeTitle(value: string) {
@@ -64,7 +65,7 @@ export function parseBggCoverXml(xml: string): Map<string, string> {
     arr
       .map((item) => {
         const id = String(item["@_id"] ?? "")
-        const image = item.image ? String(item.image) : ""
+        const image = item.image ? String(item.image) : item.thumbnail ? String(item.thumbnail) : ""
         if (!id || !image) return null
         return [id, image.startsWith("http") ? image : `https:${image}`] as const
       })

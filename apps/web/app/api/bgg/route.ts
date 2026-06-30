@@ -104,7 +104,7 @@ export async function GET(req: NextRequest) {
   const now = new Date()
 
   if (query) {
-    const cacheKey = `v2:${query.trim().toLowerCase()}`
+    const cacheKey = `v3:${query.trim().toLowerCase()}`
 
     // Check search cache
     const [cached] = await db.select().from(bggSearchCache).where(eq(bggSearchCache.query, cacheKey))

@@ -38,6 +38,20 @@ describe("parseBggCoverXml", () => {
       new Map([["1406", "https://cf.geekdo-images.com/monopoly.jpg"]])
     )
   })
+
+  it("uses thumbnails when full images are missing", () => {
+    const xml = `
+      <items>
+        <item type="boardgame" id="1406">
+          <thumbnail>//cf.geekdo-images.com/monopoly-thumb.jpg</thumbnail>
+        </item>
+      </items>
+    `
+
+    expect(parseBggCoverXml(xml)).toEqual(
+      new Map([["1406", "https://cf.geekdo-images.com/monopoly-thumb.jpg"]])
+    )
+  })
 })
 
 describe("rankGameSuggestions", () => {
