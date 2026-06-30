@@ -2,6 +2,7 @@ export type GameSuggestion = {
   bggId: string
   title: string
   year: number | null
+  coverUrl: string | null
 }
 
 export type GameDetail = {

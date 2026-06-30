@@ -14,6 +14,11 @@ type BggSearchItem = {
   }
 }
 
+type BggThingItem = {
+  "@_id"?: string | number
+  image?: string
+}
+
 function normalizeTitle(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim()
 }
@@ -42,9 +47,39 @@ export function parseBggSearchXml(xml: string): GameSuggestion[] {
         bggId: String(item["@_id"] ?? ""),
         title: primary?.["@_value"] ?? "",
         year: parseInt(String(item.yearpublished?.["@_value"] ?? "")) || null,
+        coverUrl: null,
       }
     })
     .filter((game) => game.bggId && game.title)
+}
+
+export function parseBggCoverXml(xml: string): Map<string, string> {
+  const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "@_" })
+  const doc = parser.parse(xml)
+  const items = doc?.items?.item
+  if (!items) return new Map()
+
+  const arr = (Array.isArray(items) ? items : [items]) as BggThingItem[]
+  return new Map(
+    arr
+      .map((item) => {
+        const id = String(item["@_id"] ?? "")
+        const image = item.image ? String(item.image) : ""
+        if (!id || !image) return null
+        return [id, image.startsWith("http") ? image : `https:${image}`] as const
+      })
+      .filter((entry): entry is readonly [string, string] => entry !== null)
+  )
+}
+
+export function addGameSuggestionCovers(
+  suggestions: GameSuggestion[],
+  covers: Map<string, string>
+): GameSuggestion[] {
+  return suggestions.map((suggestion) => ({
+    ...suggestion,
+    coverUrl: covers.get(suggestion.bggId) ?? suggestion.coverUrl,
+  }))
 }
 
 export function rankGameSuggestions(query: string, suggestions: GameSuggestion[]) {
