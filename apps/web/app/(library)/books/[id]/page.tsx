@@ -3,8 +3,10 @@ import { notFound } from "next/navigation"
 import { auth } from "@/auth"
 import { getBookById } from "@/lib/queries/books"
 import { DeleteBookForm } from "@/components/books/delete-book-form"
+import { ItemReviewPanel } from "@/components/reviews/item-review-panel"
 import { StatusBadge } from "@/components/ui/status-badge"
 import { btnPrimary, btnSecondary } from "@/components/ui/classes"
+import { getReviewForItem } from "@/lib/queries/reviews"
 
 export default async function BookDetailPage({
   params,
@@ -15,6 +17,9 @@ export default async function BookDetailPage({
   const session = await auth()
   const book = await getBookById(id, session!.user!.id!)
   if (!book) notFound()
+  const review = book.lendableItemId
+    ? await getReviewForItem(book.lendableItemId, session!.user!.id!)
+    : null
 
   return (
     <div>
@@ -71,6 +76,13 @@ export default async function BookDetailPage({
             src={book.coverUrl}
             alt={`Cover of ${book.title}`}
             className="mt-4 h-48 w-auto rounded-lg object-cover border border-edge"
+          />
+        )}
+        {book.lendableItemId && (
+          <ItemReviewPanel
+            lendableItemId={book.lendableItemId}
+            returnPath={`/books/${book.id}`}
+            review={review}
           />
         )}
       </div>

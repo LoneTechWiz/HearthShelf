@@ -43,6 +43,13 @@
       "when": 1782853242912,
       "tag": "0005_daffy_mordo",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1782854284143,
+      "tag": "0006_rare_forgotten_one",
+      "breakpoints": true
     }
   ]
 }

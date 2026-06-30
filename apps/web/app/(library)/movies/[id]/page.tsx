@@ -3,14 +3,19 @@ import { notFound } from "next/navigation"
 import { auth } from "@/auth"
 import { getMovieById } from "@/lib/queries/movies"
 import { DeleteMovieForm } from "@/components/movies/delete-movie-form"
+import { ItemReviewPanel } from "@/components/reviews/item-review-panel"
 import { StatusBadge } from "@/components/ui/status-badge"
 import { btnPrimary, btnSecondary } from "@/components/ui/classes"
+import { getReviewForItem } from "@/lib/queries/reviews"
 
 export default async function MovieDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const session = await auth()
   const movie = await getMovieById(id, session!.user!.id!)
   if (!movie) notFound()
+  const review = movie.lendableItemId
+    ? await getReviewForItem(movie.lendableItemId, session!.user!.id!)
+    : null
 
   return (
     <div>
@@ -50,6 +55,13 @@ export default async function MovieDetailPage({ params }: { params: Promise<{ id
           // eslint-disable-next-line @next/next/no-img-element
           <img src={movie.posterUrl} alt={`Poster for ${movie.title}`}
             className="mt-4 h-48 w-auto rounded-lg object-cover border border-edge" />
+        )}
+        {movie.lendableItemId && (
+          <ItemReviewPanel
+            lendableItemId={movie.lendableItemId}
+            returnPath={`/movies/${movie.id}`}
+            review={review}
+          />
         )}
       </div>
     </div>
