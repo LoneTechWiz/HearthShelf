@@ -6,6 +6,7 @@ import type { GameWithAvailability } from "@/lib/queries/games"
 import { inputClass, btnPrimary, btnSecondarySm } from "@/components/ui/classes"
 import { StatusBadge } from "@/components/ui/status-badge"
 import { EmptyState } from "@/components/ui/empty-state"
+import { DataAttribution } from "@/components/ui/data-attribution"
 
 const gameIcon = (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
@@ -131,12 +132,7 @@ export function GamesList({ games }: { games: GameWithAvailability[] }) {
         </ul>
       )}
 
-      <p className="mt-4 text-right text-xs text-ink-faint">
-        Game data{" "}
-        <a href="https://boardgamegeek.com" target="_blank" rel="noopener noreferrer" className="hover:text-ink-muted underline">
-          Powered by BGG
-        </a>
-      </p>
+      <DataAttribution label="BoardGameGeek" href="https://boardgamegeek.com" />
     </>
   )
 }

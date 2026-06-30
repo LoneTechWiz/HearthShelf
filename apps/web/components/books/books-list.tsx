@@ -6,6 +6,7 @@ import type { BookWithAvailability } from "@/lib/queries/books"
 import { inputClass, btnPrimary, btnSecondarySm } from "@/components/ui/classes"
 import { StatusBadge } from "@/components/ui/status-badge"
 import { EmptyState } from "@/components/ui/empty-state"
+import { DataAttribution } from "@/components/ui/data-attribution"
 
 const bookIcon = (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
@@ -150,6 +151,7 @@ export function BooksList({ books }: { books: BookWithAvailability[] }) {
           ))}
         </ul>
       )}
+      <DataAttribution label="Open Library" href="https://openlibrary.org" />
     </>
   )
 }
