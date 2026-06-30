@@ -17,6 +17,9 @@ type NativeBarcodeDetectorConstructor = {
   new (options?: { formats?: string[] }): NativeBarcodeDetector
   getSupportedFormats?: () => Promise<string[]>
 }
+type ScannerVideoConstraints = MediaTrackConstraints & {
+  focusMode?: ConstrainDOMString
+}
 
 const barcodeFormats = [BarcodeFormat.EAN_13]
 const nativeBarcodeFormats = ["ean_13"]
@@ -33,14 +36,38 @@ function createZxingReader() {
 }
 
 function getRearCameraConstraints(): MediaStreamConstraints {
+  const video: ScannerVideoConstraints = {
+    facingMode: { ideal: "environment" },
+    width: { ideal: 1280 },
+    height: { ideal: 720 },
+    focusMode: { ideal: "continuous" },
+  }
+
+  return {
+    video,
+    audio: false,
+  }
+}
+
+function getFallbackCameraConstraints(): MediaStreamConstraints {
   return {
     video: {
-      facingMode: { ideal: "environment" },
-      width: { ideal: 1920 },
-      height: { ideal: 1080 },
+      facingMode: "environment",
     },
     audio: false,
   }
+}
+
+async function openRearCamera() {
+  try {
+    return await navigator.mediaDevices.getUserMedia(getRearCameraConstraints())
+  } catch {
+    return navigator.mediaDevices.getUserMedia(getFallbackCameraConstraints())
+  }
+}
+
+function stopStream(stream: MediaStream) {
+  stream.getTracks().forEach((track) => track.stop())
 }
 
 async function createNativeBarcodeDetector() {
@@ -131,9 +158,16 @@ export function BarcodeScanner({ onDetected, onClose }: BarcodeScannerProps) {
     }
 
     async function start() {
+      let stream: MediaStream | null = null
       try {
+        stream = await openRearCamera()
+        if (cancelled) {
+          stopStream(stream)
+          return
+        }
+
         const reader = createZxingReader()
-        controls = await reader.decodeFromConstraints(getRearCameraConstraints(), video, (result) => {
+        controls = await reader.decodeFromStream(stream, video, (result) => {
           if (!result) return
           handleDetected(result.getText())
         })
@@ -147,6 +181,7 @@ export function BarcodeScanner({ onDetected, onClose }: BarcodeScannerProps) {
 
         stopNativeScan = startNativeBarcodeScan(nativeDetector, video, handleDetected)
       } catch {
+        if (!controls && stream) stopStream(stream)
         if (!cancelled) setError("Unable to access camera. Check permissions and try again.")
       }
     }
