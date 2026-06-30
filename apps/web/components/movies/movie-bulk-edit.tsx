@@ -7,6 +7,7 @@ import { inputClass, btnPrimary } from "@/components/ui/classes"
 type Row = {
   id: string
   title: string
+  seriesName: string
   director: string
   year: string
   format: string
@@ -20,6 +21,7 @@ interface MovieBulkEditProps {
   movies: Array<{
     id: string
     title: string
+    seriesName: string | null
     director: string | null
     year: number | null
     format: string | null
@@ -38,6 +40,7 @@ export function MovieBulkEdit({ movies }: MovieBulkEditProps) {
     movies.map((m) => ({
       id: m.id,
       title: m.title,
+      seriesName: m.seriesName ?? "",
       director: m.director ?? "",
       year: String(m.year ?? ""),
       format: m.format ?? "",
@@ -62,6 +65,7 @@ export function MovieBulkEdit({ movies }: MovieBulkEditProps) {
           <thead className="bg-surface-raised text-ink-muted">
             <tr>
               <th className="px-2 py-1.5 font-medium">Title</th>
+              <th className="w-32 px-2 py-1.5 font-medium">Series</th>
               <th className="w-32 px-2 py-1.5 font-medium">Director</th>
               <th className="w-16 px-2 py-1.5 font-medium">Year</th>
               <th className="w-24 px-2 py-1.5 font-medium">Format</th>
@@ -77,6 +81,10 @@ export function MovieBulkEdit({ movies }: MovieBulkEditProps) {
                 <td className="px-2 py-1.5">
                   <input aria-label={`Title for ${row.id}`} value={row.title}
                     onChange={(e) => update(row.id, "title", e.target.value)} className={`${inputClass} w-full`} />
+                </td>
+                <td className="w-32 px-2 py-1.5">
+                  <input aria-label={`Series for ${row.id}`} value={row.seriesName}
+                    onChange={(e) => update(row.id, "seriesName", e.target.value)} className={`${inputClass} w-full`} />
                 </td>
                 <td className="w-32 px-2 py-1.5">
                   <input aria-label={`Director for ${row.id}`} value={row.director}

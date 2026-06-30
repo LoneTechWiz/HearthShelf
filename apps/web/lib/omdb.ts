@@ -1,5 +1,7 @@
 "use client"
 
+import { inferMovieSeriesName } from "@/lib/movie-series"
+
 export type MovieSuggestion = {
   imdbId: string
   title: string
@@ -9,6 +11,7 @@ export type MovieSuggestion = {
 
 export type MovieDetail = {
   title: string
+  seriesName: string | null
   director: string | null
   year: number | null
   posterUrl: string | null
@@ -46,6 +49,7 @@ export async function getMovieByImdbId(imdbId: string): Promise<MovieDetail | nu
 
   return {
     title: data.Title ?? "",
+    seriesName: inferMovieSeriesName(data.Title ?? ""),
     director: data.Director !== "N/A" ? (data.Director ?? null) : null,
     year: data.Year ? parseInt(String(data.Year), 10) : null,
     posterUrl: data.Poster !== "N/A" ? (data.Poster ?? null) : null,

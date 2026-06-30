@@ -39,6 +39,7 @@ export async function createMovie(
 
   await createMovieRecord(session.user.id, {
     title,
+    seriesName: nullIfEmpty(formData.get("seriesName")),
     director: nullIfEmpty(formData.get("director")),
     year: nullableInt(formData.get("year")),
     posterUrl: nullIfEmpty(formData.get("posterUrl")),
@@ -83,6 +84,7 @@ export async function updateMovie(
 
   await updateMovieRecord(id, session.user.id, {
     title,
+    seriesName: nullIfEmpty(formData.get("seriesName")),
     director: nullIfEmpty(formData.get("director")),
     year: nullableInt(formData.get("year")),
     posterUrl: nullIfEmpty(formData.get("posterUrl")),
@@ -98,7 +100,7 @@ export async function updateMovie(
   return null
 }
 
-const MOVIE_COLUMNS = ["title", "director", "year", "posterUrl", "format", "genre", "runtime", "description"] as const
+const MOVIE_COLUMNS = ["title", "seriesName", "director", "year", "posterUrl", "format", "genre", "runtime", "description"] as const
 
 export async function importMovies(
   _prevState: ImportResult | null,
@@ -131,6 +133,7 @@ export async function importMovies(
     const runtime = values.runtime ? parseInt(values.runtime, 10) : null
     const data = {
       title,
+      seriesName: values.seriesName ?? null,
       director: values.director ?? null,
       year: isNaN(year!) ? null : year,
       posterUrl: values.posterUrl ?? null,
@@ -145,6 +148,7 @@ export async function importMovies(
       if (existing) {
         await updateMovieRecord(existing.id, userId, {
           title,
+          seriesName: data.seriesName ?? existing.seriesName,
           director: data.director ?? existing.director,
           year: data.year ?? existing.year,
           posterUrl: data.posterUrl ?? existing.posterUrl,
@@ -172,6 +176,7 @@ export async function importMovies(
 type BulkEditRow = {
   id: string
   title: string
+  seriesName: string
   director: string
   year: string
   posterUrl: string
@@ -205,6 +210,7 @@ export async function bulkUpdateMovies(
     const runtime = row.runtime ? parseInt(row.runtime, 10) : null
     await updateMovieRecord(row.id, userId, {
       title: row.title.trim(),
+      seriesName: nullIfEmpty(row.seriesName),
       director: nullIfEmpty(row.director),
       year: isNaN(year!) ? null : year,
       posterUrl: nullIfEmpty(row.posterUrl),

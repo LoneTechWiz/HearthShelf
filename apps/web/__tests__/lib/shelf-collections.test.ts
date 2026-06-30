@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 import {
   buildBookAuthorCollections,
   buildBookSeriesCollections,
-  buildMovieDirectorCollections,
+  buildMovieSeriesCollections,
   buildGameCategoryCollections,
   type CollectionBook,
   type CollectionMovie,
@@ -78,16 +78,16 @@ describe("book collections", () => {
     expect(collections[0].items[0].copyCount).toBe(2)
   })
 
-  it("groups movies by director", () => {
+  it("groups movies by series", () => {
     const movies: CollectionMovie[] = [
-      { id: "m1", title: "Inception", director: "Christopher Nolan", year: 2010, posterUrl: null, genre: "Sci-Fi", format: null },
-      { id: "m2", title: "Interstellar", director: "Christopher Nolan", year: 2014, posterUrl: null, genre: "Sci-Fi", format: null },
+      { id: "m1", title: "Star Wars: Episode IV - A New Hope", seriesName: "Star Wars", director: "George Lucas", year: 1977, posterUrl: null, genre: "Sci-Fi", format: null },
+      { id: "m2", title: "Star Wars: Episode V - The Empire Strikes Back", seriesName: "Star Wars", director: "Irvin Kershner", year: 1980, posterUrl: null, genre: "Sci-Fi", format: null },
     ]
 
-    const collections = buildMovieDirectorCollections(movies)
+    const collections = buildMovieSeriesCollections(movies)
 
     expect(collections).toHaveLength(1)
-    expect(collections[0].name).toBe("Christopher Nolan")
+    expect(collections[0].name).toBe("Star Wars")
     expect(collections[0].ownedCount).toBe(2)
   })
 

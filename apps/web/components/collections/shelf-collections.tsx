@@ -6,11 +6,11 @@ import type { ShelfCollection, CollectionItem } from "@/lib/shelf-collections"
 import { EmptyState } from "@/components/ui/empty-state"
 
 type ShelfType = "books" | "movies" | "games"
-type GroupView = "authors" | "series" | "directors" | "genres" | "categories" | "players"
+type GroupView = "authors" | "series" | "genres" | "categories" | "players"
 
 type ShelfCollectionsData = {
   books: { authors: ShelfCollection[]; series: ShelfCollection[] }
-  movies: { directors: ShelfCollection[]; genres: ShelfCollection[] }
+  movies: { series: ShelfCollection[]; genres: ShelfCollection[] }
   games: { categories: ShelfCollection[]; players: ShelfCollection[] }
 }
 
@@ -33,7 +33,7 @@ const groupOptions: Record<ShelfType, Array<{ key: GroupView; label: string }>> 
     { key: "series", label: "Series" },
   ],
   movies: [
-    { key: "directors", label: "Directors" },
+    { key: "series", label: "Series" },
     { key: "genres", label: "Genres" },
   ],
   games: [
@@ -44,7 +44,7 @@ const groupOptions: Record<ShelfType, Array<{ key: GroupView; label: string }>> 
 
 function collectionsForView(data: ShelfCollectionsData, shelf: ShelfType, view: GroupView): ShelfCollection[] {
   if (shelf === "books") return view === "series" ? data.books.series : data.books.authors
-  if (shelf === "movies") return view === "genres" ? data.movies.genres : data.movies.directors
+  if (shelf === "movies") return view === "genres" ? data.movies.genres : data.movies.series
   return view === "players" ? data.games.players : data.games.categories
 }
 
@@ -120,7 +120,7 @@ export function ShelfCollections({ data }: { data: ShelfCollectionsData }) {
   const [shelf, setShelf] = useState<ShelfType>("books")
   const [views, setViews] = useState<Record<ShelfType, GroupView>>({
     books: "authors",
-    movies: "directors",
+    movies: "series",
     games: "categories",
   })
   const view = views[shelf]

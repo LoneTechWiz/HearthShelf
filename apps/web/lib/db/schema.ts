@@ -88,6 +88,7 @@ export const movies = pgTable("movie", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
+  seriesName: text("seriesName"),
   director: text("director"),
   year: integer("year"),
   posterUrl: text("posterUrl"),
