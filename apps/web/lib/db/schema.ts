@@ -71,6 +71,7 @@ export const books = pgTable("book", {
   isbn: text("isbn"),
   title: text("title").notNull(),
   authors: text("authors"),
+  seriesKey: text("seriesKey"),
   seriesName: text("seriesName"),
   seriesPosition: integer("seriesPosition"),
   seriesTotal: integer("seriesTotal"),

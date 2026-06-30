@@ -54,6 +54,13 @@ export function BookSearchDropdown({
                 <div className="flex min-w-0 flex-col">
                   <span className="truncate text-sm font-medium text-ink">{s.title}</span>
                   <span className="truncate text-xs text-ink-muted">{s.authors}</span>
+                  {s.seriesName && (
+                    <span className="truncate text-xs text-ink-muted">
+                      {s.seriesName}
+                      {s.seriesPosition ? ` #${s.seriesPosition}` : ""}
+                      {s.seriesTotal ? ` of ${s.seriesTotal}` : ""}
+                    </span>
+                  )}
                   {s.isbn && <span className="text-xs text-ink-faint">{s.isbn}</span>}
                 </div>
               </button>

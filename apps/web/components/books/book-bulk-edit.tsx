@@ -10,6 +10,7 @@ type Row = {
   title: string
   authors: string
   isbn: string
+  seriesKey: string
   seriesName: string
   seriesPosition: string
   seriesTotal: string
@@ -23,6 +24,7 @@ interface BookBulkEditProps {
     title: string
     authors: string | null
     isbn: string | null
+    seriesKey: string | null
     seriesName: string | null
     seriesPosition: number | null
     seriesTotal: number | null
@@ -39,6 +41,7 @@ export function BookBulkEdit({ books }: BookBulkEditProps) {
       title: b.title,
       authors: b.authors ?? "",
       isbn: b.isbn ?? "",
+      seriesKey: b.seriesKey ?? "",
       seriesName: b.seriesName ?? "",
       seriesPosition: String(b.seriesPosition ?? ""),
       seriesTotal: String(b.seriesTotal ?? ""),
@@ -49,7 +52,13 @@ export function BookBulkEdit({ books }: BookBulkEditProps) {
   const [lookingUp, setLookingUp] = useState<string | null>(null)
 
   function update(id: string, field: keyof Row, value: string) {
-    setRows((rs) => rs.map((r) => (r.id === id ? { ...r, [field]: value } : r)))
+    setRows((rs) =>
+      rs.map((r) =>
+        r.id === id
+          ? { ...r, [field]: value, ...(field === "seriesName" ? { seriesKey: "" } : {}) }
+          : r
+      )
+    )
   }
 
   // Fill only the empty fields from an ISBN lookup; never overwrite user input.
@@ -66,6 +75,10 @@ export function BookBulkEdit({ books }: BookBulkEditProps) {
             ? {
                 ...r,
                 authors: r.authors || result.authors,
+                seriesKey: r.seriesKey || (result.seriesKey ?? ""),
+                seriesName: r.seriesName || (result.seriesName ?? ""),
+                seriesPosition: r.seriesPosition || String(result.seriesPosition ?? ""),
+                seriesTotal: r.seriesTotal || String(result.seriesTotal ?? ""),
                 coverUrl: r.coverUrl || (result.coverUrl ?? ""),
                 description: r.description || (result.description ?? ""),
               }

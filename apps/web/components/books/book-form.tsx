@@ -22,6 +22,7 @@ interface BookFormProps {
     title?: string
     authors?: string | null
     isbn?: string | null
+    seriesKey?: string | null
     seriesName?: string | null
     seriesPosition?: number | null
     seriesTotal?: number | null
@@ -38,6 +39,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
   const [searchQuery, setSearchQuery] = useState(defaultValues?.title ?? "")
   const [authors, setAuthors] = useState(defaultValues?.authors ?? "")
   const [isbn, setIsbn] = useState(defaultValues?.isbn ?? "")
+  const [seriesKey, setSeriesKey] = useState(defaultValues?.seriesKey ?? "")
   const [seriesName, setSeriesName] = useState(defaultValues?.seriesName ?? "")
   const [seriesPosition, setSeriesPosition] = useState(String(defaultValues?.seriesPosition ?? ""))
   const [seriesTotal, setSeriesTotal] = useState(String(defaultValues?.seriesTotal ?? ""))
@@ -76,6 +78,10 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
     setSearchQuery("")
     setAuthors(suggestion.authors)
     setIsbn(suggestion.isbn ?? "")
+    setSeriesKey(suggestion.seriesKey ?? "")
+    setSeriesName(suggestion.seriesName ?? "")
+    setSeriesPosition(String(suggestion.seriesPosition ?? ""))
+    setSeriesTotal(String(suggestion.seriesTotal ?? ""))
     setCoverUrl(suggestion.coverUrl ?? "")
     setDescription(suggestion.description ?? "")
     setShowDropdown(false)
@@ -93,6 +99,10 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
       }
       setTitle(result.title)
       setAuthors(result.authors)
+      setSeriesKey(result.seriesKey ?? "")
+      setSeriesName(result.seriesName ?? "")
+      setSeriesPosition(String(result.seriesPosition ?? ""))
+      setSeriesTotal(String(result.seriesTotal ?? ""))
       setCoverUrl(result.coverUrl ?? "")
       setDescription(result.description ?? "")
     } catch {
@@ -129,6 +139,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
       {defaultValues?.id && (
         <input type="hidden" name="id" value={defaultValues.id} />
       )}
+      <input type="hidden" name="seriesKey" value={seriesKey} />
 
       <div className="relative flex flex-col gap-1">
         <label className={labelClass} htmlFor="title">
@@ -184,7 +195,10 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
           id="seriesName"
           name="seriesName"
           value={seriesName}
-          onChange={(e) => setSeriesName(e.target.value)}
+          onChange={(e) => {
+            setSeriesName(e.target.value)
+            setSeriesKey("")
+          }}
           className={inputClass}
         />
       </div>

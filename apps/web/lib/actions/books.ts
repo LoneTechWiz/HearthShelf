@@ -41,6 +41,7 @@ export async function createBook(
     title,
     authors: nullIfEmpty(formData.get("authors")),
     isbn: nullIfEmpty(formData.get("isbn")),
+    seriesKey: nullIfEmpty(formData.get("seriesKey")),
     seriesName: nullIfEmpty(formData.get("seriesName")),
     seriesPosition: optionalPositiveInt(formData.get("seriesPosition")),
     seriesTotal: optionalPositiveInt(formData.get("seriesTotal")),
@@ -85,6 +86,7 @@ export async function updateBook(
     title,
     authors: nullIfEmpty(formData.get("authors")),
     isbn: nullIfEmpty(formData.get("isbn")),
+    seriesKey: nullIfEmpty(formData.get("seriesKey")),
     seriesName: nullIfEmpty(formData.get("seriesName")),
     seriesPosition: optionalPositiveInt(formData.get("seriesPosition")),
     seriesTotal: optionalPositiveInt(formData.get("seriesTotal")),
@@ -102,6 +104,7 @@ const BOOK_COLUMNS = [
   "title",
   "authors",
   "isbn",
+  "seriesKey",
   "seriesName",
   "seriesPosition",
   "seriesTotal",
@@ -140,6 +143,7 @@ export async function importBooks(
       title,
       authors: values.authors,
       isbn: values.isbn,
+      seriesKey: values.seriesKey,
       seriesName: values.seriesName,
       seriesPosition: optionalPositiveInt(values.seriesPosition),
       seriesTotal: optionalPositiveInt(values.seriesTotal),
@@ -153,6 +157,7 @@ export async function importBooks(
         title,
         authors: data.authors ?? existing.authors,
         isbn: data.isbn ?? existing.isbn,
+        seriesKey: data.seriesKey ?? existing.seriesKey,
         seriesName: data.seriesName ?? existing.seriesName,
         seriesPosition: data.seriesPosition ?? existing.seriesPosition,
         seriesTotal: data.seriesTotal ?? existing.seriesTotal,
@@ -177,6 +182,7 @@ type BulkEditRow = {
   title: string
   authors: string
   isbn: string
+  seriesKey: string
   seriesName: string
   seriesPosition: string
   seriesTotal: string
@@ -206,6 +212,7 @@ export async function bulkUpdateBooks(
       title: row.title.trim(),
       authors: nullIfEmpty(row.authors),
       isbn: nullIfEmpty(row.isbn),
+      seriesKey: nullIfEmpty(row.seriesKey),
       seriesName: nullIfEmpty(row.seriesName),
       seriesPosition: optionalPositiveInt(row.seriesPosition),
       seriesTotal: optionalPositiveInt(row.seriesTotal),

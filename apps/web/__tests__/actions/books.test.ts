@@ -43,6 +43,7 @@ describe("createBook", () => {
     fd.set("title", "Dune")
     fd.set("authors", "Frank Herbert")
     fd.set("isbn", "9780441013593")
+    fd.set("seriesKey", "OL1L")
     fd.set("seriesName", "Dune")
     fd.set("seriesPosition", "1")
     fd.set("seriesTotal", "6")
@@ -51,6 +52,7 @@ describe("createBook", () => {
       title: "Dune",
       authors: "Frank Herbert",
       isbn: "9780441013593",
+      seriesKey: "OL1L",
       seriesName: "Dune",
       seriesPosition: 1,
       seriesTotal: 6,
@@ -143,6 +145,7 @@ describe("updateBook", () => {
       title: "Updated Title",
       authors: "Author",
       isbn: null,
+      seriesKey: null,
       seriesName: null,
       seriesPosition: null,
       seriesTotal: null,
