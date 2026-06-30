@@ -5,12 +5,7 @@ import { db } from "@/lib/db"
 import { bggSearchCache, bggGameCache } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import type { GameDetail } from "@/lib/bgg"
-import {
-  addGameSuggestionCovers,
-  combineGameSuggestions,
-  parseBggCoverXml,
-  parseBggSearchXml,
-} from "@/lib/bgg-search"
+import { combineGameSuggestions, parseBggSearchXml } from "@/lib/bgg-search"
 
 const SEARCH_TTL_MS = 24 * 60 * 60 * 1000      // 1 day
 const DETAIL_TTL_MS = 7 * 24 * 60 * 60 * 1000  // 7 days
@@ -104,7 +99,7 @@ export async function GET(req: NextRequest) {
   const now = new Date()
 
   if (query) {
-    const cacheKey = `v3:${query.trim().toLowerCase()}`
+    const cacheKey = `v4:${query.trim().toLowerCase()}`
 
     // Check search cache
     const [cached] = await db.select().from(bggSearchCache).where(eq(bggSearchCache.query, cacheKey))
@@ -124,20 +119,11 @@ export async function GET(req: NextRequest) {
     ])
     if (!exactXml && !broadXml) return NextResponse.json({ error: "BGG request failed" }, { status: 502 })
 
-    const rankedResults = combineGameSuggestions(
+    const results = combineGameSuggestions(
       query,
       exactXml ? parseBggSearchXml(exactXml) : [],
       broadXml ? parseBggSearchXml(broadXml) : []
     )
-    const coverXml = rankedResults.length > 0
-      ? await fetchBgg(
-          `https://boardgamegeek.com/xmlapi2/thing?id=${rankedResults.map((result) => result.bggId).join(",")}`,
-          apiKey
-        )
-      : null
-    const results = coverXml
-      ? addGameSuggestionCovers(rankedResults, parseBggCoverXml(coverXml))
-      : rankedResults
 
     await db
       .insert(bggSearchCache)

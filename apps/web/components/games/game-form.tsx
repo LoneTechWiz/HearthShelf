@@ -70,7 +70,6 @@ export function GameForm({ action, defaultValues, submitLabel = "Save" }: GameFo
     try {
       const detail = await getGameByBggId(suggestion.bggId)
       if (detail) {
-        setCoverUrl(detail.coverUrl ?? "")
         setMinPlayers(String(detail.minPlayers ?? ""))
         setMaxPlayers(String(detail.maxPlayers ?? ""))
         setAgeRating(detail.ageRating ?? "")
@@ -113,19 +112,9 @@ export function GameForm({ action, defaultValues, submitLabel = "Save" }: GameFo
             {suggestions.map((s) => (
               <li key={s.bggId}>
                 <button type="button" onClick={() => handleSelect(s)}
-                  className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm hover:bg-surface-raised">
-                  {s.coverUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={s.coverUrl} alt="" className="h-12 w-9 flex-shrink-0 rounded border border-edge object-cover" />
-                  ) : (
-                    <span className="flex h-12 w-9 flex-shrink-0 items-center justify-center rounded border border-edge bg-surface-raised text-[10px] text-ink-faint">
-                      No art
-                    </span>
-                  )}
-                  <span className="min-w-0">
-                    <span className="block truncate font-medium">{s.title}</span>
-                    {s.year && <span className="text-ink-muted">({s.year})</span>}
-                  </span>
+                  className="w-full px-3 py-2 text-left text-sm hover:bg-surface-raised">
+                  <span className="font-medium">{s.title}</span>
+                  {s.year && <span className="ml-1 text-ink-muted">({s.year})</span>}
                 </button>
               </li>
             ))}
