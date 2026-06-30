@@ -9,6 +9,7 @@ import {
   findContactMatch,
   updateContactRecord,
 } from "@/lib/queries/contacts"
+import { getUserContactCandidate } from "@/lib/queries/users"
 import { parseCsv, toRecords } from "@/lib/csv/parse"
 import type { ImportResult, ImportSkip } from "@/lib/csv/types"
 
@@ -38,6 +39,44 @@ export async function createContact(
   revalidatePath("/contacts")
   redirect("/contacts?flash=Contact added")
   return null
+}
+
+export async function addUserAsContact(formData: FormData): Promise<void> {
+  const session = await auth()
+  if (!session?.user?.id) {
+    redirect("/contacts/new?flash=Unauthorized")
+    return
+  }
+
+  const targetUserId = String(formData.get("userId") ?? "")
+  if (!targetUserId) {
+    redirect("/contacts/new?flash=Missing%20user")
+    return
+  }
+
+  const user = await getUserContactCandidate(targetUserId, session.user.id)
+  if (!user?.name || !user.email) {
+    redirect("/contacts/new?flash=User%20not%20found")
+    return
+  }
+
+  const existing = await findContactMatch(session.user.id, {
+    name: user.name,
+    email: user.email,
+  })
+  if (existing) {
+    redirect(`/contacts/${existing.id}?flash=Contact%20already%20exists`)
+    return
+  }
+
+  await createContactRecord(session.user.id, {
+    name: user.name,
+    email: user.email,
+    phone: null,
+  })
+
+  revalidatePath("/contacts")
+  redirect("/contacts?flash=Contact%20added")
 }
 
 export async function deleteContact(
