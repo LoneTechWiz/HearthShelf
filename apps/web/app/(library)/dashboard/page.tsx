@@ -16,7 +16,7 @@ const ITEM_HREF: Record<string, string> = {
   game: "/games",
 }
 
-const collectionOverview = [
+const shelfOverview = [
   {
     label: "Books",
     href: "/shelf?type=books",
@@ -64,7 +64,7 @@ export default async function DashboardPage() {
 
   const firstName = session!.user!.name?.split(" ")[0]
   const totalItems = stats.totalBooks + stats.totalMovies + stats.totalGames
-  const collectionCounts: Record<string, number> = {
+  const shelfCounts: Record<string, number> = {
     Books: stats.totalBooks,
     Movies: stats.totalMovies,
     Games: stats.totalGames,
@@ -139,28 +139,28 @@ export default async function DashboardPage() {
       </div>
 
       <section>
-        <h2 className="mb-3 font-display text-lg font-semibold text-ink">Your collections</h2>
+        <h2 className="mb-3 font-display text-lg font-semibold text-ink">Shelf overview</h2>
         <div className="grid gap-3 md:grid-cols-3">
-          {collectionOverview.map((collection) => (
+          {shelfOverview.map((shelf) => (
             <div
-              key={collection.label}
+              key={shelf.label}
               className="rounded-xl border border-edge bg-surface p-4 shadow-sm"
             >
               <div className="mb-4 flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-sm text-ink-muted">{collection.label}</p>
+                  <p className="text-sm text-ink-muted">{shelf.label}</p>
                   <p className="font-display text-3xl font-semibold text-ink">
-                    {collectionCounts[collection.label]}
+                    {shelfCounts[shelf.label]}
                   </p>
                 </div>
                 <span className="rounded-lg bg-accent-soft p-2 text-accent [&>svg]:h-6 [&>svg]:w-6">
-                  {collection.icon}
+                  {shelf.icon}
                 </span>
               </div>
               <div className="flex flex-wrap gap-2">
-                <Link href={collection.href} className={btnSecondary}>View</Link>
-                <Link href={collection.addHref} className={btnSecondary}>Add</Link>
-                <Link href={collection.importHref} className={btnSecondary}>Import</Link>
+                <Link href={shelf.href} className={btnSecondary}>View</Link>
+                <Link href={shelf.addHref} className={btnSecondary}>Add</Link>
+                <Link href={shelf.importHref} className={btnSecondary}>Import</Link>
               </div>
             </div>
           ))}
