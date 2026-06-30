@@ -15,6 +15,20 @@
       "when": 1782745205538,
       "tag": "0001_add_book_series_fields",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1782794918542,
+      "tag": "0002_rapid_living_tribunal",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1782796057330,
+      "tag": "0003_premium_stryfe",
+      "breakpoints": true
     }
   ]
 }

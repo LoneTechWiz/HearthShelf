@@ -14,6 +14,7 @@ export default async function EditContactPage({
   const session = await auth()
   const contact = await getContactById(id, session!.user!.id!)
   if (!contact) notFound()
+  if (contact.linkedUserId) notFound()
 
   return (
     <div>

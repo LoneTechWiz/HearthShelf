@@ -80,6 +80,7 @@ describe("importContacts", () => {
       name: "Alice",
       email: "alice@example.com",
       phone: "555-1234",
+      linkedUserId: null,
       createdAt: new Date(),
     })
     const { importContacts } = await import("@/lib/actions/contacts")

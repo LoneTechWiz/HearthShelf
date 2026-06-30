@@ -1,0 +1,2 @@
+ALTER TABLE "contact" ADD COLUMN "linkedUserId" text;--> statement-breakpoint
+ALTER TABLE "contact" ADD CONSTRAINT "contact_linkedUserId_user_id_fk" FOREIGN KEY ("linkedUserId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;
