@@ -266,3 +266,37 @@ export const webPushSubscriptions = pgTable("webPushSubscription", {
   createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
   updatedAt: timestamp("updatedAt", { mode: "date" }).defaultNow().notNull(),
 })
+
+export const mobileAuthCodes = pgTable("mobileAuthCode", {
+  codeHash: text("codeHash").primaryKey(),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  redirectUri: text("redirectUri").notNull(),
+  expiresAt: timestamp("expiresAt", { mode: "date" }).notNull(),
+  createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+})
+
+export const mobileSessions = pgTable("mobileSession", {
+  tokenHash: text("tokenHash").primaryKey(),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  expiresAt: timestamp("expiresAt", { mode: "date" }).notNull(),
+  createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+  lastUsedAt: timestamp("lastUsedAt", { mode: "date" }),
+})
+
+export const mobilePushSubscriptions = pgTable("mobilePushSubscription", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  expoPushToken: text("expoPushToken").notNull().unique(),
+  platform: text("platform"),
+  deviceName: text("deviceName"),
+  createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt", { mode: "date" }).defaultNow().notNull(),
+})

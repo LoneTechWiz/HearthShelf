@@ -150,3 +150,50 @@ export async function createEventRecord(
 export async function deleteEventRecord(id: string, userId: string): Promise<void> {
   await db.delete(shelfEvents).where(and(eq(shelfEvents.id, id), eq(shelfEvents.userId, userId)))
 }
+
+export async function updateEventRecord(
+  id: string,
+  userId: string,
+  data: {
+    title: string
+    type: EventType
+    startsAt: Date
+    recurrence: EventRecurrence
+    lendableItemIds: string[]
+    notes: string | null
+  }
+): Promise<boolean> {
+  const lendableItemIds = Array.from(new Set(data.lendableItemIds))
+  if (lendableItemIds.length > 0) {
+    const items = await db
+      .select({ id: lendableItems.id })
+      .from(lendableItems)
+      .where(and(inArray(lendableItems.id, lendableItemIds), eq(lendableItems.userId, userId)))
+    if (items.length !== lendableItemIds.length) return false
+  }
+
+  await db.transaction(async (tx) => {
+    await tx
+      .update(shelfEvents)
+      .set({
+        title: data.title,
+        type: data.type,
+        startsAt: data.startsAt,
+        recurrence: data.recurrence,
+        notes: data.notes,
+      })
+      .where(and(eq(shelfEvents.id, id), eq(shelfEvents.userId, userId)))
+
+    await tx.delete(shelfEventItems).where(eq(shelfEventItems.eventId, id))
+    if (lendableItemIds.length > 0) {
+      await tx.insert(shelfEventItems).values(
+        lendableItemIds.map((lendableItemId) => ({
+          eventId: id,
+          lendableItemId,
+        }))
+      )
+    }
+  })
+
+  return true
+}
