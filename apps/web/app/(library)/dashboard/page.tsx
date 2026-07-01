@@ -5,8 +5,6 @@ import { getActiveCheckouts } from "@/lib/queries/checkouts"
 import { PageHeader } from "@/components/ui/page-header"
 import { EmptyState } from "@/components/ui/empty-state"
 import { btnPrimary, btnSecondary } from "@/components/ui/classes"
-import { PushNotificationToggle } from "@/components/push-notification-toggle"
-import { getWebPushPublicKey } from "@/lib/push"
 
 function formatDate(d: Date) {
   return new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(d)
@@ -57,7 +55,6 @@ const shelfOverview = [
 export default async function DashboardPage() {
   const session = await auth()
   const userId = session!.user!.id!
-  const webPushPublicKey = getWebPushPublicKey()
 
   const [stats, activity, active] = await Promise.all([
     getDashboardStats(userId),
@@ -79,7 +76,6 @@ export default async function DashboardPage() {
         <PageHeader
           title={firstName ? `Welcome, ${firstName}` : "Welcome"}
           subtitle="Start with any kind of item you lend out."
-          actions={<PushNotificationToggle publicKey={webPushPublicKey} />}
         />
         <EmptyState
           icon={
@@ -119,7 +115,6 @@ export default async function DashboardPage() {
             <Link href="/movies/new" className={btnSecondary}>Add Movie</Link>
             <Link href="/games/new" className={btnSecondary}>Add Game</Link>
             <Link href="/checkouts/new" className={btnPrimary}>Check Out</Link>
-            <PushNotificationToggle publicKey={webPushPublicKey} />
           </>
         }
       />
