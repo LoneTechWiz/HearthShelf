@@ -54,6 +54,15 @@ const links = [
     ),
   },
   {
+    href: "/notifications",
+    label: "Updates",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a2.625 2.625 0 01-5.714 0m9.607-2.332c-.861-1.097-1.5-2.358-1.5-4.5a5.25 5.25 0 00-10.5 0c0 2.142-.639 3.403-1.5 4.5a.75.75 0 00.59 1.213h12.32a.75.75 0 00.59-1.213z" />
+      </svg>
+    ),
+  },
+  {
     href: "/movies",
     label: "Movies",
     icon: (
@@ -100,7 +109,16 @@ const moreIcon = (
   </svg>
 )
 
-export function Nav({ user }: { user: NavUser }) {
+function NotificationBadge({ count }: { count: number }) {
+  if (count <= 0) return null
+  return (
+    <span className="ml-auto rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
+      {count > 9 ? "9+" : count}
+    </span>
+  )
+}
+
+export function Nav({ user, notificationCount }: { user: NavUser; notificationCount: number }) {
   const pathname = usePathname()
   const [moreOpen, setMoreOpen] = useState(false)
   const primaryLinks = links.filter((link) => mobilePrimaryHrefs.has(link.href))
@@ -136,13 +154,14 @@ export function Nav({ user }: { user: NavUser }) {
               key={href}
               href={href}
               aria-current={isActive ? "page" : undefined}
-              className={`relative rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+              className={`relative flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                 isActive
                   ? "bg-accent-soft text-accent before:absolute before:-left-3 before:top-1/2 before:h-5 before:w-0.5 before:-translate-y-1/2 before:rounded-full before:bg-accent"
                   : "text-ink-muted hover:bg-surface-raised hover:text-ink"
               }`}
             >
-              {label}
+              <span>{label}</span>
+              {href === "/notifications" && <NotificationBadge count={notificationCount} />}
             </Link>
           )
         })}
@@ -179,8 +198,13 @@ export function Nav({ user }: { user: NavUser }) {
                         : "bg-surface text-ink-muted hover:bg-surface-raised hover:text-ink"
                     }`}
                   >
-                    {icon}
-                    {label}
+                    <span className="relative">
+                      {icon}
+                      {href === "/notifications" && notificationCount > 0 && (
+                        <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-red-500" />
+                      )}
+                    </span>
+                    <span>{label}</span>
                   </Link>
                 )
               })}
@@ -234,7 +258,12 @@ export function Nav({ user }: { user: NavUser }) {
             moreOpen || moreIsActive ? "text-accent" : "text-ink-faint"
           }`}
         >
-          {moreIcon}
+          <span className="relative">
+            {moreIcon}
+            {notificationCount > 0 && (
+              <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-red-500" />
+            )}
+          </span>
           <span>More</span>
         </button>
       </nav>
