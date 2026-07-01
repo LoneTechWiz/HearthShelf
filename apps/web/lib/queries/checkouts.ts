@@ -171,3 +171,20 @@ export async function returnItemRecord(checkoutId: string, userId: string): Prom
     .set({ returnedAt: new Date() })
     .where(and(eq(checkouts.id, checkoutId), eq(checkouts.userId, userId)))
 }
+
+export async function updateCheckoutRecord(
+  checkoutId: string,
+  userId: string,
+  data: { contactId: string | null; dueDate: Date | null; notes: string | null }
+): Promise<void> {
+  await db
+    .update(checkouts)
+    .set(data)
+    .where(and(eq(checkouts.id, checkoutId), eq(checkouts.userId, userId)))
+}
+
+export async function deleteCheckoutRecord(checkoutId: string, userId: string): Promise<void> {
+  await db
+    .delete(checkouts)
+    .where(and(eq(checkouts.id, checkoutId), eq(checkouts.userId, userId)))
+}

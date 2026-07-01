@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "HearthShelf",
+    "slug": "hearthshelf",
+    "scheme": "hearthshelf",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "experiments": {
+      "typedRoutes": true
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow HearthShelf to scan ISBN barcodes."
+        }
+      ],
+      "expo-notifications"
+    ]
+  }
+}
