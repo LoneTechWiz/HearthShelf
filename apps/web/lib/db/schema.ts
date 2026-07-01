@@ -251,3 +251,18 @@ export const shelfEventItems = pgTable(
   },
   (t) => [primaryKey({ columns: [t.eventId, t.lendableItemId] })]
 )
+
+export const webPushSubscriptions = pgTable("webPushSubscription", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  endpoint: text("endpoint").notNull().unique(),
+  p256dh: text("p256dh").notNull(),
+  auth: text("auth").notNull(),
+  userAgent: text("userAgent"),
+  createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt", { mode: "date" }).defaultNow().notNull(),
+})

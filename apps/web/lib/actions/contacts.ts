@@ -19,6 +19,7 @@ import {
 import { getUserContactCandidate } from "@/lib/queries/users"
 import { parseCsv, toRecords } from "@/lib/csv/parse"
 import type { ImportResult, ImportSkip } from "@/lib/csv/types"
+import { sendPushToUser } from "@/lib/push"
 
 type ActionState = { error: string } | null
 
@@ -83,6 +84,11 @@ export async function requestUserContact(formData: FormData): Promise<void> {
   }
 
   await createContactRequest(session.user.id, user.id)
+  await sendPushToUser(user.id, {
+    title: "New contact request",
+    body: `${session.user.name ?? "Someone"} wants to connect on HearthShelf.`,
+    url: "/contacts",
+  })
 
   revalidatePath("/contacts/new")
   redirect("/contacts/new?flash=Request%20sent")

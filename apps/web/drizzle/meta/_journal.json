@@ -57,6 +57,13 @@
       "when": 1782873340129,
       "tag": "0007_faithful_roxanne_simpson",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1782875581007,
+      "tag": "0008_careful_silver_fox",
+      "breakpoints": true
     }
   ]
 }
