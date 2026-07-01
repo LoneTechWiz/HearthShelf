@@ -5,6 +5,7 @@ vi.mock("@/auth")
 vi.mock("@/lib/queries/contacts")
 vi.mock("@/lib/queries/users")
 vi.mock("@/lib/queries/contact-requests")
+vi.mock("@/lib/push")
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))
 vi.mock("next/navigation", () => ({ redirect: vi.fn() }))
 
@@ -25,6 +26,7 @@ import {
 } from "@/lib/queries/contact-requests"
 import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
+import { sendPushToUser } from "@/lib/push"
 
 const mockedAuth = vi.mocked(auth as unknown as () => Promise<Session | null>)
 
@@ -50,7 +52,7 @@ describe("createContact", () => {
   })
 
   it("creates contact and redirects", async () => {
-    mockedAuth.mockResolvedValue({ user: { id: "u1" }, expires: "" } as Session)
+    mockedAuth.mockResolvedValue({ user: { id: "u1", name: "Grace" }, expires: "" } as Session)
     vi.mocked(createContactRecord).mockResolvedValue()
     const { createContact } = await import("@/lib/actions/contacts")
     const fd = new FormData()
@@ -288,7 +290,7 @@ describe("requestUserContact", () => {
   })
 
   it("creates request for selected user and redirects", async () => {
-    mockedAuth.mockResolvedValue({ user: { id: "u1" }, expires: "" } as Session)
+    mockedAuth.mockResolvedValue({ user: { id: "u1", name: "Grace" }, expires: "" } as Session)
     vi.mocked(getUserContactCandidate).mockResolvedValue({
       id: "target",
       name: "Alice",
@@ -304,6 +306,11 @@ describe("requestUserContact", () => {
     await requestUserContact(fd)
     expect(createContactRecord).not.toHaveBeenCalled()
     expect(createContactRequest).toHaveBeenCalledWith("u1", "target")
+    expect(sendPushToUser).toHaveBeenCalledWith("target", {
+      title: "New contact request",
+      body: "Grace wants to connect on HearthShelf.",
+      url: "/contacts",
+    })
     expect(revalidatePath).toHaveBeenCalledWith("/contacts/new")
     expect(redirect).toHaveBeenCalledWith("/contacts/new?flash=Request%20sent")
   })

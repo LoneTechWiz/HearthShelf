@@ -4,7 +4,6 @@ import { redirect } from "next/navigation"
 import { Nav } from "@/components/nav"
 import { Toaster } from "sonner"
 import { FlashToast } from "@/components/flash-toast"
-import { getNotificationsForUser } from "@/lib/notifications"
 
 export default async function LibraryLayout({
   children,
@@ -13,14 +12,10 @@ export default async function LibraryLayout({
 }) {
   const session = await auth()
   if (!session) redirect("/")
-  const notificationCount = session.user?.id
-    ? (await getNotificationsForUser(session.user.id)).length
-    : 0
 
   return (
     <div className="flex min-h-screen">
       <Nav
-        notificationCount={notificationCount}
         user={{
           name: session.user?.name ?? null,
           email: session.user?.email ?? null,
