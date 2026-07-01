@@ -50,6 +50,13 @@
       "when": 1782854284143,
       "tag": "0006_rare_forgotten_one",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1782873340129,
+      "tag": "0007_faithful_roxanne_simpson",
+      "breakpoints": true
     }
   ]
 }

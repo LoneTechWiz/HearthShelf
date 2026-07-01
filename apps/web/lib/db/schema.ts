@@ -223,3 +223,31 @@ export const itemReviews = pgTable(
   },
   (t) => [unique().on(t.userId, t.lendableItemId)]
 )
+
+export const shelfEvents = pgTable("shelfEvent", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  type: text("type").$type<"book_club" | "movie_night" | "game_night">().notNull(),
+  startsAt: timestamp("startsAt", { mode: "date" }).notNull(),
+  recurrence: text("recurrence").$type<"none" | "weekly" | "monthly">().notNull().default("none"),
+  notes: text("notes"),
+  createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+})
+
+export const shelfEventItems = pgTable(
+  "shelfEventItem",
+  {
+    eventId: text("eventId")
+      .notNull()
+      .references(() => shelfEvents.id, { onDelete: "cascade" }),
+    lendableItemId: text("lendableItemId")
+      .notNull()
+      .references(() => lendableItems.id, { onDelete: "cascade" }),
+  },
+  (t) => [primaryKey({ columns: [t.eventId, t.lendableItemId] })]
+)
