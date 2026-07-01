@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { btnSecondary } from "@/components/ui/classes"
 
 type PushState = "unsupported" | "disabled" | "enabled" | "blocked" | "loading"
+const AUTO_PROMPT_KEY = "hearthshelf-push-auto-prompted"
 
 function urlBase64ToArrayBuffer(base64String: string): ArrayBuffer {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4)
@@ -23,6 +24,70 @@ async function getRegistration(): Promise<ServiceWorkerRegistration> {
   return existing ?? navigator.serviceWorker.register("/push-sw.js")
 }
 
+function pushIsSupported(publicKey: string | null): boolean {
+  return Boolean(
+    publicKey &&
+      "serviceWorker" in navigator &&
+      "PushManager" in window &&
+      "Notification" in window
+  )
+}
+
+async function subscribeToPush(publicKey: string): Promise<"enabled" | "disabled" | "blocked"> {
+  const permission = await Notification.requestPermission()
+  if (permission === "denied") return "blocked"
+  if (permission !== "granted") return "disabled"
+
+  const registration = await getRegistration()
+  const subscription =
+    (await registration.pushManager.getSubscription()) ??
+    (await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToArrayBuffer(publicKey),
+    }))
+
+  await fetch("/api/push/subscribe", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(subscription.toJSON()),
+  })
+
+  return "enabled"
+}
+
+export function PushNotificationAutoPrompt({ publicKey }: { publicKey: string | null }) {
+  useEffect(() => {
+    if (!pushIsSupported(publicKey)) return
+    if (Notification.permission !== "default") return
+    if (window.localStorage.getItem(AUTO_PROMPT_KEY)) return
+
+    async function promptForNotifications() {
+      removeListeners()
+      window.localStorage.setItem(AUTO_PROMPT_KEY, "1")
+
+      try {
+        await subscribeToPush(publicKey!)
+      } catch (error) {
+        console.warn("Unable to enable push notifications", error)
+      }
+    }
+
+    function removeListeners() {
+      window.removeEventListener("pointerdown", promptForNotifications)
+      window.removeEventListener("keydown", promptForNotifications)
+      window.removeEventListener("touchstart", promptForNotifications)
+    }
+
+    window.addEventListener("pointerdown", promptForNotifications, { once: true })
+    window.addEventListener("keydown", promptForNotifications, { once: true })
+    window.addEventListener("touchstart", promptForNotifications, { once: true })
+
+    return removeListeners
+  }, [publicKey])
+
+  return null
+}
+
 export function PushNotificationToggle({ publicKey }: { publicKey: string | null }) {
   const [state, setState] = useState<PushState>("loading")
 
@@ -30,7 +95,7 @@ export function PushNotificationToggle({ publicKey }: { publicKey: string | null
     let mounted = true
 
     async function checkSubscription() {
-      if (!publicKey || !("serviceWorker" in navigator) || !("PushManager" in window)) {
+      if (!pushIsSupported(publicKey)) {
         if (mounted) setState("unsupported")
         return
       }
@@ -56,31 +121,7 @@ export function PushNotificationToggle({ publicKey }: { publicKey: string | null
     if (!publicKey) return
     setState("loading")
 
-    const permission = await Notification.requestPermission()
-    if (permission === "denied") {
-      setState("blocked")
-      return
-    }
-    if (permission !== "granted") {
-      setState("disabled")
-      return
-    }
-
-    const registration = await getRegistration()
-    const subscription =
-      (await registration.pushManager.getSubscription()) ??
-      (await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToArrayBuffer(publicKey),
-      }))
-
-    await fetch("/api/push/subscribe", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(subscription.toJSON()),
-    })
-
-    setState("enabled")
+    setState(await subscribeToPush(publicKey))
   }
 
   async function disable() {
