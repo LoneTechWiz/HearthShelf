@@ -11,7 +11,8 @@ import type {
 import { getMobileToken } from "./token-store"
 
 export const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ?? "http://localhost:3000"
+  process.env.EXPO_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ??
+  "https://hearthshelf.lonetechwiz.com"
 
 type ApiOptions = {
   method?: "GET" | "POST" | "PUT" | "DELETE"

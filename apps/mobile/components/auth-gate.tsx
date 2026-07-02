@@ -6,7 +6,15 @@ import { Button, Card, LoadingState, Screen, SecondaryButton, StatusText } from 
 export function AuthGate({ children }: PropsWithChildren) {
   const auth = useAuth()
 
-  if (auth.loading) return <LoadingState />
+  if (auth.loading) {
+    return (
+      <Screen title="HearthShelf" subtitle="Connecting to your shelf.">
+        <LoadingState />
+        <StatusText>Checking your mobile session...</StatusText>
+      </Screen>
+    )
+  }
+
   if (auth.user) return <>{children}</>
 
   return (
