@@ -1,7 +1,7 @@
 import { Component } from "react"
 import type { ErrorInfo, PropsWithChildren } from "react"
 import { Slot } from "expo-router"
-import { StyleSheet, Text, View } from "react-native"
+import { StatusBar, StyleSheet, Text, View } from "react-native"
 import { AuthProvider } from "../lib/auth"
 import { colors } from "../lib/theme"
 import { Button, Card, Screen, StatusText } from "../components/screen"
@@ -10,6 +10,7 @@ export default function RootLayout() {
   return (
     <RootErrorBoundary>
       <AuthProvider>
+        <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
         <Slot />
       </AuthProvider>
     </RootErrorBoundary>

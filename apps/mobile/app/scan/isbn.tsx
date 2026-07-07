@@ -3,8 +3,8 @@ import { StyleSheet, Text, View } from "react-native"
 import { CameraView, useCameraPermissions, type BarcodeScanningResult } from "expo-camera"
 import { useRouter } from "expo-router"
 import { AuthGate } from "../../components/auth-gate"
-import { Button, Screen, StatusText } from "../../components/screen"
-import { colors, spacing } from "../../lib/theme"
+import { Button, Card, Screen, StatusText } from "../../components/screen"
+import { colors, radii, shadows, spacing } from "../../lib/theme"
 
 export default function IsbnScannerScreen() {
   const router = useRouter()
@@ -23,10 +23,10 @@ export default function IsbnScannerScreen() {
     <AuthGate>
       <Screen title="Scan ISBN" subtitle="Point the camera at a book barcode.">
         {!permission?.granted ? (
-          <View style={styles.card}>
+          <Card>
             <StatusText>Camera permission is required to scan an ISBN barcode.</StatusText>
-            <Button label="Allow camera" onPress={() => void requestPermission()} />
-          </View>
+            <Button label="Allow Camera" onPress={() => void requestPermission()} fullWidth />
+          </Card>
         ) : (
           <View style={styles.cameraWrap}>
             <CameraView
@@ -34,7 +34,10 @@ export default function IsbnScannerScreen() {
               barcodeScannerSettings={{ barcodeTypes: ["ean13", "ean8", "upc_a", "upc_e"] }}
               onBarcodeScanned={scanned ? undefined : onBarcodeScanned}
             />
-            <Text style={styles.caption}>{scanned ? "Barcode found." : "Scanning..."}</Text>
+            <View pointerEvents="none" style={styles.scanFrame} />
+            <View style={styles.captionBar}>
+              <Text style={styles.caption}>{scanned ? "Barcode found." : "Scanning..."}</Text>
+            </View>
           </View>
         )}
       </Screen>
@@ -43,26 +46,41 @@ export default function IsbnScannerScreen() {
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: colors.surface,
-    borderColor: colors.edge,
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: spacing.md,
-    padding: spacing.md,
-  },
   cameraWrap: {
     backgroundColor: colors.ink,
-    borderRadius: 8,
+    borderRadius: radii.lg,
+    minHeight: 420,
     overflow: "hidden",
+    ...shadows.card,
   },
   camera: {
-    aspectRatio: 3 / 4,
+    flex: 1,
+    minHeight: 420,
     width: "100%",
+  },
+  scanFrame: {
+    borderColor: colors.accentContrast,
+    borderRadius: radii.lg,
+    borderWidth: 2,
+    bottom: 120,
+    left: spacing.xl,
+    opacity: 0.85,
+    position: "absolute",
+    right: spacing.xl,
+    top: 120,
+  },
+  captionBar: {
+    backgroundColor: "rgba(43, 33, 27, 0.82)",
+    bottom: 0,
+    left: 0,
+    padding: spacing.md,
+    position: "absolute",
+    right: 0,
   },
   caption: {
     color: colors.primaryInk,
-    padding: spacing.md,
+    fontSize: 14,
+    fontWeight: "800",
     textAlign: "center",
   },
 })
