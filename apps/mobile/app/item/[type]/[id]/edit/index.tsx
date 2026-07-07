@@ -20,7 +20,10 @@ export default function EditItemScreen() {
 
   return (
     <AuthGate>
-      <Screen title="Edit item">
+      <Screen
+        title="Edit Item"
+        subtitle={data?.item ? data.item.title : "Update shelf details."}
+      >
         {loading ? <LoadingState /> : null}
         {error ? <ErrorState message={error} onRetry={() => void reload()} /> : null}
         {data?.item ? (

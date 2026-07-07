@@ -9,6 +9,7 @@
     "ios": "expo run:ios"
   },
   "dependencies": {
+    "@expo/vector-icons": "~14.0.4",
     "@my-shelf/types": "*",
     "expo": "~52.0.0",
     "expo-camera": "~16.0.18",

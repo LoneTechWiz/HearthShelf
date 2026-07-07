@@ -61,6 +61,7 @@ export function ItemForm({ type, item, isbn, onSaved, onScanIsbn }: ItemFormProp
   const [values, setValues] = useState(() => initialState(type, item, isbn))
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const titleMissing = !values.title?.trim()
 
   useEffect(() => {
     if (type !== "book" || !isbn || item) return
@@ -88,6 +89,7 @@ export function ItemForm({ type, item, isbn, onSaved, onScanIsbn }: ItemFormProp
   }
 
   async function submit() {
+    if (titleMissing) return
     setSaving(true)
     setError(null)
     try {
@@ -108,7 +110,7 @@ export function ItemForm({ type, item, isbn, onSaved, onScanIsbn }: ItemFormProp
         <>
           <Field label="Authors" value={values.authors ?? ""} onChangeText={(value) => setField("authors", value)} />
           <Field label="ISBN" value={values.isbn ?? ""} onChangeText={(value) => setField("isbn", value)} />
-          {onScanIsbn ? <SecondaryButton label="Scan ISBN" onPress={onScanIsbn} /> : null}
+          {onScanIsbn ? <SecondaryButton label="Scan ISBN" onPress={onScanIsbn} fullWidth /> : null}
           <Field label="Series" value={values.seriesName ?? ""} onChangeText={(value) => setField("seriesName", value)} />
           <Field label="Series position" value={values.seriesPosition ?? ""} keyboardType="number-pad" onChangeText={(value) => setField("seriesPosition", value)} />
           <Field label="Series total" value={values.seriesTotal ?? ""} keyboardType="number-pad" onChangeText={(value) => setField("seriesTotal", value)} />
@@ -133,8 +135,13 @@ export function ItemForm({ type, item, isbn, onSaved, onScanIsbn }: ItemFormProp
       <Field label="Genre" value={values.genre ?? ""} onChangeText={(value) => setField("genre", value)} />
       <Field label={type === "movie" ? "Poster URL" : "Cover URL"} value={(values.posterUrl ?? values.coverUrl) ?? ""} onChangeText={(value) => setField(type === "movie" ? "posterUrl" : "coverUrl", value)} />
       <Field label="Description" value={values.description ?? ""} multiline onChangeText={(value) => setField("description", value)} />
-      {!values.title?.trim() ? <StatusText>Title is required.</StatusText> : null}
-      <Button label={saving ? "Saving..." : "Save"} onPress={() => void submit()} />
+      {titleMissing ? <StatusText tone="danger">Title is required.</StatusText> : null}
+      <Button
+        label={saving ? "Saving..." : "Save"}
+        disabled={saving || titleMissing}
+        onPress={() => void submit()}
+        fullWidth
+      />
     </Card>
   )
 }
@@ -161,6 +168,8 @@ function Field({
         onChangeText={onChangeText}
         keyboardType={keyboardType}
         multiline={multiline}
+        placeholderTextColor={colors.faint}
+        selectionColor={colors.accent}
       />
     </View>
   )
@@ -171,16 +180,18 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   label: {
-    color: colors.muted,
+    color: colors.ink,
     fontSize: 13,
-    fontWeight: "700",
+    fontWeight: "800",
   },
   input: {
-    backgroundColor: colors.background,
+    backgroundColor: colors.surfaceRaised,
     borderColor: colors.edge,
     borderRadius: 8,
     borderWidth: 1,
     color: colors.ink,
+    fontSize: 15,
+    minHeight: 46,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },

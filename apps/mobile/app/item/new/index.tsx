@@ -8,6 +8,12 @@ function parseType(value: string | string[] | undefined): ItemType {
   return value === "movie" || value === "game" ? value : "book"
 }
 
+const labels: Record<ItemType, string> = {
+  book: "Book",
+  movie: "Movie",
+  game: "Game",
+}
+
 export default function NewItemScreen() {
   const router = useRouter()
   const params = useLocalSearchParams<{ type?: string; isbn?: string }>()
@@ -15,7 +21,7 @@ export default function NewItemScreen() {
 
   return (
     <AuthGate>
-      <Screen title={`Add ${type}`} subtitle="Create a new shelf item.">
+      <Screen title={`Add ${labels[type]}`} subtitle="Create a new shelf item.">
         <ItemForm
           type={type}
           isbn={params.isbn}
