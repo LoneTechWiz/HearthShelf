@@ -23,8 +23,8 @@ export async function GET(request: Request) {
   }
 
   if (!session?.user?.id) {
-    const callbackUrl = encodeURIComponent(request.url)
-    return Response.redirect(new URL(`/api/auth/signin?callbackUrl=${callbackUrl}`, request.url))
+    const callbackUrl = encodeURIComponent(`${requestUrl.pathname}${requestUrl.search}`)
+    return Response.redirect(new URL(`/mobile-sign-in?callbackUrl=${callbackUrl}`, request.url))
   }
 
   const code = await createMobileAuthCode(session.user.id, redirectUri.toString())
