@@ -70,6 +70,7 @@ export function GameForm({ action, defaultValues, submitLabel = "Save" }: GameFo
     try {
       const detail = await getGameByBggId(suggestion.bggId)
       if (detail) {
+        setCoverUrl(detail.coverUrl ?? "")
         setMinPlayers(String(detail.minPlayers ?? ""))
         setMaxPlayers(String(detail.maxPlayers ?? ""))
         setAgeRating(detail.ageRating ?? "")
