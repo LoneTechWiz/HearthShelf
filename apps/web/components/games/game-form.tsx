@@ -70,6 +70,7 @@ export function GameForm({ action, defaultValues, submitLabel = "Save" }: GameFo
     try {
       const detail = await getGameByBggId(suggestion.bggId)
       if (detail) {
+        setCoverUrl(detail.coverUrl ?? "")
         setMinPlayers(String(detail.minPlayers ?? ""))
         setMaxPlayers(String(detail.maxPlayers ?? ""))
         setAgeRating(detail.ageRating ?? "")
@@ -112,9 +113,16 @@ export function GameForm({ action, defaultValues, submitLabel = "Save" }: GameFo
             {suggestions.map((s) => (
               <li key={s.bggId}>
                 <button type="button" onClick={() => handleSelect(s)}
-                  className="w-full px-3 py-2 text-left text-sm hover:bg-surface-raised">
-                  <span className="font-medium">{s.title}</span>
-                  {s.year && <span className="ml-1 text-ink-muted">({s.year})</span>}
+                  className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm hover:bg-surface-raised">
+                  {s.coverUrl ? (
+                    <img src={s.coverUrl} alt="" className="h-10 w-7 flex-shrink-0 rounded object-cover" />
+                  ) : (
+                    <div className="h-10 w-7 flex-shrink-0 rounded bg-surface-raised" />
+                  )}
+                  <span className="min-w-0 truncate font-medium">
+                    {s.title}
+                    {s.year && <span className="ml-1 text-ink-muted">({s.year})</span>}
+                  </span>
                 </button>
               </li>
             ))}

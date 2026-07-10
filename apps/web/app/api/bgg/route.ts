@@ -21,6 +21,7 @@ type BggLinkNode = {
 }
 
 type BggDetailItem = {
+  "@_id"?: string | number
   name?: BggNameNode | BggNameNode[]
   image?: string
   link?: BggLinkNode | BggLinkNode[]
@@ -30,41 +31,53 @@ type BggDetailItem = {
   description?: string | { __cdata?: string }
 }
 
-function parseDetail(xml: string): GameDetail | null {
+function parseDetailItems(xml: string): Array<{ bggId: string; detail: GameDetail }> {
   const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "@_", cdataPropName: "__cdata" })
   const doc = parser.parse(xml)
-  const item = doc?.items?.item as BggDetailItem | undefined
-  if (!item) return null
+  const rawItems = doc?.items?.item
+  if (!rawItems) return []
+  const items = (Array.isArray(rawItems) ? rawItems : [rawItems]) as BggDetailItem[]
 
-  const names = Array.isArray(item.name) ? item.name : [item.name]
-  const primaryName = names.find((name) => name?.["@_type"] === "primary") ?? names[0]
-  const title = primaryName?.["@_value"] ?? ""
+  return items.flatMap((item) => {
+    const names = Array.isArray(item.name) ? item.name : [item.name]
+    const primaryName = names.find((name) => name?.["@_type"] === "primary") ?? names[0]
+    const title = primaryName?.["@_value"] ?? ""
 
-  const rawImage = item.image ?? null
-  const coverUrl = rawImage
-    ? String(rawImage).startsWith("http") ? String(rawImage) : `https:${rawImage}`
-    : null
+    const rawImage = item.image ?? null
+    const coverUrl = rawImage
+      ? String(rawImage).startsWith("http") ? String(rawImage) : `https:${rawImage}`
+      : null
 
-  const links = Array.isArray(item.link) ? item.link : item.link ? [item.link] : []
-  const category = links.find((link) => link?.["@_type"] === "boardgamecategory")
+    const links = Array.isArray(item.link) ? item.link : item.link ? [item.link] : []
+    const category = links.find((link) => link?.["@_type"] === "boardgamecategory")
 
-  const minAge = parseInt(String(item.minage?.["@_value"] ?? "")) || null
+    const minAge = parseInt(String(item.minage?.["@_value"] ?? "")) || null
 
-  // BGG description is HTML-escaped plain text in a CDATA section
-  const rawDesc = typeof item.description === "object"
-    ? item.description.__cdata ?? null
-    : item.description ?? null
-  const description = rawDesc ? String(rawDesc).trim() || null : null
+    // BGG description is HTML-escaped plain text in a CDATA section
+    const rawDesc = typeof item.description === "object"
+      ? item.description.__cdata ?? null
+      : item.description ?? null
+    const description = rawDesc ? String(rawDesc).trim() || null : null
 
-  return {
-    title,
-    coverUrl,
-    minPlayers: parseInt(String(item.minplayers?.["@_value"] ?? "")) || null,
-    maxPlayers: parseInt(String(item.maxplayers?.["@_value"] ?? "")) || null,
-    ageRating: minAge ? `${minAge}+` : null,
-    genre: category?.["@_value"] ?? null,
-    description,
-  }
+    const bggId = String(item["@_id"] ?? "")
+    if (!bggId) return []
+    return [{
+      bggId,
+      detail: {
+        title,
+        coverUrl,
+        minPlayers: parseInt(String(item.minplayers?.["@_value"] ?? "")) || null,
+        maxPlayers: parseInt(String(item.maxplayers?.["@_value"] ?? "")) || null,
+        ageRating: minAge ? `${minAge}+` : null,
+        genre: category?.["@_value"] ?? null,
+        description,
+      },
+    }]
+  })
+}
+
+function parseDetail(xml: string): GameDetail | null {
+  return parseDetailItems(xml)[0]?.detail ?? null
 }
 
 async function fetchBgg(url: string, apiKey: string): Promise<string | null> {
@@ -99,7 +112,7 @@ export async function GET(req: NextRequest) {
   const now = new Date()
 
   if (query) {
-    const cacheKey = `v4:${query.trim().toLowerCase()}`
+    const cacheKey = `v5:${query.trim().toLowerCase()}`
 
     // Check search cache
     const [cached] = await db.select().from(bggSearchCache).where(eq(bggSearchCache.query, cacheKey))
@@ -124,6 +137,19 @@ export async function GET(req: NextRequest) {
       exactXml ? parseBggSearchXml(exactXml) : [],
       broadXml ? parseBggSearchXml(broadXml) : []
     )
+
+    if (results.length > 0) {
+      const coverXml = await fetchBgg(
+        `https://boardgamegeek.com/xmlapi2/thing?id=${results.map((result) => encodeURIComponent(result.bggId)).join(",")}`,
+        apiKey
+      )
+      if (coverXml) {
+        const details = new Map(parseDetailItems(coverXml).map(({ bggId, detail }) => [bggId, detail]))
+        for (const result of results) {
+          result.coverUrl = details.get(result.bggId)?.coverUrl ?? null
+        }
+      }
+    }
 
     await db
       .insert(bggSearchCache)
