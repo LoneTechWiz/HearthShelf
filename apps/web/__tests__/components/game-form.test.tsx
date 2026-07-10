@@ -17,7 +17,7 @@ describe("GameForm", () => {
   it("fills the cover URL returned for a selected game", async () => {
     vi.useFakeTimers()
     vi.mocked(searchGamesByTitle).mockResolvedValue([
-      { bggId: "13", title: "Catan", year: 1995 },
+      { bggId: "13", title: "Catan", year: 1995, coverUrl: "https://example.com/catan.jpg" },
     ])
     vi.mocked(getGameByBggId).mockResolvedValue({
       title: "Catan",
@@ -35,6 +35,8 @@ describe("GameForm", () => {
       fireEvent.change(screen.getByLabelText(/Title/), { target: { value: "Catan" } })
       await vi.advanceTimersByTimeAsync(300)
     })
+    expect(screen.getByRole("presentation")).toHaveAttribute("src", "https://example.com/catan.jpg")
+
     await act(async () => {
       fireEvent.click(screen.getByRole("button", { name: /Catan/ }))
     })
