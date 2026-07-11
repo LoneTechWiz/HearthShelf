@@ -3,7 +3,7 @@ import { useRouter } from "expo-router"
 import { Image, Pressable, StyleSheet, Text, View } from "react-native"
 import type { MobileShelfItem } from "@my-shelf/types"
 import { Pill, StatusBadge } from "./screen"
-import { colors, radii, shadows, spacing } from "../lib/theme"
+import { colors, pressableRipple, radii, shadows, spacing } from "../lib/theme"
 
 function itemImage(item: MobileShelfItem): string | null {
   if (item.type === "movie") return item.posterUrl
@@ -25,6 +25,9 @@ export function ItemRow({ item }: { item: MobileShelfItem }) {
   const itemSubtitle = subtitle(item)
   return (
     <Pressable
+      accessibilityLabel={`Open ${item.title}`}
+      accessibilityRole="button"
+      android_ripple={pressableRipple}
       style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
       onPress={() => router.push({ pathname: "/item/[type]/[id]", params: { type: item.type, id: item.id } })}
     >
@@ -58,6 +61,7 @@ const styles = StyleSheet.create({
     borderColor: colors.edge,
     borderRadius: radii.lg,
     borderWidth: 1,
+    cursor: "pointer",
     padding: spacing.md,
     ...shadows.card,
   },

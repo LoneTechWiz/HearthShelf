@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { StyleSheet, Text, TextInput, View } from "react-native"
 import type { ItemType, MobileShelfItem } from "@my-shelf/types"
 import { Button, Card, SecondaryButton, StatusText } from "./screen"
-import { colors, spacing } from "../lib/theme"
+import { colors, radii, spacing, typography } from "../lib/theme"
 import { lookupBookByIsbn, saveItem } from "../lib/api"
 
 type ItemFormProps = {
@@ -181,13 +181,12 @@ const styles = StyleSheet.create({
   },
   label: {
     color: colors.ink,
-    fontSize: 13,
-    fontWeight: "800",
+    ...typography.label,
   },
   input: {
-    backgroundColor: colors.surfaceRaised,
+    backgroundColor: colors.surface,
     borderColor: colors.edge,
-    borderRadius: 8,
+    borderRadius: radii.md,
     borderWidth: 1,
     color: colors.ink,
     fontSize: 15,

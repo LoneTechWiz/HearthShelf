@@ -1,12 +1,10 @@
 import { useCallback, useEffect, useState } from "react"
-import { Pressable, StyleSheet, Text, View } from "react-native"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import type { ItemType, MobileShelfItem } from "@my-shelf/types"
 import { AuthGate } from "../../components/auth-gate"
 import { ItemRow } from "../../components/item-row"
-import { EmptyState, ErrorState, LoadingState, Screen } from "../../components/screen"
+import { EmptyState, ErrorState, LoadingState, Screen, SegmentedControl } from "../../components/screen"
 import { getItems } from "../../lib/api"
-import { colors, radii, spacing } from "../../lib/theme"
 import { useCachedQuery } from "../../lib/use-cached-query"
 
 const types: ItemType[] = ["book", "movie", "game"]
@@ -45,23 +43,11 @@ export default function ShelfScreen() {
         }
         action={{ label: `Add ${labels[type].singular}`, onPress: () => router.push({ pathname: "/item/new", params: { type } }) }}
       >
-        <View style={styles.segment}>
-          {types.map((itemType) => (
-            <Pressable
-              key={itemType}
-              style={({ pressed }) => [
-                styles.segmentButton,
-                itemType === type && styles.segmentButtonActive,
-                pressed && itemType !== type && styles.segmentButtonPressed,
-              ]}
-              onPress={() => setType(itemType)}
-            >
-              <Text style={itemType === type ? styles.segmentTextActive : styles.segmentText}>
-                {labels[itemType].plural}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
+        <SegmentedControl
+          options={types.map((itemType) => ({ label: labels[itemType].plural, value: itemType }))}
+          value={type}
+          onChange={setType}
+        />
         {loading ? <LoadingState /> : null}
         {error ? <ErrorState message={error} onRetry={() => void reload()} /> : null}
         {!loading && !error && items.length === 0 ? (
@@ -75,38 +61,3 @@ export default function ShelfScreen() {
     </AuthGate>
   )
 }
-
-const styles = StyleSheet.create({
-  segment: {
-    backgroundColor: colors.surface,
-    borderColor: colors.edge,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    flexDirection: "row",
-    padding: spacing.xs,
-  },
-  segmentButton: {
-    alignItems: "center",
-    borderRadius: radii.md,
-    flex: 1,
-    minHeight: 38,
-    justifyContent: "center",
-    paddingHorizontal: spacing.xs,
-  },
-  segmentButtonPressed: {
-    backgroundColor: colors.surfaceRaised,
-  },
-  segmentButtonActive: {
-    backgroundColor: colors.accentSoft,
-  },
-  segmentText: {
-    color: colors.muted,
-    fontSize: 14,
-    fontWeight: "800",
-  },
-  segmentTextActive: {
-    color: colors.accent,
-    fontSize: 14,
-    fontWeight: "800",
-  },
-})

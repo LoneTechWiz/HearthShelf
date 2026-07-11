@@ -8,7 +8,7 @@ import type { GameWithAvailability } from "@/lib/queries/games"
 import { BooksList } from "@/components/books/books-list"
 import { MoviesList } from "@/components/movies/movies-list"
 import { GamesList } from "@/components/games/games-list"
-import { btnPrimary, btnSecondary } from "@/components/ui/classes"
+import { btnPrimary, btnSecondary, segmentedButtonClass, segmentedGroupClass } from "@/components/ui/classes"
 
 type ShelfType = "books" | "movies" | "games"
 
@@ -50,16 +50,14 @@ export function ShelfView({
         </div>
       </div>
 
-      <div className="mb-4 flex rounded-lg border border-edge bg-surface p-0.5 sm:w-fit" role="group" aria-label="Shelf type">
+      <div className={`${segmentedGroupClass} mb-4 sm:w-fit`} role="group" aria-label="Shelf type">
         {(["books", "movies", "games"] as const).map((nextShelf) => (
           <button
             key={nextShelf}
             type="button"
             onClick={() => setShelf(nextShelf)}
             aria-pressed={shelf === nextShelf}
-            className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors sm:flex-none ${
-              shelf === nextShelf ? "bg-accent-soft text-accent" : "text-ink-muted hover:text-ink"
-            }`}
+            className={segmentedButtonClass(shelf === nextShelf)}
           >
             {labels[nextShelf]}
           </button>
