@@ -7,7 +7,7 @@ import { AuthGate } from "../../components/auth-gate"
 import { Card, EmptyState, ErrorState, LoadingState, MetricCard, Pill, Screen, SectionHeader } from "../../components/screen"
 import { getDashboard } from "../../lib/api"
 import { useAuth } from "../../lib/auth"
-import { colors, radii, shadows, spacing } from "../../lib/theme"
+import { colors, pressableRipple, radii, shadows, spacing } from "../../lib/theme"
 import { useCachedQuery } from "../../lib/use-cached-query"
 
 type IconName = ComponentProps<typeof Ionicons>["name"]
@@ -116,7 +116,13 @@ function OverviewCard({
   onPress: () => void
 }) {
   return (
-    <Pressable style={({ pressed }) => [styles.overviewCard, pressed && styles.overviewCardPressed]} onPress={onPress}>
+    <Pressable
+      accessibilityLabel={`${label}: ${value}`}
+      accessibilityRole="button"
+      android_ripple={pressableRipple}
+      style={({ pressed }) => [styles.overviewCard, pressed && styles.overviewCardPressed]}
+      onPress={onPress}
+    >
       <View style={styles.overviewIcon}>
         <Ionicons name={icon} size={22} color={colors.accent} />
       </View>
@@ -150,6 +156,7 @@ const styles = StyleSheet.create({
     borderColor: colors.edge,
     borderRadius: radii.lg,
     borderWidth: 1,
+    cursor: "pointer",
     flexDirection: "row",
     gap: spacing.md,
     padding: spacing.lg,

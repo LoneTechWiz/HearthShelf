@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import type { ShelfCollection, CollectionItem } from "@/lib/shelf-collections"
 import { EmptyState } from "@/components/ui/empty-state"
+import { cardClass, segmentedButtonClass, segmentedGroupClass } from "@/components/ui/classes"
 
 type ShelfType = "books" | "movies" | "games"
 type GroupView = "authors" | "series" | "genres" | "categories" | "players"
@@ -86,7 +87,7 @@ function CollectionCard({ collection, shelf }: { collection: ShelfCollection; sh
   const itemLabel = shelf === "books" ? "book" : shelf === "movies" ? "movie" : "game"
 
   return (
-    <article className="rounded-xl border border-edge bg-surface p-4 shadow-sm">
+    <article className={`${cardClass} p-4`}>
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h2 className="truncate font-display text-lg font-semibold text-ink">{collection.name}</h2>
@@ -137,32 +138,28 @@ export function ShelfCollections({ data }: { data: ShelfCollectionsData }) {
   return (
     <>
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex rounded-lg border border-edge bg-surface p-0.5" role="group" aria-label="Shelf type">
+        <div className={segmentedGroupClass} role="group" aria-label="Shelf type">
           {(["books", "movies", "games"] as const).map((nextShelf) => (
             <button
               key={nextShelf}
               type="button"
               onClick={() => changeShelf(nextShelf)}
               aria-pressed={shelf === nextShelf}
-              className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors sm:flex-none ${
-                shelf === nextShelf ? "bg-accent-soft text-accent" : "text-ink-muted hover:text-ink"
-              }`}
+              className={segmentedButtonClass(shelf === nextShelf)}
             >
               {shelfLabels[nextShelf]}
             </button>
           ))}
         </div>
 
-        <div className="flex rounded-lg border border-edge bg-surface p-0.5" role="group" aria-label="Collection grouping">
+        <div className={segmentedGroupClass} role="group" aria-label="Collection grouping">
           {groupOptions[shelf].map((option) => (
             <button
               key={option.key}
               type="button"
               onClick={() => changeView(option.key)}
               aria-pressed={view === option.key}
-              className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors sm:flex-none ${
-                view === option.key ? "bg-accent-soft text-accent" : "text-ink-muted hover:text-ink"
-              }`}
+              className={segmentedButtonClass(view === option.key)}
             >
               {option.label}
             </button>

@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { inputClass } from "@/components/ui/classes"
+import { inputClass, segmentedButtonClass, segmentedGroupClass } from "@/components/ui/classes"
 
 type ItemType = "book" | "movie" | "game"
 
@@ -66,16 +66,14 @@ export function ItemPicker({ books, movies, games, defaultLendableItemId, defaul
   return (
     <div className="flex flex-col gap-2">
       {/* Type tabs */}
-      <div className="flex rounded-lg border border-edge bg-surface p-0.5 w-fit" role="group" aria-label="Item type">
+      <div className={`${segmentedGroupClass} w-fit`} role="group" aria-label="Item type">
         {(["book", "movie", "game"] as ItemType[]).map((type) => (
           <button
             key={type}
             type="button"
             onClick={() => handleTypeChange(type)}
             aria-pressed={activeType === type}
-            className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-              activeType === type ? "bg-accent-soft text-accent" : "text-ink-muted hover:text-ink"
-            }`}
+            className={segmentedButtonClass(activeType === type)}
           >
             {tabLabel[type]}
           </button>

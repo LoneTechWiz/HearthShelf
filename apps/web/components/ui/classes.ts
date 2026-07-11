@@ -11,3 +11,14 @@ export const inputClass =
   "rounded-lg border border-edge bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-accent"
 
 export const labelClass = "text-sm font-medium text-ink"
+
+export const cardClass = "rounded-xl border border-edge bg-surface shadow-sm"
+
+export const segmentedGroupClass =
+  "flex rounded-lg border border-edge bg-surface p-0.5"
+
+export function segmentedButtonClass(active: boolean) {
+  return `flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:flex-none ${
+    active ? "bg-accent-soft text-accent" : "text-ink-muted hover:bg-surface-raised hover:text-ink"
+  }`
+}

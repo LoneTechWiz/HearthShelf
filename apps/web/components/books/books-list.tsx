@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import type { BookWithAvailability } from "@/lib/queries/books"
-import { inputClass, btnPrimary, btnSecondarySm } from "@/components/ui/classes"
+import { inputClass, btnPrimary, btnSecondarySm, segmentedButtonClass, segmentedGroupClass } from "@/components/ui/classes"
 import { StatusBadge } from "@/components/ui/status-badge"
 import { EmptyState } from "@/components/ui/empty-state"
 import { DataAttribution } from "@/components/ui/data-attribution"
@@ -51,16 +51,14 @@ export function BooksList({ books }: { books: BookWithAvailability[] }) {
           onChange={(e) => setQuery(e.target.value)}
           className={`w-full max-w-sm ${inputClass}`}
         />
-        <div className="flex shrink-0 rounded-lg border border-edge bg-surface p-0.5" role="group" aria-label="View">
+        <div className={`${segmentedGroupClass} shrink-0`} role="group" aria-label="View">
           {(["list", "grid"] as const).map((v) => (
             <button
               key={v}
               type="button"
               onClick={() => changeView(v)}
               aria-pressed={view === v}
-              className={`rounded-md px-2.5 py-1 text-xs font-medium capitalize transition-colors ${
-                view === v ? "bg-accent-soft text-accent" : "text-ink-muted hover:text-ink"
-              }`}
+              className={`${segmentedButtonClass(view === v)} capitalize`}
             >
               {v}
             </button>

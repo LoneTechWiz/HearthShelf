@@ -10,7 +10,7 @@ import {
   type ViewStyle,
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-import { colors, radii, shadows, spacing } from "../lib/theme"
+import { colors, pressableRipple, radii, shadows, spacing, typography } from "../lib/theme"
 
 type ScreenProps = PropsWithChildren<{
   title: string
@@ -27,6 +27,8 @@ type ButtonProps = {
 }
 
 type PillTone = "neutral" | "accent" | "success" | "warning" | "danger"
+
+type SegmentOption<T extends string> = { label: string; value: T }
 
 export function Screen({ title, subtitle, action, eyebrow, children }: ScreenProps) {
   return (
@@ -50,6 +52,7 @@ export function Button({ label, onPress, disabled, fullWidth }: ButtonProps) {
   return (
     <Pressable
       accessibilityRole="button"
+      android_ripple={pressableRipple}
       disabled={disabled}
       style={({ pressed }) => [
         styles.button,
@@ -68,6 +71,7 @@ export function SecondaryButton({ label, onPress, disabled, fullWidth }: ButtonP
   return (
     <Pressable
       accessibilityRole="button"
+      android_ripple={pressableRipple}
       disabled={disabled}
       style={({ pressed }) => [
         styles.secondaryButton,
@@ -86,6 +90,7 @@ export function DangerButton({ label, onPress, disabled, fullWidth }: ButtonProp
   return (
     <Pressable
       accessibilityRole="button"
+      android_ripple={pressableRipple}
       disabled={disabled}
       style={({ pressed }) => [
         styles.dangerButton,
@@ -97,6 +102,42 @@ export function DangerButton({ label, onPress, disabled, fullWidth }: ButtonProp
     >
       <Text style={styles.dangerButtonText}>{label}</Text>
     </Pressable>
+  )
+}
+
+export function SegmentedControl<T extends string>({
+  options,
+  value,
+  onChange,
+}: {
+  options: SegmentOption<T>[]
+  value: T
+  onChange: (value: T) => void
+}) {
+  return (
+    <View accessibilityRole="tablist" style={styles.segmentedGroup}>
+      {options.map((option) => {
+        const selected = option.value === value
+        return (
+          <Pressable
+            key={option.value}
+            accessibilityRole="tab"
+            accessibilityState={{ selected }}
+            android_ripple={pressableRipple}
+            onPress={() => onChange(option.value)}
+            style={({ pressed }) => [
+              styles.segmentedButton,
+              selected && styles.segmentedButtonActive,
+              pressed && !selected && styles.segmentedButtonPressed,
+            ]}
+          >
+            <Text style={[styles.segmentedText, selected && styles.segmentedTextActive]}>
+              {option.label}
+            </Text>
+          </Pressable>
+        )
+      })}
+    </View>
   )
 }
 
@@ -259,16 +300,13 @@ const styles = StyleSheet.create({
   },
   eyebrow: {
     color: colors.accent,
-    fontSize: 12,
-    fontWeight: "800",
+    ...typography.eyebrow,
     marginBottom: spacing.xs,
     textTransform: "uppercase",
   },
   title: {
     color: colors.ink,
-    fontSize: 30,
-    fontWeight: "800",
-    lineHeight: 36,
+    ...typography.screenTitle,
   },
   subtitle: {
     color: colors.muted,
@@ -281,7 +319,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accent,
     borderRadius: radii.md,
     justifyContent: "center",
-    minHeight: 42,
+    cursor: "pointer",
+    minHeight: 44,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
     ...shadows.card,
@@ -291,12 +330,12 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.98 }],
   },
   buttonDisabled: {
+    cursor: "auto",
     opacity: 0.55,
   },
   buttonText: {
     color: colors.accentContrast,
-    fontSize: 14,
-    fontWeight: "800",
+    ...typography.control,
   },
   secondaryButton: {
     alignItems: "center",
@@ -305,7 +344,8 @@ const styles = StyleSheet.create({
     borderRadius: radii.md,
     borderWidth: 1,
     justifyContent: "center",
-    minHeight: 42,
+    cursor: "pointer",
+    minHeight: 44,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
   },
@@ -315,28 +355,27 @@ const styles = StyleSheet.create({
   },
   secondaryButtonText: {
     color: colors.ink,
-    fontSize: 14,
-    fontWeight: "800",
+    ...typography.control,
   },
   dangerButton: {
     alignItems: "center",
     backgroundColor: colors.dangerSoft,
-    borderColor: "#f2b8b5",
+    borderColor: colors.dangerEdge,
     borderRadius: radii.md,
     borderWidth: 1,
     justifyContent: "center",
-    minHeight: 42,
+    cursor: "pointer",
+    minHeight: 44,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
   },
   dangerButtonPressed: {
-    backgroundColor: "#fbd0cd",
+    backgroundColor: colors.dangerPressed,
     transform: [{ scale: 0.98 }],
   },
   dangerButtonText: {
     color: colors.danger,
-    fontSize: 14,
-    fontWeight: "800",
+    ...typography.control,
   },
   fullWidth: {
     alignSelf: "stretch",
@@ -356,8 +395,7 @@ const styles = StyleSheet.create({
   },
   status: {
     color: colors.muted,
-    fontSize: 14,
-    lineHeight: 20,
+    ...typography.body,
     textAlign: "left",
   },
   statusDanger: {
@@ -376,9 +414,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: colors.ink,
-    fontSize: 18,
-    fontWeight: "800",
-    lineHeight: 23,
+    ...typography.sectionTitle,
   },
   sectionSubtitle: {
     color: colors.muted,
@@ -520,5 +556,35 @@ const styles = StyleSheet.create({
   },
   emptyMessage: {
     textAlign: "center",
+  },
+  segmentedGroup: {
+    backgroundColor: colors.surface,
+    borderColor: colors.edge,
+    borderRadius: radii.lg,
+    borderWidth: 1,
+    flexDirection: "row",
+    padding: spacing.xs,
+  },
+  segmentedButton: {
+    alignItems: "center",
+    borderRadius: radii.md,
+    flex: 1,
+    justifyContent: "center",
+    cursor: "pointer",
+    minHeight: 44,
+    paddingHorizontal: spacing.sm,
+  },
+  segmentedButtonActive: {
+    backgroundColor: colors.accentSoft,
+  },
+  segmentedButtonPressed: {
+    backgroundColor: colors.surfaceRaised,
+  },
+  segmentedText: {
+    color: colors.muted,
+    ...typography.control,
+  },
+  segmentedTextActive: {
+    color: colors.accent,
   },
 })

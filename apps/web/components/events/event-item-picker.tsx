@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { inputClass, segmentedButtonClass, segmentedGroupClass } from "@/components/ui/classes"
 
 type ItemType = "book" | "movie" | "game"
 
@@ -51,7 +52,7 @@ export function EventItemPicker({
         <input key={id} type="hidden" name="lendableItemIds" value={id} />
       ))}
 
-      <div className="flex rounded-lg border border-edge bg-surface p-0.5 w-fit" role="group" aria-label="Item type">
+      <div className={`${segmentedGroupClass} w-fit`} role="group" aria-label="Item type">
         {(["book", "movie", "game"] as ItemType[]).map((type) => (
           <button
             key={type}
@@ -61,9 +62,7 @@ export function EventItemPicker({
               setQuery("")
             }}
             aria-pressed={activeType === type}
-            className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-              activeType === type ? "bg-accent-soft text-accent" : "text-ink-muted hover:text-ink"
-            }`}
+            className={segmentedButtonClass(activeType === type)}
           >
             {labels[type]}
           </button>
@@ -76,7 +75,7 @@ export function EventItemPicker({
         onChange={(event) => setQuery(event.target.value)}
         aria-label={`Search ${labels[activeType].toLowerCase()}`}
         placeholder={`Search ${labels[activeType].toLowerCase()}...`}
-        className="rounded-lg border border-edge bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-accent"
+        className={inputClass}
       />
 
       {filtered.length === 0 ? (
