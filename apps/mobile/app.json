@@ -20,6 +20,10 @@
       ],
       "expo-notifications"
     ],
+    "ios": {
+      "bundleIdentifier": "com.lonetechwiz.hearthshelf",
+      "buildNumber": "1"
+    },
     "android": {
       "permissions": [
         "android.permission.CAMERA",

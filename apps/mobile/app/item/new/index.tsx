@@ -21,7 +21,11 @@ export default function NewItemScreen() {
 
   return (
     <AuthGate>
-      <Screen title={`Add ${labels[type]}`} subtitle="Create a new shelf item.">
+      <Screen
+        title={`Add ${labels[type]}`}
+        subtitle="Create a new shelf item."
+        back={{ label: "Shelf", onPress: () => router.canGoBack() ? router.back() : router.replace("/(tabs)/shelf") }}
+      >
         <ItemForm
           type={type}
           isbn={params.isbn}

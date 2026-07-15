@@ -1,21 +1,29 @@
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Image, Platform, StyleSheet, Text, View } from "react-native"
+import { useRouter } from "expo-router"
 import * as Notifications from "expo-notifications"
 import { IosAuthorizationStatus } from "expo-notifications"
 import { AuthGate } from "../../components/auth-gate"
 import { Button, Card, EmptyState, ErrorState, LoadingState, Pill, Screen, SecondaryButton, SectionHeader, StatusText } from "../../components/screen"
-import { getContacts, getEvents, registerPushToken } from "../../lib/api"
+import { getContacts, getEvents, registerPushToken, unregisterPushToken } from "../../lib/api"
 import { useAuth } from "../../lib/auth"
 import { colors, radii, spacing } from "../../lib/theme"
+import { getPushEnabled, setPushEnabled as persistPushEnabled } from "../../lib/token-store"
 import { useCachedQuery } from "../../lib/use-cached-query"
 
 export default function MoreScreen() {
+  const router = useRouter()
   const auth = useAuth()
   const [pushStatus, setPushStatus] = useState<string | null>(null)
+  const [pushEnabled, setPushEnabled] = useState(false)
   const loadContacts = useCallback(() => getContacts(), [])
   const loadEvents = useCallback(() => getEvents(), [])
   const contacts = useCachedQuery("contacts", loadContacts)
   const events = useCachedQuery("events", loadEvents)
+
+  useEffect(() => {
+    void getPushEnabled().then(setPushEnabled)
+  }, [])
 
   async function enablePush() {
     const permission = await Notifications.requestPermissionsAsync()
@@ -25,7 +33,17 @@ export default function MoreScreen() {
     }
     const token = await Notifications.getExpoPushTokenAsync()
     await registerPushToken(token.data, Platform.OS)
+    await persistPushEnabled(true)
+    setPushEnabled(true)
     setPushStatus("Push notifications are enabled for this device.")
+  }
+
+  async function disablePush() {
+    const token = await Notifications.getExpoPushTokenAsync()
+    await unregisterPushToken(token.data)
+    await persistPushEnabled(false)
+    setPushEnabled(false)
+    setPushStatus("Push notifications are disabled for this device.")
   }
 
   return (
@@ -49,13 +67,21 @@ export default function MoreScreen() {
           {pushStatus ? <StatusText>{pushStatus}</StatusText> : null}
           <View style={styles.actions}>
             <SecondaryButton label="Refresh Session" onPress={() => void auth.refresh()} fullWidth />
-            <SecondaryButton label="Enable Push" onPress={() => void enablePush()} fullWidth />
-            <Button label="Sign Out Locally" onPress={() => void auth.signOutLocal()} fullWidth />
+            <SecondaryButton
+              label={pushEnabled ? "Disable Push" : "Enable Push"}
+              onPress={() => void (pushEnabled ? disablePush() : enablePush())}
+              fullWidth
+            />
+            <Button label="Sign Out" onPress={() => void auth.signOutLocal()} fullWidth />
           </View>
         </Card>
 
         <View style={styles.section}>
-          <SectionHeader title="Events" subtitle="Upcoming shelf plans." />
+          <SectionHeader
+            title="Events"
+            subtitle="Upcoming shelf plans."
+            action={<SecondaryButton label="View All" onPress={() => router.push("/events")} />}
+          />
           {events.loading ? <LoadingState /> : null}
           {events.error ? <ErrorState message={events.error} onRetry={() => void events.reload()} /> : null}
           {events.data?.events.length ? (
@@ -75,12 +101,20 @@ export default function MoreScreen() {
             </Card>
           ) : null}
           {!events.loading && !events.error && events.data?.events.length === 0 ? (
-            <EmptyState title="No events scheduled" message="Book clubs, movie nights, and game nights will show here." />
+            <EmptyState
+              title="No events scheduled"
+              message="Book clubs, movie nights, and game nights will show here."
+              action={<SecondaryButton label="Create Event" onPress={() => router.push("/events/new")} />}
+            />
           ) : null}
         </View>
 
         <View style={styles.section}>
-          <SectionHeader title="Contacts" subtitle="People connected to your shelf." />
+          <SectionHeader
+            title="Contacts"
+            subtitle="People connected to your shelf."
+            action={<SecondaryButton label="View All" onPress={() => router.push("/contacts")} />}
+          />
           {contacts.loading ? <LoadingState /> : null}
           {contacts.error ? <ErrorState message={contacts.error} onRetry={() => void contacts.reload()} /> : null}
           {contacts.data?.contacts.length ? (
@@ -99,7 +133,11 @@ export default function MoreScreen() {
             </Card>
           ) : null}
           {!contacts.loading && !contacts.error && contacts.data?.contacts.length === 0 ? (
-            <EmptyState title="No contacts yet" message="Add contacts on the web app to track who has what." />
+            <EmptyState
+              title="No contacts yet"
+              message="Add contacts to track who has what."
+              action={<SecondaryButton label="Add Contact" onPress={() => router.push("/contacts/new")} />}
+            />
           ) : null}
         </View>
       </Screen>

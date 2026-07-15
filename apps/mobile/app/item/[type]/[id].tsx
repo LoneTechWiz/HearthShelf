@@ -3,7 +3,8 @@ import { Alert, Image, StyleSheet, Text, View } from "react-native"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import type { ItemType, MobileShelfItem } from "@my-shelf/types"
 import { AuthGate } from "../../../components/auth-gate"
-import { Card, DangerButton, ErrorState, LoadingState, Pill, Screen, StatusBadge } from "../../../components/screen"
+import { ReviewPanel } from "../../../components/review-panel"
+import { Card, DangerButton, ErrorState, LoadingState, Pill, Screen, SecondaryButton, StatusBadge } from "../../../components/screen"
 import { deleteItem, getItem } from "../../../lib/api"
 import { colors, radii, spacing } from "../../../lib/theme"
 import { useCachedQuery } from "../../../lib/use-cached-query"
@@ -27,6 +28,7 @@ export default function ItemDetailScreen() {
       <Screen
         title={title}
         subtitle={(item ? detailSubtitle(item) : type) ?? undefined}
+        back={{ label: "Shelf", onPress: () => router.canGoBack() ? router.back() : router.replace("/(tabs)/shelf") }}
         action={item ? {
           label: "Edit",
           onPress: () => router.push({ pathname: "/item/[type]/[id]/edit", params: { type, id } }),
@@ -37,6 +39,7 @@ export default function ItemDetailScreen() {
         {item ? (
           <ItemDetails
             item={item}
+            onCheckout={() => router.push({ pathname: "/checkouts/new", params: { lendableItemId: item.lendableItemId!, type: item.type } })}
             onDelete={() => {
               Alert.alert("Delete item?", "This removes the item from your shelf.", [
                 { text: "Cancel", style: "cancel" },
@@ -51,12 +54,13 @@ export default function ItemDetailScreen() {
             }}
           />
         ) : null}
+        {item?.lendableItemId ? <ReviewPanel lendableItemId={item.lendableItemId} /> : null}
       </Screen>
     </AuthGate>
   )
 }
 
-function ItemDetails({ item, onDelete }: { item: MobileShelfItem; onDelete: () => void }) {
+function ItemDetails({ item, onDelete, onCheckout }: { item: MobileShelfItem; onDelete: () => void; onCheckout: () => void }) {
   const image = item.type === "movie" ? item.posterUrl : item.coverUrl
   const meta = metadata(item)
 
@@ -97,6 +101,7 @@ function ItemDetails({ item, onDelete }: { item: MobileShelfItem; onDelete: () =
           <Text style={styles.description}>{item.description}</Text>
         </View>
       ) : null}
+      {!item.isCheckedOut && item.lendableItemId ? <SecondaryButton label="Check Out" onPress={onCheckout} fullWidth /> : null}
       <DangerButton label="Delete Item" onPress={onDelete} fullWidth />
     </Card>
   )

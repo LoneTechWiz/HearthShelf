@@ -23,6 +23,7 @@ export default function EditItemScreen() {
       <Screen
         title="Edit Item"
         subtitle={data?.item ? data.item.title : "Update shelf details."}
+        back={{ label: "Item", onPress: () => router.canGoBack() ? router.back() : router.replace({ pathname: "/item/[type]/[id]", params: { type, id: params.id } }) }}
       >
         {loading ? <LoadingState /> : null}
         {error ? <ErrorState message={error} onRetry={() => void reload()} /> : null}
