@@ -47,6 +47,7 @@ describe("createBook", () => {
     fd.set("seriesName", "Dune")
     fd.set("seriesPosition", "1")
     fd.set("seriesTotal", "6")
+    fd.set("genre", "Science fiction")
     const result = await createBook(null, fd)
     expect(createBookRecord).toHaveBeenCalledWith("u1", {
       title: "Dune",
@@ -56,6 +57,7 @@ describe("createBook", () => {
       seriesName: "Dune",
       seriesPosition: 1,
       seriesTotal: 6,
+      genre: "Science fiction",
       description: null,
       coverUrl: null,
     })
@@ -149,6 +151,7 @@ describe("updateBook", () => {
       seriesName: null,
       seriesPosition: null,
       seriesTotal: null,
+      genre: null,
       description: null,
       coverUrl: null,
     })

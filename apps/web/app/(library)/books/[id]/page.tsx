@@ -44,6 +44,9 @@ export default async function BookDetailPage({
             {book.isbn && (
               <p className="mt-1 text-xs text-ink-faint">ISBN: {book.isbn}</p>
             )}
+            {book.genre && (
+              <p className="mt-1 text-xs text-ink-faint">Genre: {book.genre}</p>
+            )}
             <div className="mt-2">
               <StatusBadge status={book.isCheckedOut ? "checked-out" : "available"} />
             </div>

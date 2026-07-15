@@ -40,6 +40,7 @@ export type BookSuggestion = {
   seriesName: string | null
   seriesPosition: number | null
   seriesTotal: number | null
+  genre: string | null
   coverUrl: string | null
   description: string | null
 }

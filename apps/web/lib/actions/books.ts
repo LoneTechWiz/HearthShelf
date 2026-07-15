@@ -45,6 +45,7 @@ export async function createBook(
     seriesName: nullIfEmpty(formData.get("seriesName")),
     seriesPosition: optionalPositiveInt(formData.get("seriesPosition")),
     seriesTotal: optionalPositiveInt(formData.get("seriesTotal")),
+    genre: nullIfEmpty(formData.get("genre")),
     description: nullIfEmpty(formData.get("description")),
     coverUrl: nullIfEmpty(formData.get("coverUrl")),
   })
@@ -90,6 +91,7 @@ export async function updateBook(
     seriesName: nullIfEmpty(formData.get("seriesName")),
     seriesPosition: optionalPositiveInt(formData.get("seriesPosition")),
     seriesTotal: optionalPositiveInt(formData.get("seriesTotal")),
+    genre: nullIfEmpty(formData.get("genre")),
     description: nullIfEmpty(formData.get("description")),
     coverUrl: nullIfEmpty(formData.get("coverUrl")),
   })

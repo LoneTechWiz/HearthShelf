@@ -26,6 +26,7 @@ interface BookFormProps {
     seriesName?: string | null
     seriesPosition?: number | null
     seriesTotal?: number | null
+    genre?: string | null
     description?: string | null
     coverUrl?: string | null
   }
@@ -43,6 +44,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
   const [seriesName, setSeriesName] = useState(defaultValues?.seriesName ?? "")
   const [seriesPosition, setSeriesPosition] = useState(String(defaultValues?.seriesPosition ?? ""))
   const [seriesTotal, setSeriesTotal] = useState(String(defaultValues?.seriesTotal ?? ""))
+  const [genre, setGenre] = useState(defaultValues?.genre ?? "")
   const [description, setDescription] = useState(defaultValues?.description ?? "")
   const [coverUrl, setCoverUrl] = useState(defaultValues?.coverUrl ?? "")
 
@@ -82,6 +84,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
     setSeriesName(suggestion.seriesName ?? "")
     setSeriesPosition(String(suggestion.seriesPosition ?? ""))
     setSeriesTotal(String(suggestion.seriesTotal ?? ""))
+    setGenre(suggestion.genre ?? "")
     setCoverUrl(suggestion.coverUrl ?? "")
     setDescription(suggestion.description ?? "")
     setShowDropdown(false)
@@ -103,6 +106,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
       setSeriesName(result.seriesName ?? "")
       setSeriesPosition(String(result.seriesPosition ?? ""))
       setSeriesTotal(String(result.seriesTotal ?? ""))
+      setGenre(result.genre ?? "")
       setCoverUrl(result.coverUrl ?? "")
       setDescription(result.description ?? "")
     } catch {
@@ -183,6 +187,19 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
           name="authors"
           value={authors}
           onChange={(e) => setAuthors(e.target.value)}
+          className={inputClass}
+        />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <label className={labelClass} htmlFor="genre">
+          Genre
+        </label>
+        <input
+          id="genre"
+          name="genre"
+          value={genre}
+          onChange={(e) => setGenre(e.target.value)}
           className={inputClass}
         />
       </div>
