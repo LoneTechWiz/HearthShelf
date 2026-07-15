@@ -180,7 +180,7 @@ export function ItemForm({ type, item, isbn, onSaved, onScanIsbn }: ItemFormProp
   async function selectSuggestion(suggestion: TitleSuggestion) {
     setSearchQuery("")
     setSuggestions([])
-    setLookingUp(suggestion.type !== "book")
+    setLookingUp(suggestion.type !== "book" || Boolean(suggestion.isbn))
 
     if (suggestion.type === "book") {
       setValues((current) => ({
@@ -196,6 +196,22 @@ export function ItemForm({ type, item, isbn, onSaved, onScanIsbn }: ItemFormProp
         coverUrl: suggestion.coverUrl ?? "",
         description: suggestion.description ?? "",
       }))
+
+      if (!suggestion.isbn) return
+      try {
+        const { suggestion: detail } = await lookupBookByIsbn(suggestion.isbn)
+        const description = detail?.description
+        if (description) {
+          setValues((current) => ({
+            ...current,
+            description,
+          }))
+        }
+      } catch {
+        setSearchError("Details could not be loaded. You can complete the fields manually.")
+      } finally {
+        setLookingUp(false)
+      }
       return
     }
 

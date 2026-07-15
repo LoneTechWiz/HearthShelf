@@ -75,7 +75,7 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
     return () => clearTimeout(timer)
   }, [searchQuery])
 
-  function handleSelect(suggestion: BookSuggestion) {
+  async function handleSelect(suggestion: BookSuggestion) {
     setTitle(suggestion.title)
     setSearchQuery("")
     setAuthors(suggestion.authors)
@@ -89,6 +89,18 @@ export function BookForm({ action, defaultValues, submitLabel = "Save" }: BookFo
     setDescription(suggestion.description ?? "")
     setShowDropdown(false)
     setSuggestions([])
+
+    if (!suggestion.isbn) return
+    setIsLookingUp(true)
+    setLookupError(null)
+    try {
+      const detail = await lookupByIsbn(suggestion.isbn)
+      if (detail?.description) setDescription(detail.description)
+    } catch {
+      setLookupError("Details lookup failed")
+    } finally {
+      setIsLookingUp(false)
+    }
   }
 
   async function runLookup(code: string) {
