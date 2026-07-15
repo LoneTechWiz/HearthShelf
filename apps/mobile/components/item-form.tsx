@@ -134,6 +134,7 @@ export function ItemForm({ type, item, isbn, onSaved, onScanIsbn }: ItemFormProp
           seriesName: suggestion.seriesName ?? "",
           seriesPosition: suggestion.seriesPosition?.toString() ?? "",
           seriesTotal: suggestion.seriesTotal?.toString() ?? "",
+          genre: suggestion.genre ?? "",
           coverUrl: suggestion.coverUrl ?? "",
           description: suggestion.description ?? "",
         }))
@@ -165,6 +166,7 @@ export function ItemForm({ type, item, isbn, onSaved, onScanIsbn }: ItemFormProp
         seriesName: suggestion.seriesName ?? "",
         seriesPosition: suggestion.seriesPosition?.toString() ?? "",
         seriesTotal: suggestion.seriesTotal?.toString() ?? "",
+        genre: suggestion.genre ?? "",
         coverUrl: suggestion.coverUrl ?? "",
         description: suggestion.description ?? "",
       }))
@@ -190,6 +192,7 @@ export function ItemForm({ type, item, isbn, onSaved, onScanIsbn }: ItemFormProp
         seriesName: suggestion.seriesName ?? "",
         seriesPosition: suggestion.seriesPosition?.toString() ?? "",
         seriesTotal: suggestion.seriesTotal?.toString() ?? "",
+        genre: suggestion.genre ?? "",
         coverUrl: suggestion.coverUrl ?? "",
         description: suggestion.description ?? "",
       }))

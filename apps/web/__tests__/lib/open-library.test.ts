@@ -19,6 +19,7 @@ describe("searchByTitle", () => {
               series_key: ["OL1L"],
               series_name: ["Dune"],
               series_position: ["1"],
+              subject: ["Dune (Imaginary place)", "Fiction", "Science fiction"],
             },
           ],
         }),
@@ -44,6 +45,7 @@ describe("searchByTitle", () => {
       seriesName: "Dune",
       seriesPosition: 1,
       seriesTotal: 2,
+      genre: "Science fiction",
       coverUrl: "https://covers.openlibrary.org/b/id/8839523-S.jpg",
       description: null,
     }])
@@ -66,6 +68,7 @@ describe("searchByTitle", () => {
       seriesName: null,
       seriesPosition: null,
       seriesTotal: null,
+      genre: null,
       coverUrl: null,
       description: null,
     }])
@@ -106,7 +109,10 @@ describe("lookupByIsbn", () => {
       })
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ description: "A science fiction novel." }),
+        json: async () => ({
+          description: "A science fiction novel.",
+          subjects: ["Dune (Imaginary place)", "Fiction", "Science fiction"],
+        }),
       })
     )
     const result = await lookupByIsbn("9780441013593")
@@ -119,6 +125,7 @@ describe("lookupByIsbn", () => {
       seriesName: null,
       seriesPosition: null,
       seriesTotal: null,
+      genre: "Science fiction",
       coverUrl: "https://covers.openlibrary.org/b/id/8839523-M.jpg",
       description: "A science fiction novel.",
     })
@@ -198,6 +205,23 @@ describe("lookupByIsbn", () => {
     }))
     const result = await lookupByIsbn("9780441013593")
     expect(result?.description).toBeNull()
+  })
+
+  it("uses edition subjects when no work genre is available", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        "ISBN:9780441013593": {
+          details: {
+            title: "Dune",
+            authors: [],
+            subjects: [{ name: "Science fiction" }],
+          },
+        },
+      }),
+    }))
+    const result = await lookupByIsbn("9780441013593")
+    expect(result?.genre).toBe("Science fiction")
   })
 
   it("returns null when ISBN is not found", async () => {
