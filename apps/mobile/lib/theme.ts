@@ -1,25 +1,32 @@
+import { DynamicColorIOS, Platform } from "react-native"
+
+function adaptiveColor(light: string, dark: string): string {
+  if (Platform.OS !== "ios") return light
+  return DynamicColorIOS({ light, dark }) as unknown as string
+}
+
 export const colors = {
-  background: "#faf6f0",
-  surface: "#fffdfa",
-  surfaceRaised: "#f3ecdf",
-  ink: "#2b211b",
-  muted: "#6b5d52",
-  faint: "#7d6c5b",
-  edge: "#e8e0d4",
-  accent: "#a84a08",
-  accentHover: "#93430a",
-  accentContrast: "#ffffff",
-  accentSoft: "#f7e8d8",
-  success: "#047857",
-  successSoft: "#dff6e7",
-  warning: "#b45309",
-  warningSoft: "#fff1c2",
-  danger: "#b42318",
-  dangerSoft: "#fee4e2",
-  dangerEdge: "#f2b8b5",
-  dangerPressed: "#fbd0cd",
-  overlay: "rgba(43, 33, 27, 0.08)",
-  primary: "#a84a08",
+  background: adaptiveColor("#faf6f0", "#161210"),
+  surface: adaptiveColor("#fffdfa", "#211b16"),
+  surfaceRaised: adaptiveColor("#f3ecdf", "#2c241d"),
+  ink: adaptiveColor("#2b211b", "#f2ece3"),
+  muted: adaptiveColor("#6b5d52", "#b3a394"),
+  faint: adaptiveColor("#7d6c5b", "#9a8b7a"),
+  edge: adaptiveColor("#e8e0d4", "#372e26"),
+  accent: adaptiveColor("#a84a08", "#e08a3c"),
+  accentHover: adaptiveColor("#93430a", "#eda05c"),
+  accentContrast: adaptiveColor("#ffffff", "#231405"),
+  accentSoft: adaptiveColor("#f7e8d8", "#3a2a1a"),
+  success: adaptiveColor("#047857", "#6ee7b7"),
+  successSoft: adaptiveColor("#dff6e7", "#16382e"),
+  warning: adaptiveColor("#b45309", "#f6c453"),
+  warningSoft: adaptiveColor("#fff1c2", "#3b2d16"),
+  danger: adaptiveColor("#b42318", "#fca5a5"),
+  dangerSoft: adaptiveColor("#fee4e2", "#421f1f"),
+  dangerEdge: adaptiveColor("#f2b8b5", "#6b3030"),
+  dangerPressed: adaptiveColor("#fbd0cd", "#552525"),
+  overlay: adaptiveColor("rgba(43, 33, 27, 0.08)", "rgba(242, 236, 227, 0.10)"),
+  primary: adaptiveColor("#a84a08", "#e08a3c"),
   primaryInk: "#ffffff",
 }
 
@@ -43,7 +50,7 @@ export const radii = {
 
 export const shadows = {
   card: {
-    shadowColor: "#2b211b",
+    shadowColor: adaptiveColor("#2b211b", "#000000"),
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.08,
     shadowRadius: 10,
