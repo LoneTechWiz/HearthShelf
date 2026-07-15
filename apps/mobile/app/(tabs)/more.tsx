@@ -4,16 +4,18 @@ import { useRouter } from "expo-router"
 import * as Notifications from "expo-notifications"
 import { IosAuthorizationStatus } from "expo-notifications"
 import { AuthGate } from "../../components/auth-gate"
-import { Button, Card, EmptyState, ErrorState, LoadingState, Pill, Screen, SecondaryButton, SectionHeader, StatusText } from "../../components/screen"
+import { Button, Card, EmptyState, ErrorState, LoadingState, Pill, Screen, SecondaryButton, SectionHeader, SegmentedControl, StatusText } from "../../components/screen"
 import { getContacts, getEvents, registerPushToken, unregisterPushToken } from "../../lib/api"
 import { useAuth } from "../../lib/auth"
 import { colors, radii, spacing } from "../../lib/theme"
+import { useTheme, type ThemePreference } from "../../lib/theme-provider"
 import { getPushEnabled, setPushEnabled as persistPushEnabled } from "../../lib/token-store"
 import { useCachedQuery } from "../../lib/use-cached-query"
 
 export default function MoreScreen() {
   const router = useRouter()
   const auth = useAuth()
+  const theme = useTheme()
   const [pushStatus, setPushStatus] = useState<string | null>(null)
   const [pushEnabled, setPushEnabled] = useState(false)
   const loadContacts = useCallback(() => getContacts(), [])
@@ -75,6 +77,22 @@ export default function MoreScreen() {
             <Button label="Sign Out" onPress={() => void auth.signOutLocal()} fullWidth />
           </View>
         </Card>
+
+        <View style={styles.section}>
+          <SectionHeader title="Appearance" subtitle="Choose how HearthShelf looks." />
+          <Card>
+            <SegmentedControl
+              options={themeOptions}
+              value={theme.preference}
+              onChange={theme.setPreference}
+            />
+            <StatusText>
+              {theme.preference === "system"
+                ? "Matches your iPhone appearance setting."
+                : `HearthShelf will stay in ${theme.preference} mode.`}
+            </StatusText>
+          </Card>
+        </View>
 
         <View style={styles.section}>
           <SectionHeader
@@ -144,6 +162,12 @@ export default function MoreScreen() {
     </AuthGate>
   )
 }
+
+const themeOptions: { label: string; value: ThemePreference }[] = [
+  { label: "System", value: "system" },
+  { label: "Light", value: "light" },
+  { label: "Dark", value: "dark" },
+]
 
 function initials(value: string | null | undefined) {
   if (!value) return "HS"

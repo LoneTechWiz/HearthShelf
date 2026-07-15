@@ -59,7 +59,7 @@ export default function IsbnScannerScreen() {
 
 const styles = StyleSheet.create({
   cameraWrap: {
-    backgroundColor: colors.ink,
+    backgroundColor: "#161210",
     borderRadius: radii.lg,
     minHeight: 420,
     overflow: "hidden",
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   scanFrame: {
-    borderColor: colors.accentContrast,
+    borderColor: colors.primaryInk,
     borderRadius: radii.lg,
     borderWidth: 2,
     bottom: 120,

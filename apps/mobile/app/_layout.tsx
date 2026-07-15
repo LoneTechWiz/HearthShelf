@@ -1,19 +1,49 @@
 import { Component } from "react"
 import type { ErrorInfo, PropsWithChildren } from "react"
+import { DarkTheme, DefaultTheme, ThemeProvider as NavigationThemeProvider } from "@react-navigation/native"
 import { Slot } from "expo-router"
 import { StatusBar, StyleSheet, Text, View } from "react-native"
 import { AuthProvider } from "../lib/auth"
 import { colors } from "../lib/theme"
+import { ThemeProvider, useTheme } from "../lib/theme-provider"
 import { Button, Card, Screen, StatusText } from "../components/screen"
 
 export default function RootLayout() {
   return (
     <RootErrorBoundary>
+      <ThemeProvider>
+        <RootContent />
+      </ThemeProvider>
+    </RootErrorBoundary>
+  )
+}
+
+function RootContent() {
+  const { colorScheme } = useTheme()
+  const baseTheme = colorScheme === "dark" ? DarkTheme : DefaultTheme
+  const navigationTheme = {
+    ...baseTheme,
+    colors: {
+      ...baseTheme.colors,
+      primary: colors.accent,
+      background: colors.background,
+      card: colors.surface,
+      text: colors.ink,
+      border: colors.edge,
+      notification: colors.accent,
+    },
+  }
+
+  return (
+    <NavigationThemeProvider value={navigationTheme}>
       <AuthProvider>
-        <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
+        <StatusBar
+          barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
+          backgroundColor={colors.background}
+        />
         <Slot />
       </AuthProvider>
-    </RootErrorBoundary>
+    </NavigationThemeProvider>
   )
 }
 
