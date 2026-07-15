@@ -27,4 +27,7 @@ CREATE TABLE "mobileSession" (
 --> statement-breakpoint
 ALTER TABLE "mobileAuthCode" ADD CONSTRAINT "mobileAuthCode_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "mobilePushSubscription" ADD CONSTRAINT "mobilePushSubscription_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "mobileSession" ADD CONSTRAINT "mobileSession_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;
+ALTER TABLE "mobileSession" ADD CONSTRAINT "mobileSession_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "mobileAuthCode" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "mobilePushSubscription" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "mobileSession" ENABLE ROW LEVEL SECURITY;

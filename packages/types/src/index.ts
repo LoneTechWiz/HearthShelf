@@ -110,6 +110,22 @@ export interface MobileContact {
   createdAt: string
 }
 
+export interface MobileContactRequest {
+  id: string
+  createdAt: string
+  requester: {
+    id: string
+    name: string
+    image: string | null
+  }
+}
+
+export interface MobileUserSearchResult {
+  id: string
+  name: string
+  image: string | null
+}
+
 export interface MobileCheckoutItem {
   id: string
   type: ItemType
@@ -170,11 +186,41 @@ export interface MobileDashboard {
   recentActivity: MobileActivityEvent[]
 }
 
+export interface MobileCollectionItem {
+  identity: string
+  id: string
+  type: ItemType
+  title: string
+  subtitle: string | null
+  imageUrl: string | null
+  position: number | null
+  copyCount: number
+}
+
+export interface MobileCollection {
+  name: string
+  ownedCount: number
+  totalCount?: number | null
+  items: MobileCollectionItem[]
+}
+
 export interface MobileCollections {
-  authors: Array<{ key: string; label: string; count: number }>
-  series: Array<{ key: string; label: string; count: number }>
-  movieSeries: Array<{ key: string; label: string; count: number }>
-  gameGenres: Array<{ key: string; label: string; count: number }>
+  books?: {
+    authors: MobileCollection[]
+    series: MobileCollection[]
+  }
+  movies?: {
+    series: MobileCollection[]
+    genres: MobileCollection[]
+  }
+  games?: {
+    categories: MobileCollection[]
+    players: MobileCollection[]
+  }
+  authors?: Array<{ key: string; label: string; count: number }>
+  series?: Array<{ key: string; label: string; count: number }>
+  movieSeries?: Array<{ key: string; label: string; count: number }>
+  gameGenres?: Array<{ key: string; label: string; count: number }>
 }
 
 export interface MobileReview {

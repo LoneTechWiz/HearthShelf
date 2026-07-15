@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons"
 import { useRouter } from "expo-router"
 import { Pressable, StyleSheet, Text, View } from "react-native"
 import { AuthGate } from "../../components/auth-gate"
-import { Card, EmptyState, ErrorState, LoadingState, MetricCard, Pill, Screen, SectionHeader } from "../../components/screen"
+import { Button, Card, EmptyState, ErrorState, LoadingState, MetricCard, Pill, Screen, SecondaryButton, SectionHeader } from "../../components/screen"
 import { getDashboard } from "../../lib/api"
 import { useAuth } from "../../lib/auth"
 import { colors, pressableRipple, radii, shadows, spacing } from "../../lib/theme"
@@ -37,6 +37,15 @@ export default function HomeScreen() {
         {error ? <ErrorState message={error} onRetry={() => void reload()} /> : null}
         {data ? (
           <>
+            <View style={styles.section}>
+              <SectionHeader title="Quick actions" />
+              <View style={styles.quickActions}>
+                <SecondaryButton label="Add Book" onPress={() => router.push({ pathname: "/item/new", params: { type: "book" } })} />
+                <SecondaryButton label="Add Movie" onPress={() => router.push({ pathname: "/item/new", params: { type: "movie" } })} />
+                <SecondaryButton label="Add Game" onPress={() => router.push({ pathname: "/item/new", params: { type: "game" } })} />
+                <Button label="Check Out" onPress={() => router.push("/checkouts/new")} />
+              </View>
+            </View>
             <View style={styles.stats}>
               <MetricCard label="Shelf" value={totalItems} />
               <MetricCard label="Checked out" value={data.stats.checkedOutNow} />
@@ -146,6 +155,11 @@ const styles = StyleSheet.create({
   },
   section: {
     gap: spacing.md,
+  },
+  quickActions: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
   },
   overviewGrid: {
     gap: spacing.md,

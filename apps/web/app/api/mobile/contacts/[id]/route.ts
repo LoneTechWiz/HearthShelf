@@ -25,6 +25,9 @@ export async function PUT(request: Request, { params }: Params) {
   if (user instanceof Response) return user
 
   const body = await request.json()
+  const contact = await getContactById((await params).id, user.id)
+  if (!contact) return jsonError("Not found", 404)
+  if (contact.linkedUserId) return jsonError("Connected contacts cannot be edited", 409)
   const name = nullIfEmpty(body.name)
   if (!name) return jsonError("Name is required")
 
@@ -41,6 +44,9 @@ export async function DELETE(request: Request, { params }: Params) {
   const user = await requireMobileUser(request)
   if (user instanceof Response) return user
 
-  await deleteContactRecord((await params).id, user.id)
+  const contact = await getContactById((await params).id, user.id)
+  if (!contact) return jsonError("Not found", 404)
+  if (contact.linkedUserId) return jsonError("Connected contacts cannot be deleted", 409)
+  await deleteContactRecord(contact.id, user.id)
   return Response.json({ ok: true })
 }

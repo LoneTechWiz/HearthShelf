@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react"
 import { Image, StyleSheet, Text, View } from "react-native"
+import { useRouter } from "expo-router"
 import type { MobileCheckout } from "@my-shelf/types"
 import { AuthGate } from "../../components/auth-gate"
 import { Card, EmptyState, ErrorState, LoadingState, Pill, Screen, SecondaryButton, SectionHeader } from "../../components/screen"
@@ -8,6 +9,7 @@ import { colors, radii, spacing } from "../../lib/theme"
 import { useCachedQuery } from "../../lib/use-cached-query"
 
 export default function CheckoutsScreen() {
+  const router = useRouter()
   const load = useCallback(() => getCheckouts(), [])
   const { data, loading, error, reload } = useCachedQuery("checkouts", load)
   const [returningId, setReturningId] = useState<string | null>(null)
@@ -24,7 +26,11 @@ export default function CheckoutsScreen() {
 
   return (
     <AuthGate>
-      <Screen title="Active Checkouts" subtitle="Items currently away from the shelf.">
+      <Screen
+        title="Active Checkouts"
+        subtitle="Items currently away from the shelf."
+        action={{ label: "Check Out", onPress: () => router.push("/checkouts/new") }}
+      >
         {loading ? <LoadingState /> : null}
         {error ? <ErrorState message={error} onRetry={() => void reload()} /> : null}
         {data?.active.length ? (
@@ -40,7 +46,11 @@ export default function CheckoutsScreen() {
           </View>
         ) : null}
         {!loading && !error && data?.active.length === 0 ? (
-          <EmptyState title="Nothing checked out" message="All your items are home on the shelf." />
+          <EmptyState
+            title="Nothing checked out"
+            message="All your items are home on the shelf."
+            action={<SecondaryButton label="Check Out an Item" onPress={() => router.push("/checkouts/new")} />}
+          />
         ) : null}
         {data?.history.length ? (
           <View style={styles.section}>

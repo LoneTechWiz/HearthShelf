@@ -16,6 +16,7 @@ type ScreenProps = PropsWithChildren<{
   title: string
   subtitle?: string
   action?: { label: string; onPress: () => void }
+  back?: { label?: string; onPress: () => void }
   eyebrow?: string
 }>
 
@@ -30,10 +31,15 @@ type PillTone = "neutral" | "accent" | "success" | "warning" | "danger"
 
 type SegmentOption<T extends string> = { label: string; value: T }
 
-export function Screen({ title, subtitle, action, eyebrow, children }: ScreenProps) {
+export function Screen({ title, subtitle, action, back, eyebrow, children }: ScreenProps) {
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
+        {back ? (
+          <Pressable accessibilityRole="button" onPress={back.onPress} style={styles.backButton}>
+            <Text style={styles.backButtonText}>← {back.label ?? "Back"}</Text>
+          </Pressable>
+        ) : null}
         <View style={styles.header}>
           <View style={styles.headerText}>
             {eyebrow ? <Text style={styles.eyebrow}>{eyebrow}</Text> : null}
@@ -293,6 +299,16 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     justifyContent: "space-between",
     gap: spacing.md,
+  },
+  backButton: {
+    alignSelf: "flex-start",
+    minHeight: 36,
+    justifyContent: "center",
+  },
+  backButtonText: {
+    color: colors.accent,
+    fontSize: 14,
+    fontWeight: "800",
   },
   headerText: {
     flex: 1,

@@ -19,9 +19,21 @@ export default function IsbnScannerScreen() {
     router.replace({ pathname: "/item/new", params: { type: "book", isbn } })
   }
 
+  function cancelScan() {
+    if (router.canGoBack()) {
+      router.back()
+      return
+    }
+    router.replace({ pathname: "/item/new", params: { type: "book" } })
+  }
+
   return (
     <AuthGate>
-      <Screen title="Scan ISBN" subtitle="Point the camera at a book barcode.">
+      <Screen
+        title="Scan ISBN"
+        subtitle="Point the camera at a book barcode."
+        action={{ label: "Cancel", onPress: cancelScan }}
+      >
         {!permission?.granted ? (
           <Card>
             <StatusText>Camera permission is required to scan an ISBN barcode.</StatusText>

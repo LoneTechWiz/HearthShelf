@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useState } from "react"
+import { useFocusEffect } from "expo-router"
 import { getCached, setCached } from "./cache"
 
 export type QueryState<T> = {
@@ -30,9 +31,9 @@ export function useCachedQuery<T>(key: string, load: () => Promise<T>): QuerySta
     }
   }, [key, load])
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     void reload()
-  }, [reload])
+  }, [reload]))
 
   return { data, loading, refreshing, error, reload }
 }
